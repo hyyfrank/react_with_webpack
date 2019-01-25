@@ -1,0 +1,27 @@
+{
+  "name": "webpack4",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyyfrank/webpack4.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hyyfrank/webpack4/issues"
+  },
+  "scripts": {
+    "build": "rmdir-cli build && webpack"
+  },
+  "homepage": "https://github.com/hyyfrank/webpack4#readme",
+  "dependencies": {
+    "rmdir-cli": "^2.0.6",
+    "webpack-cli": "^3.2.1"
+  },
+  "devDependencies": {
+    "webpack": "^4.29.0"
+  }
+}

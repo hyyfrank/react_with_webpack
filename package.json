@@ -14,14 +14,17 @@
     "url": "https://github.com/hyyfrank/webpack4/issues"
   },
   "scripts": {
-    "build": "rmdir-cli build && webpack"
+    "build": "rmdir-cli build && webpack ",
+    "dev": "node dev-server.js"
   },
   "homepage": "https://github.com/hyyfrank/webpack4#readme",
   "dependencies": {
-    "rmdir-cli": "^2.0.6",
-    "webpack-cli": "^3.2.1"
+    "webpack": "^4.29.0"
   },
   "devDependencies": {
-    "webpack": "^4.29.0"
+    "html-webpack-plugin": "^4.0.0-beta.5",
+    "rmdir-cli": "^2.0.6",
+    "webpack-cli": "^3.2.1",
+    "webpack-dev-server": "^3.1.14"
   }
 }

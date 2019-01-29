@@ -1,12 +1,18 @@
 const path = require("path");
-
+const webpack = require("webpack");
 module.exports = {
-  entry: {
-    app: "./src/main.js"
-  },
+  entry: [
+    "./src/main.js",
+    "webpack/hot/dev-server",
+    "webpack-dev-server/client?http://localhost:8080"
+  ],
   output: {
-    publicPath: __dirname + "/build/", // js引用路径或者CDN地址
-    path: path.resolve(__dirname, "build"), // 打包文件的输出目录
+    publicPath: "",
+    path: path.resolve(__dirname, "build"),
     filename: "bundle.js"
-  }
+  },
+  mode: "development", 
+  plugins: [
+    new webpack.HotModuleReplacementPlugin()
+  ]
 };

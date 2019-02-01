@@ -1,3 +1,4 @@
 import addtwo from "./add"
-console.log("javascript say hello2.")
-addtwo(1,2)
+import style from "./main.css"
+console.log("javascript say hello")
+addtwo(1,22)

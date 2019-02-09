@@ -11,17 +11,10 @@ module.exports = {
     contentBase: './dist',
     hot: true
   },
-<<<<<<< HEAD
-  mode: "development",
-=======
->>>>>>> 2975c9d... add babel,  react and css module
   module: {
     rules: [
       {
         test: /\.css$/,
-<<<<<<< HEAD
-        use: ['style-loader', 'css-loader']
-=======
         use: [
           {
             loader:'style-loader'
@@ -38,7 +31,6 @@ module.exports = {
         use: {
           loader: 'babel-loader'
         }
->>>>>>> 2975c9d... add babel,  react and css module
       }
     ]
   },

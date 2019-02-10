@@ -14,8 +14,8 @@
     "url": "https://github.com/hyyfrank/webpack4/issues"
   },
   "scripts": {
-    "build": "webpack --mode production",
-    "dev": "webpack-dev-server --mode development --open"
+    "build": "webpack --mode production --watch",
+    "dev": "webpack-dev-server --mode development --devtool inline-source-map --open"
   },
   "homepage": "https://github.com/hyyfrank/webpack4#readme",
   "dependencies": {
@@ -29,6 +29,7 @@
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-react": "^7.0.0",
+    "@babel/preset-stage-0": "^7.0.0",
     "babel-loader": "^8.0.5",
     "clean-webpack-plugin": "^1.0.1",
     "css-loader": "^2.1.0",

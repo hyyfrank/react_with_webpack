@@ -2,14 +2,11 @@ const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-module.exports = {
+const baseConfig = {
   entry: {
     app: './src/index.js'
   },
-  devServer: {
-    contentBase: './dist',
-    hot: true
-  },
+  devtool: 'cheap-module-source-map',
   module: {
     rules: [
       {
@@ -25,11 +22,19 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.js$/,
+        test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader'
         }
+      },
+      {
+        test: /\.html$/,
+        use: [
+          {
+            loader: "html-loader"
+          }
+        ]
       }
     ]
   },
@@ -42,9 +47,21 @@ module.exports = {
     }),
     new webpack.HotModuleReplacementPlugin()
   ],
+  resolve: {
+    extensions: ['*', '.js', '.jsx']
+  },
   output: {
     publicPath: "",
     path: path.resolve(__dirname, "dist"),
     filename: "[name]-bundle.js"
   },
 }
+if (process.env.NODE_ENV === 'development') {
+  baseConfig.devtool = 'inline-source-map';
+  baseConfig.devServer = {
+    contentBase: './dist',
+    hot: true,
+    open: true,
+  };
+}
+module.exports = baseConfig;

@@ -14,23 +14,27 @@
     "url": "https://github.com/hyyfrank/webpack4/issues"
   },
   "scripts": {
-    "build": "webpack --mode production --watch",
-    "dev": "webpack-dev-server --mode development --devtool inline-source-map --open"
+    "prod": "webpack --mode production",
+    "dev": "NODE_ENV=development webpack-dev-server --mode development --open"
   },
   "homepage": "https://github.com/hyyfrank/webpack4#readme",
   "dependencies": {
-    "@babel/polyfill": "^7.2.5",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "webpack": "^4.29.0"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/runtime": "^7.0.0-beta.55",
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-stage-0": "^7.0.0",
     "babel-loader": "^8.0.5",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "clean-webpack-plugin": "^1.0.1",
     "css-loader": "^2.1.0",
     "html-loader": "^0.5.5",

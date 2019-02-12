@@ -3,9 +3,10 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const baseConfig = {
-  entry: {
-    app: './src/index.js'
-  },
+  entry: [
+    "@babel/polyfill",
+    "./src/index.js"
+  ],
   devtool: 'cheap-module-source-map',
   module: {
     rules: [
@@ -55,7 +56,7 @@ const baseConfig = {
     path: path.resolve(__dirname, "dist"),
     filename: "[name]-bundle.js"
   },
-}
+};
 if (process.env.NODE_ENV === 'development') {
   baseConfig.devtool = 'inline-source-map';
   baseConfig.devServer = {

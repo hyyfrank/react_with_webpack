@@ -5,6 +5,9 @@ const HomeComponent = () => {
     console.log(x); // 1
     console.log(y); // 2
     console.log(z); // { a: 3, b: 4 }
+    const arr = Array.from(new Set([1, 2, 3, 2, 1]));
+    const arr2 = [1, [2, 3], [4, [5]]].flat(2);
+    console.log(arr2);
     const promise = new Promise((resolve,reject)=>{
         console.log("promise");
         resolve(1);

@@ -1,5 +1,5 @@
 import React from 'react';
-import * as style from '../css/main.css';
+import * as style from '../css/main.scss';
 const HomeComponent = () => {
     let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
     console.log(x); // 1

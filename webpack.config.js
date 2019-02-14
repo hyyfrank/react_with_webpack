@@ -2,6 +2,26 @@ const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+const isProd = process.env.NODE_ENV === 'production';
+const cssDevRules=[
+  {
+    loader:'style-loader'
+  },
+  {
+    loader:'css-loader?modules&localIdentName=[name]_[hash:base64:5]',
+  },
+  {
+    loader:'sass-loader',
+  }
+];
+const cssProdRules=[
+  "style-loader",
+   MiniCssExtractPlugin.loader,
+  "css-loader",
+  "sass-loader"
+];
 const baseConfig = {
   entry: [
     "@babel/polyfill",
@@ -11,15 +31,8 @@ const baseConfig = {
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: [
-          {
-            loader:'style-loader'
-          },
-          {
-            loader:'css-loader?modules&localIdentName=[name]_[hash:base64:5]',
-          }
-        ],
+        test: /\.(css|sass|scss)$/,
+        use: isProd? cssProdRules:cssDevRules,
         exclude: /node_modules/,
       },
       {
@@ -46,6 +59,9 @@ const baseConfig = {
       filename: 'index.html',
       hash: true,//防止缓存
     }),
+    new MiniCssExtractPlugin({
+      filename: "style.css"
+    }),
     new webpack.HotModuleReplacementPlugin()
   ],
   resolve: {
@@ -57,7 +73,7 @@ const baseConfig = {
     filename: "[name]-bundle.js"
   },
 };
-if (process.env.NODE_ENV === 'development') {
+if (!isProd) {
   baseConfig.devtool = 'inline-source-map';
   baseConfig.devServer = {
     contentBase: './dist',

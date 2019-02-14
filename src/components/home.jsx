@@ -18,6 +18,12 @@ const HomeComponent = () => {
     return <div>
         <h2>Hello React16.7.0!</h2>
         <div className={style.hello}>Hello CSS Module!</div>
+        <div className={style.flexContent}>
+            <div className={style.block}>block1</div>
+            <div className={style.block}>block2</div>
+            <div className={style.block}>block3</div>
+            <div className={style.block}>block4</div>
+        </div>
     </div>
 };
 export default HomeComponent;

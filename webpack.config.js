@@ -10,7 +10,16 @@ const cssDevRules=[
     loader:'style-loader'
   },
   {
-    loader:'css-loader?modules&localIdentName=[name]_[hash:base64:5]',
+    loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
+  },
+  {
+    loader: 'postcss-loader',
+    options: {
+      plugins: () => [
+        require('autoprefixer')
+      ],
+      sourceMap: true
+    }
   },
   {
     loader:'sass-loader',

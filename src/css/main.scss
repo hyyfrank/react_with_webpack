@@ -3,16 +3,21 @@ h2{
 }
 .flexContent{
     display: flex;
-}
-.block{
-    border:1px solid black;
-    background-color: green;
-    margin: 10px;
-    padding: 10px;
-    color: white;
-}
-.hello{
-    color: blue;
-    font-size: 20px;
-    font-weight: bold;
+    justify-content: space-around;
+    .block{
+        border:1px solid black;
+        background-color: green;
+        margin: 10px;
+        padding: 10px;
+        color: white;
+        &:hover {
+            background-color: blue;
+        }
+    }
+
+    .hello{
+        color: blue;
+        font-size: 20px;
+        font-weight: bold;
+    }
 }

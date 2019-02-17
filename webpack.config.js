@@ -1,87 +1,24 @@
-const path = require("path");
-const webpack = require("webpack");
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const merge = require('webpack-merge');
+const common = require('./webpack_common.config');
+const devserver = require('./webpack_devserver.config');
+const fontParse = require('./webpack_font.config');
+const imageParse = require('./webpack_image.config');
+const jsParse = require('./webpack_js.config');
+const optimizing = require('./webpack_optimizing.config');
+const styleParse = require('./webpack_style.config');
+const sourceMap = require('./webpack_sourcemap.config');
+const hotModuleReplacement = require('./webpack_hmr.config');
+const longCached = require('./webpack_longcached.config');
 
-const isProd = process.env.NODE_ENV === 'production';
-const cssDevRules=[
-  {
-    loader:'style-loader'
-  },
-  {
-    loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
-  },
-  {
-    loader: 'postcss-loader',
-  },
-  {
-    loader:'sass-loader',
-  }
-];
-const cssProdRules=[
-  "style-loader",
-   MiniCssExtractPlugin.loader,
-  "css-loader",
-  "sass-loader"
-];
-const baseConfig = {
-  entry: [
-    "@babel/polyfill",
-    "./src/index.js"
-  ],
-  devtool: 'cheap-module-source-map',
-  module: {
-    rules: [
-      {
-        test: /\.(css|sass|scss)$/,
-        use: isProd? cssProdRules:cssDevRules,
-        exclude: /node_modules/,
-      },
-      {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader'
-        }
-      },
-      {
-        test: /\.html$/,
-        use: [
-          {
-            loader: "html-loader"
-          }
-        ]
-      }
-    ]
-  },
-  plugins: [
-    new CleanWebpackPlugin(['dist']),
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'src', 'index.html'),//模板
-      filename: 'index.html',
-      hash: true,//防止缓存
-    }),
-    new MiniCssExtractPlugin({
-      filename: "style.css"
-    }),
-    new webpack.HotModuleReplacementPlugin()
-  ],
-  resolve: {
-    extensions: ['*', '.js', '.jsx']
-  },
-  output: {
-    publicPath: "",
-    path: path.resolve(__dirname, "dist"),
-    filename: "[name]-bundle.js"
-  },
-};
-if (!isProd) {
-  baseConfig.devtool = 'inline-source-map';
-  baseConfig.devServer = {
-    contentBase: './dist',
-    hot: true,
-    open: true,
-  };
-}
-module.exports = baseConfig;
+module.exports = merge([
+    common,
+    jsParse,
+    styleParse,
+    fontParse,
+    imageParse,
+    devserver,
+    sourceMap,
+    hotModuleReplacement,
+    longCached,
+    optimizing
+]);

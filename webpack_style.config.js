@@ -1,6 +1,11 @@
 
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const isProd = process.env.NODE_ENV === 'production';
-console.log("process node env is:"+process.env.NODE_ENV)
+console.log("process node env is:"+process.env.NODE_ENV);
+const plugin = new MiniCssExtractPlugin({
+    filename: "[name].css",
+});
+
 const cssDevRules=[
     {
         loader:'style-loader'
@@ -14,7 +19,7 @@ const cssDevRules=[
 ];
 const cssProdRules=[
     {
-        loader:'style-loader'
+        loader: MiniCssExtractPlugin.loader,
     },
     {
         loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
@@ -35,8 +40,8 @@ const baseConfig = {
             },
         ]
     },
-    plugins: [
-
-    ],
 };
+if(isProd){
+    baseConfig.plugins=[plugin];
+}
 module.exports = baseConfig;

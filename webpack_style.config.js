@@ -1,9 +1,19 @@
 
+const path = require('path');
+const glob = require("glob");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const PurifyCSSPlugin = require("purifycss-webpack");
+
 const isProd = process.env.NODE_ENV === 'production';
-console.log("process node env is:"+process.env.NODE_ENV);
-const plugin = new MiniCssExtractPlugin({
+const PATHS = {
+    app: path.join(__dirname, "src"),
+};
+
+const MiniCssPlugin = new MiniCssExtractPlugin({
     filename: "[name].css",
+});
+const PurifyCssPlugin = new PurifyCSSPlugin({
+    paths: glob.sync(`${PATHS.app}/**/*.js`, { nodir: true }),
 });
 
 const cssDevRules=[
@@ -42,6 +52,9 @@ const baseConfig = {
     },
 };
 if(isProd){
-    baseConfig.plugins=[plugin];
+    baseConfig.plugins=[
+        MiniCssPlugin,
+        PurifyCssPlugin,
+    ];
 }
 module.exports = baseConfig;

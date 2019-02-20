@@ -25,6 +25,9 @@ const cssDevRules=[
         loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
     },
     {
+        loader:'postcss-loader',
+    },
+    {
         loader:'sass-loader',
     }
 ];
@@ -47,6 +50,9 @@ const cssProdRules=
     },
     {
         loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
+    },
+    {
+        loader:'postcss-loader',
     },
     {
         loader:'sass-loader',

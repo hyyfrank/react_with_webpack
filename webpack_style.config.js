@@ -12,6 +12,7 @@ const PATHS = {
 const MiniCssPlugin = new MiniCssExtractPlugin({
     filename: "[name].css",
 });
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const PurifyCssPlugin = new PurifyCSSPlugin({
     paths: glob.sync(`${PATHS.app}/**/*.js`, { nodir: true }),
 });
@@ -21,23 +22,36 @@ const cssDevRules=[
         loader:'style-loader'
     },
     {
-        loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
+       loader:'css-loader',
     },
     {
         loader:'sass-loader',
     }
 ];
-const cssProdRules=[
-    {
-        loader: MiniCssExtractPlugin.loader,
-    },
-    {
-        loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
-    },
-    {
-        loader:'sass-loader',
-    }
-];
+const cssProdRules=ExtractTextPlugin.extract({
+    fallback: "style-loader",
+    use: [
+        {
+            loader:'css-loader',
+        },
+        {
+            loader:'sass-loader',
+        }
+    ]
+});
+    // [
+    // {
+    //     // loader: MiniCssExtractPlugin.loader,
+    //     loader:'style-loader'
+    // },
+    // {
+    //     loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
+    // },
+    // {
+    //     loader:'sass-loader',
+    // }
+
+// ];
 
 console.log("is prod:"+isProd);
 const baseConfig = {
@@ -53,7 +67,8 @@ const baseConfig = {
 };
 if(isProd){
     baseConfig.plugins=[
-        MiniCssPlugin,
+        // MiniCssPlugin,
+        new ExtractTextPlugin("styles.css"),
         PurifyCssPlugin,
     ];
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/main.scss';
+import * as style from '../css/main.scss';
 const HomeComponent = () => {
     let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
     console.log(x); // 1
@@ -17,12 +17,12 @@ const HomeComponent = () => {
 
     return <div>
         <h2>Hello React16.7.0!</h2>
-        <div className="hello">Hello CSS Module!</div>
-        <div className="flexContent">
-            <div className="block">block1</div>
-            <div className="block">block2</div>
-            <div className="block">block3</div>
-            <div className="block">block4</div>
+        <div className={style.hello}>Hello CSS Module!</div>
+        <div className={style.flexContent}>
+            <div className={style.block}>block1</div>
+            <div className={style.block}>block2</div>
+            <div className={style.block}>block3</div>
+            <div className={style.block}>block4</div>
         </div>
     </div>
 };

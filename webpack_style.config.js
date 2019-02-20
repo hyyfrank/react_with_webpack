@@ -22,36 +22,37 @@ const cssDevRules=[
         loader:'style-loader'
     },
     {
-       loader:'css-loader',
+        loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
     },
     {
         loader:'sass-loader',
     }
 ];
-const cssProdRules=ExtractTextPlugin.extract({
-    fallback: "style-loader",
-    use: [
-        {
-            loader:'css-loader',
-        },
-        {
-            loader:'sass-loader',
-        }
-    ]
-});
-    // [
-    // {
-    //     // loader: MiniCssExtractPlugin.loader,
-    //     loader:'style-loader'
-    // },
-    // {
-    //     loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
-    // },
-    // {
-    //     loader:'sass-loader',
-    // }
+const cssProdRules=
+//     ExtractTextPlugin.extract({
+//     fallback: "style-loader",
+//     use: [
+//         {
+//             loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
+//         },
+//         {
+//             loader:'sass-loader',
+//         }
+//     ]
+// });
+    [
+    {
+        loader: MiniCssExtractPlugin.loader,
+        // loader:'style-loader'
+    },
+    {
+        loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
+    },
+    {
+        loader:'sass-loader',
+    }
 
-// ];
+];
 
 console.log("is prod:"+isProd);
 const baseConfig = {
@@ -67,9 +68,9 @@ const baseConfig = {
 };
 if(isProd){
     baseConfig.plugins=[
-        // MiniCssPlugin,
-        new ExtractTextPlugin("styles.css"),
-        PurifyCssPlugin,
+        MiniCssPlugin,
+        // new ExtractTextPlugin("styles.css"),
+        // PurifyCssPlugin,
     ];
 }
 module.exports = baseConfig;

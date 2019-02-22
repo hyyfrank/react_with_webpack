@@ -1,4 +1,4 @@
-
+require("path");
 const path = require('path');
 const glob = require("glob");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -14,8 +14,12 @@ const MiniCssPlugin = new MiniCssExtractPlugin({
 });
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const PurifyCssPlugin = new PurifyCSSPlugin({
-    paths: glob.sync(`${PATHS.app}/**/*.js`, { nodir: true }),
-});
+    paths: glob.sync(path.join(__dirname, '../src/components/home.jsx')),
+    styleExtensions: ['.css', '.scss'],
+    purifyOptions: {
+        whitelist: ['*purify*']
+    }
+})
 
 const cssDevRules=[
     {
@@ -49,7 +53,11 @@ const cssProdRules=
         // loader:'style-loader'
     },
     {
-        loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
+        loader:'css-loader',
+        options:{
+            modules: true,
+            localIdentName: 'purify_[hash:base64:5]',
+        }
     },
     {
         loader:'postcss-loader',
@@ -74,9 +82,9 @@ const baseConfig = {
 };
 if(isProd){
     baseConfig.plugins=[
+        PurifyCssPlugin,
         MiniCssPlugin,
         // new ExtractTextPlugin("styles.css"),
-        // PurifyCssPlugin,
     ];
 }
 module.exports = baseConfig;

@@ -32,10 +32,10 @@ const StyleLintPlugin = new StyleCssLintPlugin({
 // 1. style-lint(done)
 // 2. css-next support
 // 3. css-to-string
-// 4. css extract to seperate file
-// 5. purify css to remove unused css.
-// 6. post-css use auto-prefix
-// 7. make css module always support
+// 4. css extract to seperate file(done)
+// 5. purify css to remove unused css.(done)
+// 6. post-css use auto-prefix(done)
+// 7. make css module always support(done)
 // 8. optimization on css.
 const cssDevRules=[
     {
@@ -50,6 +50,11 @@ const cssDevRules=[
     },
     {
         loader:'postcss-loader',
+        options: {
+            config: {
+                path: __dirname + '/postcss.config.js'
+            }
+        },
     },
     {
         loader:'sass-loader',
@@ -81,6 +86,11 @@ const cssProdRules=
     },
     {
         loader:'postcss-loader',
+        options: {
+            config: {
+                path: __dirname + '/postcss.config.js'
+            }
+        },
     },
     {
         loader:'sass-loader',

@@ -29,8 +29,14 @@ const StyleLintPlugin = new StyleCssLintPlugin({
     quiet: false,
 });
 //todo:
-// 1. style-lint
+// 1. style-lint(done)
 // 2. css-next support
+// 3. css-to-string
+// 4. css extract to seperate file
+// 5. purify css to remove unused css.
+// 6. post-css use auto-prefix
+// 7. make css module always support
+// 8. optimization on css.
 const cssDevRules=[
     {
         loader:'style-loader'

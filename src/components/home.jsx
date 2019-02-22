@@ -25,9 +25,9 @@ const HomeComponent = () => {
             <div className={style.block}>block4</div>
         </div>
         <div className={style.css3features}>
-            <div className={style.cssblock}>css block1</div>
-            <div className={style.cssblock}>css block2</div>
-            <div className={style.cssblock}>css block3</div>
+            <div className={style.frankDemo}>css block1</div>
+            <div className={style.frankDemo}>css block2</div>
+            <div className={style.frankDemo}>css block3</div>
         </div>
     </div>
 };

@@ -3,6 +3,7 @@ const path = require('path');
 const glob = require("glob");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const PurifyCSSPlugin = require("purifycss-webpack");
+const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 
 const isProd = process.env.NODE_ENV === 'production';
 const PATHS = {
@@ -14,19 +15,32 @@ const MiniCssPlugin = new MiniCssExtractPlugin({
 });
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const PurifyCssPlugin = new PurifyCSSPlugin({
-    paths: glob.sync(path.join(__dirname, '../src/components/home.jsx')),
+    paths: glob.sync(path.join(__dirname, '../src/index.js')),
     styleExtensions: ['.css', '.scss'],
     purifyOptions: {
         whitelist: ['*purify*']
     }
-})
-
+});
+const StyleLintPlugin = new StyleCssLintPlugin({
+    configFile: '.stylelintrc',
+    context: 'src',
+    files: '**/*.scss',
+    failOnError: false,
+    quiet: false,
+});
+//todo:
+// 1. style-lint
+// 2. css-next support
 const cssDevRules=[
     {
         loader:'style-loader'
     },
     {
-        loader:'css-loader?modules&localIdentName=[name]_[local]_[hash:base64:5]',
+        loader:'css-loader',
+        options:{
+            modules: true,
+            localIdentName: 'purify_[hash:base64:5]',
+        }
     },
     {
         loader:'postcss-loader',
@@ -83,8 +97,14 @@ const baseConfig = {
 if(isProd){
     baseConfig.plugins=[
         PurifyCssPlugin,
+        StyleLintPlugin,
         MiniCssPlugin,
         // new ExtractTextPlugin("styles.css"),
+    ];
+} else {
+    baseConfig.plugins=[
+        PurifyCssPlugin,
+        StyleLintPlugin,
     ];
 }
 module.exports = baseConfig;

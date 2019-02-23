@@ -1,4 +1,3 @@
-require("path");
 const path = require('path');
 const glob = require("glob");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -6,14 +5,19 @@ const PurifyCSSPlugin = require("purifycss-webpack");
 const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 
 const isProd = process.env.NODE_ENV === 'production';
-const PATHS = {
-    app: path.join(__dirname, "src"),
-};
-
+// TODO:
+// 1. style-lint(done)
+// 2. css-next support(done)
+// 3. css-to-string
+// 4. css extract to seperate file(done)
+// 5. purify css to remove unused css.(done)
+// 6. post-css use auto-prefix(done)
+// 7. make css module always support(done)
+// 8. optimization on css.
 const MiniCssPlugin = new MiniCssExtractPlugin({
     filename: "[name].css",
 });
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+// const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const PurifyCssPlugin = new PurifyCSSPlugin({
     paths: glob.sync(path.join(__dirname, '../src/index.js')),
     styleExtensions: ['.css', '.scss'],
@@ -28,15 +32,7 @@ const StyleLintPlugin = new StyleCssLintPlugin({
     failOnError: false,
     quiet: false,
 });
-//todo:
-// 1. style-lint(done)
-// 2. css-next support
-// 3. css-to-string
-// 4. css extract to seperate file(done)
-// 5. purify css to remove unused css.(done)
-// 6. post-css use auto-prefix(done)
-// 7. make css module always support(done)
-// 8. optimization on css.
+
 const cssDevRules=[
     {
         loader:'style-loader'

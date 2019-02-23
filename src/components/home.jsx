@@ -16,7 +16,7 @@ const HomeComponent = () => {
     console.log("symbol:"+sym.toString());
 
     return <div>
-        <h2>Hello React16.7.0!</h2>
+        <h2 className={style.myfont}>Hello React16.7.0!</h2>
         <div className={style.hello}>Hello CSS Module!</div>
         <div className={style.myblurfont}>Blur Font Test</div>
         <div className={style.flexContent}>

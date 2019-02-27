@@ -14,10 +14,8 @@
     "url": "https://github.com/hyyfrank/webpack4/issues"
   },
   "scripts": {
-    "build:one": "webpack --config webpack_prd.config.js --mode production",
-    "dev:one": "webpack-dev-server --config webpack_dev.config.js  --mode development",
-    "build": "NODE_ENV=production webpack --mode production",
-    "dev": "NODE_ENV=development webpack-dev-server --mode development --display-error-details"
+    "build": "webpack --config webpack_prd.config.js --mode production",
+    "dev": "webpack-dev-server --config webpack_dev.config.js  --mode development"
   },
   "homepage": "https://github.com/hyyfrank/webpack4#readme",
   "dependencies": {

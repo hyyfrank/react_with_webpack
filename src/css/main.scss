@@ -60,5 +60,10 @@ $blue : blue;
     width: 300px;
     height: 400px;
     background-image: url("../images/2.jpeg");
+
+    &:hover {
+      transform: scale(1.2, 1.2);
+      transform-origin: center;
+    }
   }
 }

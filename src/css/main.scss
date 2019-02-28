@@ -35,10 +35,10 @@ $blue : blue;
   .block {
     user-select: none;
     border: 1px solid black;
-    background-color: darkgoldenrod;
     margin: 15px 10px 10px 0;
     padding: 10px;
     color: aliceblue;
+    background: url("../images/1.jpg") no-repeat;
 
     &:hover {
       background-color: greenyellow;
@@ -57,9 +57,9 @@ $blue : blue;
     margin: 15px 10px 10px 0;
     padding: 10px;
     color: rebeccapurple;
-    width: 300px;
-    height: 400px;
-    background-image: url("../images/2.jpeg");
+    width: 200px;
+    height: 300px;
+    background: url("../images/2.jpeg") no-repeat;
 
     &:hover {
       transform: scale(1.2, 1.2);

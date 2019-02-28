@@ -85,6 +85,60 @@ module.exports = {
                 ],
                 exclude: /node_modules/,
             },
+            {
+                test: /\.(jpe?g|png|gif|svg)$/i,
+                use:[
+                    'url-loader?limit=10000&name=images/[name].[ext]',
+                    {
+                        loader: 'img-loader',
+                        options: {
+                            plugins: [
+                                require('imagemin-gifsicle')({
+                                    interlaced: false
+                                }),
+                                require('imagemin-mozjpeg')({}),
+                                require('imagemin-pngquant')({
+                                    floyd: 0.5,
+                                    speed: 2
+                                }),
+                                require('imagemin-svgo')({
+                                    plugins: [
+                                        { removeTitle: true },
+                                        { convertPathData: false }
+                                    ]
+                                })
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.(svg)$/,
+                exclude: /fonts/, /* dont want svg fonts from fonts folder to be included */
+                use: [
+                    {
+                        loader: 'svg-url-loader',
+                        options: {
+                            noquotes: true
+                        },
+                    },
+                ],
+            },
+            {
+                test: /.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+                exclude: /images/,  /* dont want svg images from image folder to be included */
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name][hash].[ext]',
+                            limit: 5000, // fonts file size <= 5KB, use 'base64'; else, output svg file
+                            publicPath: "fonts/",
+                            outputPath: "fonts/"
+                        },
+                    },
+                ],
+            }
         ]
     },
     resolve: {

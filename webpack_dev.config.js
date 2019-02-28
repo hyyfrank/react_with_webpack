@@ -68,16 +68,31 @@ module.exports = {
                 exclude: /node_modules/,
             },
             {
-                test: /\.(png|jpeg|gif)$/,
-                use: [
+                test: /\.(jpe?g|png|gif|svg)$/i,
+                use:[
+                    'url-loader?limit=10000&name=images/[name].[ext]',
                     {
-                        loader: 'file-loader',
+                        loader: 'img-loader',
                         options: {
-                            outputPath: 'images/',
-                            name: '[name][hash].[ext]',
-                        },
-                    },
-                ],
+                            plugins: [
+                                require('imagemin-gifsicle')({
+                                    interlaced: false
+                                }),
+                                require('imagemin-mozjpeg')({}),
+                                require('imagemin-pngquant')({
+                                    floyd: 0.5,
+                                    speed: 2
+                                }),
+                                require('imagemin-svgo')({
+                                    plugins: [
+                                        { removeTitle: true },
+                                        { convertPathData: false }
+                                    ]
+                                })
+                            ]
+                        }
+                    }
+                ]
             },
             {
                 test: /\.(svg)$/,
@@ -87,6 +102,9 @@ module.exports = {
                         loader: 'svg-url-loader',
                         options: {
                             noquotes: true,
+                            limit: 5000, // fonts file size <= 5KB, use 'base64'; else, output svg file
+                            publicPath: "fonts/",
+                            outputPath: "fonts/"
                         },
                     },
                 ],

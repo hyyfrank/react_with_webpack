@@ -75,14 +75,9 @@ module.exports = {
                         loader: 'img-loader',
                         options: {
                             plugins: [
-                                require('imagemin-gifsicle')({
-                                    interlaced: false
-                                }),
+                                require('imagemin-gifsicle')({}),
                                 require('imagemin-mozjpeg')({}),
-                                require('imagemin-pngquant')({
-                                    floyd: 0.5,
-                                    speed: 2
-                                }),
+                                require('imagemin-pngquant')({}),
                                 require('imagemin-svgo')({
                                     plugins: [
                                         { removeTitle: true },

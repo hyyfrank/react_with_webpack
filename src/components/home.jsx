@@ -30,6 +30,21 @@ const HomeComponent = () => {
             <div className={style.img2}>jpg</div>
             <div className={style.img3}>jpeg</div>
         </div>
+        <div className={style.para}>
+            A peep at some distant orb has power to raise and purify our thoughts
+            like a strain of sacred music, or a noble picture, or a passage from
+            the grander poets. It always does one good.A peep at some distant orb
+            has power to raise and purify our thoughts like a strain of sacred music,
+            or a noble picture, or a passage from the grander poets. It always does
+            one good.A peep at some distant orb has power to raise and purify our thoughts
+            like a strain of sacred music, or a noble picture, or a passage from the
+            grander poets. It always does one good.A peep at some distant orb has power
+            to raise and purify our thoughts like a strain of sacred music, or a noble
+            picture, or a passage from the grander poets. It always does one good.A peep
+            at some distant orb has power to raise and purify our thoughts like a strain
+            of sacred music, or a noble picture, or a passage from the grander poets.
+            It always does one good.
+        </div>
     </div>
 };
 export default HomeComponent;

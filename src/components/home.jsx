@@ -1,6 +1,19 @@
 import React from 'react';
 import * as style from '../css/main.scss';
+import { map,filter } from "lodash-es";
+import $ from 'jquery';
+
+
 const HomeComponent = () => {
+    const sum = (a, b) => a + b;
+    console.log("💩");
+    filter([1,2,3],function (item) {
+        console.log(item+1)
+    });
+    console.log(`2 + 3 = ${sum(2, 3)}`);
+    map([1, 2, 3], x => {
+        console.log(x);
+    });
     let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
     console.log(x); // 1
     console.log(y); // 2
@@ -14,6 +27,7 @@ const HomeComponent = () => {
     });
     const sym = Symbol();
     console.log("symbol:"+sym.toString());
+    console.log($('.block'));
 
     return <div>
         <h2 className={style.myfont}>Hello React16.7.0!</h2>

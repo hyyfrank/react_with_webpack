@@ -5,6 +5,9 @@ const glob = require("glob");
 const PurifyCSSPlugin = require("purifycss-webpack");
 const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 const webpack = require("webpack");
+const LodashWebpackPlugin = require("lodash-webpack-plugin");
+
+
 
 
 const PurifyCssPlugin = new PurifyCSSPlugin({
@@ -163,6 +166,11 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin(),
         PurifyCssPlugin,
         StyleLintPlugin,
+        new LodashWebpackPlugin(),
+        new webpack.ProvidePlugin({    //它是一个插件，所以需要按插件的用法new一个
+            $:'jquery',    //接收名字:模块名
+        }),
+
     ],
     devServer: {
         contentBase: './dist',

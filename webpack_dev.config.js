@@ -21,6 +21,7 @@ const StyleLintPlugin = new StyleCssLintPlugin({
     failOnError: false,
     quiet: false,
 });
+const spritesConfig =
 
 module.exports = {
     entry: [
@@ -55,7 +56,10 @@ module.exports = {
                             sourceMap: true,
                             config: {
                                 path: __dirname + '/postcss.config.js'
-                            }
+                            },
+                            plugins: [require("postcss-sprites")({
+                                spritePath: "./dist/images"
+                            })]
                         },
                     },
                     {
@@ -70,7 +74,15 @@ module.exports = {
             {
                 test: /\.(jpe?g|png|gif|svg)$/i,
                 use:[
-                    'url-loader?limit=10000&name=images/[name].[ext]',
+                    {
+                        loader: "url-loader",
+                        options:{
+                            name: "[name]-[hash:5].min.[ext]",
+                            limit: 10000, // size <= 20KB
+                            publicPath: "images/",
+                            outputPath: "images/"
+                        }
+                    },
                     {
                         loader: 'img-loader',
                         options: {

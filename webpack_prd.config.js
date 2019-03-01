@@ -73,9 +73,13 @@ module.exports = {
                     {
                         loader:'postcss-loader',
                         options: {
+                            sourceMap: true,
                             config: {
                                 path: __dirname + '/postcss.config.js'
-                            }
+                            },
+                            plugins: [require("postcss-sprites")({
+                                spritePath: "./dist/images"
+                            })]
                         },
                     },
                     {

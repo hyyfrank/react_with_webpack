@@ -24,7 +24,7 @@ const StyleLintPlugin = new StyleCssLintPlugin({
     failOnError: false,
     quiet: false,
 });
-const spritesConfig =
+
 
 module.exports = {
     entry: [

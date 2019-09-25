@@ -24,6 +24,8 @@
     "lodash-es": "^4.17.11",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
+    "react-redux": "^7.1.1",
+    "redux": "^4.0.4",
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {

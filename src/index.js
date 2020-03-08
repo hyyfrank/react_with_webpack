@@ -9,7 +9,7 @@ import increaseAction from "./components/actions/increaseAction"
 // Map Redux state to component props
 function mapStateToProps(state) {
   return {
-    value: state.count
+    count: state.counter.count
   };
 }
 // Map Redux actions to component props

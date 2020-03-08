@@ -5,9 +5,9 @@ import $ from "jquery";
 
 class HomeComponent extends Component {
   render() {
-    const { value, onIncreaseClick } = this.props;
+    const { count,onIncreaseClick } = this.props;
     return [
-      <span key="1">{value}</span>,
+      <span key="1">{count}</span>,
       <button key="2" onClick={onIncreaseClick}>Increase</button>
     ];
   }

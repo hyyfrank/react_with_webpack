@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider, connect } from "react-redux";
-import HomeComponent from "./components/home";
+import HomeComponent from "./components/business/home";
 import store from "./components/store/store"
 import increaseAction from "./components/actions/increaseAction"
 

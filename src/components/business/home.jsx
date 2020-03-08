@@ -5,6 +5,7 @@ import Business from "./bus"
 import $ from "jquery";
 
 class HomeComponent extends Component {
+  
   render() {
     const { count,onIncreaseClick } = this.props;
     return <div>

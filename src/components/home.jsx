@@ -7,8 +7,8 @@ class HomeComponent extends Component {
   render() {
     const { value, onIncreaseClick } = this.props;
     return [
-      <span>{value}</span>,
-      <button onClick={onIncreaseClick}>Increase</button>
+      <span key="1">{value}</span>,
+      <button key="2" onClick={onIncreaseClick}>Increase</button>
     ];
   }
 }

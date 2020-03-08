@@ -149,7 +149,7 @@ module.exports = {
     resolve: {
         extensions: ["*", ".js", ".jsx"]
     },
-    devtool: "inline-source-map",
+    devtool: "cheap-module-source-map",
     plugins: [
         new CleanWebpackPlugin(["dist"]),
         new HtmlWebpackPlugin({

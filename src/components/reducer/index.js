@@ -1,4 +1,4 @@
-function myreducer(state = { count: 0 }, action) {
+function index(state = { count: 0 }, action) {
     const count = state.count;
     switch (action.type) {
       case "increase":
@@ -7,4 +7,4 @@ function myreducer(state = { count: 0 }, action) {
         return state;
     }
   }
-export default myreducer;  
+export default index;

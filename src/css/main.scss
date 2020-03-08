@@ -1,5 +1,5 @@
 @import "./common.scss";
-$blue : blue;
+$blue: blue;
 
 .hello {
   font-family: frankfont Monaco Arial, Verdana, Tahoma, sans-serif;
@@ -47,6 +47,10 @@ $blue : blue;
       color: black;
     }
   }
+}
+
+.para {
+  font-family: Monaco, frankfont Verdana, Tahoma, sans-serif;
 }
 
 .css3features {

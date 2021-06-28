@@ -20,6 +20,8 @@
   "homepage": "https://github.com/hyyfrank/webpack4#readme",
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
+    "antd": "^4.16.5",
+    "axios": "^0.21.1",
     "jquery": "^3.3.1",
     "lodash-es": "^4.17.11",
     "react": "^16.8.1",

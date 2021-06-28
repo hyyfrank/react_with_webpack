@@ -157,7 +157,9 @@ module.exports = {
             filename: "index.html",
             hash: true
         }),
-        new webpack.HotModuleReplacementPlugin(),
+        new webpack.HotModuleReplacementPlugin({
+            multiStep: true,
+        }),
         PurifyCssPlugin,
         // StyleLintPlugin,
         new LodashWebpackPlugin(),

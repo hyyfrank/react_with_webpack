@@ -16,7 +16,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     onIncreaseClick: () => dispatch({
-      type: "MYLOGIN" ,
+      type: "MYLOGIN_MINUS" ,
       data: 100
     })
   };

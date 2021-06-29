@@ -1,9 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider, connect } from "react-redux";
-import HomeComponent from "./components/pages/home";
-import store from "./components/store/store"
-import increaseAction from "./components/actions/increaseAction"
+import HomeComponent from "./home";
+import store from "../../store/store"
 
 
 // Map Redux state to component props

@@ -1,5 +1,5 @@
 import React from 'react';
-import * as style from '../../css/main.scss';
+import * as style from '../../../css/main.scss';
 import { map, filter } from "lodash-es";
 import $ from 'jquery';
 

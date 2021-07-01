@@ -170,7 +170,7 @@ module.exports = {
         })
     ],
     devServer: {
-        contentBase: "./dist/Login",
+        contentBase: "./dist",
         hot: true,
         open: true
     },

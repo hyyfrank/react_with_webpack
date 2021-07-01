@@ -30,6 +30,7 @@ function getEntry(path){
 function createHtml(page_path){
     let htmlArr = [];
 	getPath(page_path).map((item)=>{
+		console.log("path item : "+ item)
 		htmlArr.push(new HtmlWebpackPlugin({
 			chunks:[`${item}/${item}`],
 			template: "./src/index.html",

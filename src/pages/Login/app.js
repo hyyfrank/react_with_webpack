@@ -11,7 +11,7 @@ export default class App extends Component {
 	render() {
 		return (
 			<div>
-				hello index page.
+				hello login page.
 			</div>
 			
 		);

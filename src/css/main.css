@@ -1,0 +1,44 @@
+@import "./common.css";
+
+
+.hello {
+  font-family: frankfont Monaco Arial, Verdana, Tahoma, sans-serif;
+  font-size: 20px;
+  width: 300px;
+  font-weight: bold;
+  color: var(--color-black);
+  background: rgba(153, 221, 153, 0.8);
+}
+
+.myblurfont {
+  height: 20px;
+  width: 100px;
+  padding: 5px;
+  margin: 10px 0;
+  border: 1px solid red;
+  color: red;
+}
+
+.myblurfont:hover {
+  filter: blur(4px);
+}
+
+.myfont {
+  color: red;
+  font-variant-caps: small-caps;
+}
+
+.flexContent {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.para {
+  font-family: Monaco, frankfont Verdana, Tahoma, sans-serif;
+}
+
+.css3features {
+  display: flex;
+  justify-content: flex-start;
+
+  }

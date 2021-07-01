@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const glob = require("glob");
 const PurifyCSSPlugin = require("purifycss-webpack");
-const StyleCssLintPlugin = require("stylelint-webpack-plugin");
+// const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 const webpack = require("webpack");
 const LodashWebpackPlugin = require("lodash-webpack-plugin");
 
@@ -14,13 +14,13 @@ const PurifyCssPlugin = new PurifyCSSPlugin({
         whitelist: ["*purify*"]
     }
 });
-const StyleLintPlugin = new StyleCssLintPlugin({
-    configFile: ".stylelintrc",
-    context: "src",
-    files: "**/*.scss",
-    failOnError: false,
-    quiet: false
-});
+// const StyleLintPlugin = new StyleCssLintPlugin({
+//     configFile: ".stylelintrc",
+//     context: "src",
+//     files: "**/*.scss",
+//     failOnError: false,
+//     quiet: false
+// });
 
 module.exports = {
     entry: ["@babel/polyfill", "./src/index.js"],
@@ -34,7 +34,7 @@ module.exports = {
                 }
             },
             {
-                test: /\.(css|sass|scss)$/,
+                test: /\.(css)$/,
                 use: [
                     {
                         loader: "style-loader"
@@ -58,12 +58,6 @@ module.exports = {
                                     spritePath: "./dist/images"
                                 })
                             ]
-                        }
-                    },
-                    {
-                        loader: "sass-loader",
-                        options: {
-                            sourceMap: true
                         }
                     }
                 ],

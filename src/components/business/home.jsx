@@ -1,8 +1,5 @@
 import React, { Component } from "react";
-import * as style from "../../css/main.scss";
-import { map, filter } from "lodash-es";
 import Business from "./bus"
-import $ from "jquery";
 import { Button } from 'antd';
 
 class HomeComponent extends Component {

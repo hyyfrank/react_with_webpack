@@ -1,7 +1,7 @@
 import React from 'react';
-import * as style from '../../css/main.scss';
+import * as style from '../../css/main.css';
 import { map, filter } from "lodash-es";
-import $ from 'jquery';
+
 
 
 const HomeComponent = () => {
@@ -27,7 +27,7 @@ const HomeComponent = () => {
     });
     const sym = Symbol();
     console.log("symbol:" + sym.toString());
-    console.log($('.block'));
+
 
     return <div>
         <h2 className={style.myfont}>Hello React16.7.0!</h2>

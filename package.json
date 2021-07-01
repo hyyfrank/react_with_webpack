@@ -15,7 +15,7 @@
   },
   "scripts": {
     "build": "webpack --config webpack_prd.config.js --mode production",
-    "dev": "webpack-dev-server --config webpack_dev.config.js  --mode development"
+    "dev": "webpack-dev-server --config webpack_dev.config.js --live-reload  --mode development"
   },
   "homepage": "https://github.com/hyyfrank/webpack4#readme",
   "dependencies": {

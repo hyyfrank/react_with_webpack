@@ -7,7 +7,7 @@ const glob = require("glob");
 // const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 const webpack = require("webpack");
 const LodashWebpackPlugin = require("lodash-webpack-plugin");
-const {generateHtmlPages, getEntry} = require("./src/utils/webpack-pack-utils");
+const {generateHtmlPages, getEntry, getDebugChunk} = require("./src/utils/webpack-pack-utils");
 
 const allpages = generateHtmlPages("./src/pages");
 // const PurifyCssPlugin = new PurifyCSSPlugin({
@@ -157,7 +157,7 @@ module.exports = {
             template: path.resolve(__dirname, "src", "index.html"),
             filename: "index.html",
             hash: true,
-            excludeChunks: ['Video/Video','Login/Login']
+            excludeChunks: getDebugChunk() || []
         }),
         new webpack.HotModuleReplacementPlugin({
             multiStep: true,

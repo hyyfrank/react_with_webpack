@@ -2,14 +2,17 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const glob = require("glob");
-const PurifyCSSPlugin = require("purifycss-webpack");
-const StyleCssLintPlugin = require("stylelint-webpack-plugin");
+// const PurifyCSSPlugin = require("purifycss-webpack");
+// const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const LodashWebpackPlugin = require("lodash-webpack-plugin");
 const webpack = require("webpack");
 
 const cssnano = require("cssnano");
+const {generateHtmlPages, getEntry} = require("./src/utils/webpack-pack-utils");
+
+const allpages = generateHtmlPages("./src/pages");
 
 const MiniCssPlugin = new MiniCssExtractPlugin({
     filename: "[name].css",
@@ -17,13 +20,13 @@ const MiniCssPlugin = new MiniCssExtractPlugin({
     disable: false,
 });
 // const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const PurifyCssPlugin = new PurifyCSSPlugin({
-    paths: glob.sync(path.join(__dirname, '../src/index.js')),
-    styleExtensions: ['.css', '.scss'],
-    purifyOptions: {
-        whitelist: ['*purify*']
-    }
-});
+// const PurifyCssPlugin = new PurifyCSSPlugin({
+//     paths: glob.sync(path.join(__dirname, '../src/index.js')),
+//     styleExtensions: ['.css', '.scss'],
+//     purifyOptions: {
+//         whitelist: ['*purify*']
+//     }
+// });
 
 const OptimizeCSSPlugin = new OptimizeCSSAssetsPlugin({
     cssProcessor: cssnano,
@@ -37,19 +40,16 @@ const OptimizeCSSPlugin = new OptimizeCSSAssetsPlugin({
 });
 
 
-const StyleLintPlugin = new StyleCssLintPlugin({
-    configFile: '.stylelintrc',
-    context: 'src',
-    files: '**/*.scss',
-    failOnError: false,
-    quiet: false,
-});
+// const StyleLintPlugin = new StyleCssLintPlugin({
+//     configFile: '.stylelintrc',
+//     context: 'src',
+//     files: '**/*.scss',
+//     failOnError: false,
+//     quiet: false,
+// });
 
 module.exports = {
-    entry: [
-        "@babel/polyfill",
-        "./src/index.js"
-    ],
+    entry: getEntry("./src/pages"),
     module: {
         rules: [
             {
@@ -60,7 +60,7 @@ module.exports = {
                 }
             },
             {
-                test: /\.(css|sass|scss)$/,
+                test: /\.(css)$/,
                 use:  [
                     {
                         loader: MiniCssExtractPlugin.loader,
@@ -83,9 +83,6 @@ module.exports = {
                                 spritePath: "./dist/images"
                             })]
                         },
-                    },
-                    {
-                        loader:'sass-loader',
                     }
 
                 ],
@@ -165,6 +162,7 @@ module.exports = {
     },
     devtool : 'cheap-module-source-map',
     plugins: [
+        ...allpages,
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, 'src', 'index.html'),
@@ -172,8 +170,8 @@ module.exports = {
             hash: true,
         }),
         MiniCssPlugin,
-        PurifyCssPlugin,
-        StyleLintPlugin,
+        // PurifyCssPlugin,
+        // StyleLintPlugin,
         OptimizeCSSPlugin,
         new LodashWebpackPlugin(),
         new webpack.ProvidePlugin({    //它是一个插件，所以需要按插件的用法new一个

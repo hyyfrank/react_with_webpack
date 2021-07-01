@@ -2,18 +2,22 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const glob = require("glob");
-const PurifyCSSPlugin = require("purifycss-webpack");
+
+// const PurifyCSSPlugin = require("purifycss-webpack");
 // const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 const webpack = require("webpack");
 const LodashWebpackPlugin = require("lodash-webpack-plugin");
+const {generateHtmlPages, getEntry} = require("./src/utils/webpack-pack-utils");
 
-const PurifyCssPlugin = new PurifyCSSPlugin({
-    paths: glob.sync(path.join(__dirname, "../src/index.js")),
-    styleExtensions: [".css", ".scss"],
-    purifyOptions: {
-        whitelist: ["*purify*"]
-    }
-});
+const allpages = generateHtmlPages("./src/pages");
+// const PurifyCssPlugin = new PurifyCSSPlugin({
+//     paths: glob.sync(path.join(__dirname, "../src/index.js")),
+//     styleExtensions: [".css", ".scss"],
+//     purifyOptions: {
+//         whitelist: ["*purify*"]
+//     }
+// });
+
 // const StyleLintPlugin = new StyleCssLintPlugin({
 //     configFile: ".stylelintrc",
 //     context: "src",
@@ -22,8 +26,10 @@ const PurifyCssPlugin = new PurifyCSSPlugin({
 //     quiet: false
 // });
 
+
+
 module.exports = {
-    entry: ["@babel/polyfill", "./src/index.js"],
+    entry: getEntry("./src/pages"),
     module: {
         rules: [
             {
@@ -145,6 +151,7 @@ module.exports = {
     },
     devtool: "cheap-module-source-map",
     plugins: [
+        ...allpages,
         new CleanWebpackPlugin(["dist"]),
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, "src", "index.html"),
@@ -154,7 +161,7 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin({
             multiStep: true,
         }),
-        PurifyCssPlugin,
+        // PurifyCssPlugin,
         // StyleLintPlugin,
         new LodashWebpackPlugin(),
         new webpack.ProvidePlugin({

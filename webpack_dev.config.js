@@ -156,7 +156,8 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, "src", "index.html"),
             filename: "index.html",
-            hash: true
+            hash: true,
+            excludeChunks: ['Video/Video','Login/Login']
         }),
         new webpack.HotModuleReplacementPlugin({
             multiStep: true,

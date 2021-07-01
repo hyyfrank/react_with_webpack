@@ -21,10 +21,6 @@ function getEntry(path){
 	let entry = {};
     entry["babel-polyfill"] = "@babel/polyfill";
 	getPath(path).map((item)=>{
-		/**
-		 * 下面输出格式为{"about/about":".src/aobout/index.js"}
-		 * 这样目的是为了将js打包到对应的文件夹下
-		 */
 		entry[`${item}/${item}`] = `${path}/${item}/index.js`;
 	});
 	return entry;
@@ -34,24 +30,11 @@ function getEntry(path){
 function createHtml(page_path){
     let htmlArr = [];
 	getPath(page_path).map((item)=>{
-		let infoJson ={},infoData={};
-		try{
-			// 读取pageinfo.json文件内容，如果在页面目录下没有找到pageinfo.json 捕获异常
-			infoJson = fs.readFileSync(`${page_path}/${item}/pageinfo.json`,"utf-8");//
-			infoData = JSON.parse(infoJson);
-		}catch(err){
-			infoData = {};
-		}
 		htmlArr.push(new HtmlWebpackPlugin({
-			title:infoData.title ? infoData.title : "webpack,react多页面架构",
-			meta:{
-				keywords: infoData.keywords ? infoData.keywords : "webpack，react，github",
-				description:infoData.description ? infoData.description : "这是一个webpack，react多页面架构"
-			},
-			chunks:[`${item}/${item}`], //引入的js
+			chunks:[`${item}/${item}`],
 			template: "./src/index.html",
-			filename : item == "index" ? "index.html" : `${item}/index.html`, //html位置
-			minify:{//压缩html
+			filename : item == "index" ? "index.html" : `${item}/index.html`,
+			minify:{
 				collapseWhitespace: true,
 				preserveLineBreaks: true
 			},
@@ -59,9 +42,6 @@ function createHtml(page_path){
 	});
 	return htmlArr;
 }
-
-//todo. add purifiy for each page.
-
 
 module.exports = {
     generateHtmlPages: createHtml,

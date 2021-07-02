@@ -49,7 +49,7 @@ module.exports = {
                         loader: "css-loader",
                         options: {
                             modules: true,
-                            localIdentName: "purify_[hash:base64:5]"
+                            localIdentName: "[name]__[local]--[hash:base64:5]"
                         }
                     },
                     {
@@ -60,9 +60,9 @@ module.exports = {
                                 path: __dirname + "/postcss.config.js"
                             },
                             plugins: [
-                                require("postcss-sprites")({
-                                    spritePath: "./dist/images"
-                                })
+                                // require("postcss-sprites")({
+                                //     spritePath: "./dist/images"
+                                // })
                             ]
                         }
                     }

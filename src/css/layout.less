@@ -1,0 +1,55 @@
+.layoutContainer{
+  height: 100%;
+
+  .topLogo{
+    height: 60px;
+    text-align: center;
+    .logoLayout{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      align-content: center;
+      width: 100%;
+      height: 100%;
+      font-size: 30px;
+    }
+    .detailLogo{
+      width: 40px;
+      height: 40px;
+      background-size: 40px 40px;
+      background-image: url("../images/iconfont.png");
+      
+    }
+    h1{
+      height: 60px;
+      color: #fff;
+      line-height: 2.5;
+    }
+  }
+  .bottomLink{
+    height: 40px;
+    line-height: 40px;
+    text-align: right;
+  }
+}
+  :global{
+    .trigger{
+      font-size: 22px;
+      color: white;
+    }
+    .ant-layout-header{
+      background-color:#fff;
+    }
+    .ant-menu{
+        flex: 1;
+        width: 100%;
+        overflow: auto;
+    }
+    .ant-layout-sider-children{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+  }
+ 

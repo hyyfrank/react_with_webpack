@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Form, Input, Button, Checkbox } from 'antd';
-import * as style from '../../css/main.css';
+import * as style from '../../css/main.less';
 
 export default class App extends Component {
 	constructor(){

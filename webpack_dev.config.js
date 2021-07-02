@@ -40,7 +40,7 @@ module.exports = {
                 }
             },
             {
-                test: /\.(css)$/,
+                test: /\.(css|less)$/,
                 use: [
                     {
                         loader: "style-loader"
@@ -48,8 +48,14 @@ module.exports = {
                     {
                         loader: "css-loader",
                         options: {
-                            modules: true,
-                            localIdentName: "[name]__[local]--[hash:base64:5]"
+                            modules: true, //支持css module的配置
+                            localIdentName: "[name]__[local]--[hash:base64:5]",
+                            // url:(url, resourcePath) => {
+                            //     if (url.includes("img.png")) {
+                            //       return false;
+                            //     }
+                            //     return true;
+                            //   },
                         }
                     },
                     {
@@ -64,6 +70,12 @@ module.exports = {
                                 //     spritePath: "./dist/images"
                                 // })
                             ]
+                        }
+                    },
+                    {
+                        loader: "less-loader",
+                        options: {
+                            sourceMap: true,
                         }
                     }
                 ],

@@ -2,11 +2,31 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const glob = require("glob");
+
+// const PurifyCSSPlugin = require("purifycss-webpack");
+// const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 const webpack = require("webpack");
 const LodashWebpackPlugin = require("lodash-webpack-plugin");
 const {generateHtmlPages, getEntry, getDebugChunk} = require("./src/utils/webpack-pack-utils");
 
 const allpages = generateHtmlPages("./src/pages");
+// const PurifyCssPlugin = new PurifyCSSPlugin({
+//     paths: glob.sync(path.join(__dirname, "../src/index.js")),
+//     styleExtensions: [".css", ".scss"],
+//     purifyOptions: {
+//         whitelist: ["*purify*"]
+//     }
+// });
+
+// const StyleLintPlugin = new StyleCssLintPlugin({
+//     configFile: ".stylelintrc",
+//     context: "src",
+//     files: "**/*.scss",
+//     failOnError: false,
+//     quiet: false
+// });
+
+
 
 module.exports = {
     entry: getEntry("./src/pages"),
@@ -30,12 +50,12 @@ module.exports = {
                         options: {
                             modules: true, //支持css module的配置
                             localIdentName: "[name]__[local]--[hash:base64:5]",
-                            url:(url, resourcePath) => {
-                                if (url.includes("img.png")) {
-                                  return false;
-                                }
-                                return true;
-                              },
+                            // url:(url, resourcePath) => {
+                            //     if (url.includes("img.png")) {
+                            //       return false;
+                            //     }
+                            //     return true;
+                            //   },
                         }
                     },
                     {
@@ -45,7 +65,11 @@ module.exports = {
                             config: {
                                 path: __dirname + "/postcss.config.js"
                             },
-                            plugins: []
+                            plugins: [
+                                // require("postcss-sprites")({
+                                //     spritePath: "./dist/images"
+                                // })
+                            ]
                         }
                     },
                     {

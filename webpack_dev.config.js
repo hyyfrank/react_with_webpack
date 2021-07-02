@@ -69,19 +69,19 @@ module.exports = {
                             outputPath: "images/"
                         }
                     },
-                    // {
-                    //     loader: "img-loader",
-                    //     options: {
-                    //         plugins: [
-                    //             require("imagemin-gifsicle")({}),
-                    //             require("imagemin-mozjpeg")({}),
-                    //             require("imagemin-pngquant")({}),
-                    //             require("imagemin-svgo")({
-                    //                 plugins: [{ removeTitle: true }, { convertPathData: false }]
-                    //             })
-                    //         ]
-                    //     }
-                    // }
+                    {
+                        loader: "img-loader",
+                        options: {
+                            plugins: [
+                                require("imagemin-gifsicle")({}),
+                                require("imagemin-mozjpeg")({}),
+                                require("imagemin-pngquant")({}),
+                                require("imagemin-svgo")({
+                                    plugins: [{ removeTitle: true }, { convertPathData: false }]
+                                })
+                            ]
+                        }
+                    }
                 ]
             },
             {

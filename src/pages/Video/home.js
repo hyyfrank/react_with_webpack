@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { Button } from 'antd';
 import LayoutComponent from "../../common/Layout"
-import AlgorithmComponent from "./Algorithms"
+import VideoComponent from "./video"
 
 class HomeComponent extends Component {
   
   render() {
-    return  <LayoutComponent>
-              <AlgorithmComponent></AlgorithmComponent>
+    return  <LayoutComponent selectedKey={3}>
+              <VideoComponent></VideoComponent>
             </LayoutComponent>
     
   }

@@ -7,9 +7,14 @@ import SiderComponent from "./Sider"
 import FooterComponent from "./Footer"
 
 export default class LayoutComponent extends Component {
+  constructor(){
+    super();
+  }
+  
 	render() {
+    console.log("selected in layout.jsx"+this.props.selectedKey)
 		return <Layout className={style.layoutContainer}>
-              <SiderComponent />
+              <SiderComponent selectedKey={this.props.selectedKey}/>
               <Layout className="site-layout">
                 <HeaderComponent />
                 <Content

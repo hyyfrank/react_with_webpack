@@ -28,6 +28,8 @@ export default class SiderComponent extends Component {
       });
   }
     render(){
+      const selectedStr = this.props.selectedKey.toString();
+      console.log("selected in sider.jsx"+selectedStr)
       return (<Sider trigger={null} collapsible collapsed={this.state.collapsed}>
         <div className={style.topLogo}>
             <div className={style.logoLayout}>
@@ -37,8 +39,8 @@ export default class SiderComponent extends Component {
             </div>
         </div>
         <Menu
-          defaultSelectedKeys={['1']}
-          defaultOpenKeys={['1']}
+          defaultSelectedKeys={[selectedStr]}
+          defaultOpenKeys={[selectedStr]}
           mode="inline"
           theme="dark"
           inlineCollapsed={this.state.collapsed}

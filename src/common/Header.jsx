@@ -17,8 +17,6 @@ export default class HeaderComponent extends Component {
     render(){
         const menu = (
             <Menu
-              defaultSelectedKeys={['1']}
-              defaultOpenKeys={['1']}
               mode="inline"
               theme="light"
               inlineCollapsed={this.state.collapsed}

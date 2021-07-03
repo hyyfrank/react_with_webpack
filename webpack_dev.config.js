@@ -7,7 +7,7 @@ const glob = require("glob");
 // const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 const webpack = require("webpack");
 const LodashWebpackPlugin = require("lodash-webpack-plugin");
-const {generateHtmlPages, getEntry, getDebugChunk} = require("./src/utils/webpack-pack-utils");
+const {generateHtmlPages, getEntry, getDebugChunk} = require("./src/utils/webpack-utils");
 
 const allpages = generateHtmlPages("./src/pages");
 // const PurifyCssPlugin = new PurifyCSSPlugin({

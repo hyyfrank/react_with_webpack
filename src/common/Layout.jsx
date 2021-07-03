@@ -4,6 +4,7 @@ import * as style from '../css/layout.less';
 const { Content} = Layout;
 import HeaderComponent from "./Header"
 import SiderComponent from "./Sider"
+import FooterComponent from "./Footer"
 
 export default class LayoutComponent extends Component {
 	render() {
@@ -20,7 +21,8 @@ export default class LayoutComponent extends Component {
                   }}
                 >
                   {this.props.children}
-                </Content>     
+                </Content>   
+                <FooterComponent />  
               </Layout>
             </Layout>
 			

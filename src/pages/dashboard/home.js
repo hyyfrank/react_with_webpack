@@ -1,12 +1,13 @@
 import React, { Component } from "react";
+import { Button } from 'antd';
 import LayoutComponent from "../../common/Layout"
-import AlgorithmComponent from "./algorithms"
+import DashboardComponent from "./dashboard"
 
 class HomeComponent extends Component {
   
   render() {
-    return  <LayoutComponent selectedKey={2}>
-              <AlgorithmComponent></AlgorithmComponent>
+    return  <LayoutComponent selectedKey={1}>
+              <DashboardComponent></DashboardComponent>
             </LayoutComponent>
     
   }

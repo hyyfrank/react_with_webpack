@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/hyyfrank/webpack4#readme",
   "dependencies": {
+    "@ant-design/icons": "^4.6.2",
     "@babel/polyfill": "^7.2.5",
     "antd": "^4.16.6",
     "axios": "^0.21.1",

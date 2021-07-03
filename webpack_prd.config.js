@@ -60,7 +60,7 @@ module.exports = {
                 }
             },
             {
-                test: /\.(css)$/,
+                test: /\.(css|less)$/,
                 use:  [
                     {
                         loader: MiniCssExtractPlugin.loader,
@@ -83,7 +83,14 @@ module.exports = {
                                 spritePath: "./dist/images"
                             })]
                         },
+                    },
+                    {
+                        loader: "less-loader",
+                        options: {
+                            sourceMap: true,
+                        }
                     }
+
 
                 ],
                 exclude: /node_modules/,

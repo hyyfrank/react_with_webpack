@@ -10,7 +10,7 @@ const LodashWebpackPlugin = require("lodash-webpack-plugin");
 const webpack = require("webpack");
 
 const cssnano = require("cssnano");
-const {generateHtmlPages, getEntry} = require("./src/utils/webpack-pack-utils");
+const {generateHtmlPages, getEntry} = require("./src/utils/webpack-utils");
 
 const allpages = generateHtmlPages("./src/pages");
 

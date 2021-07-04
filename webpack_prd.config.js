@@ -79,9 +79,9 @@ module.exports = {
                             config: {
                                 path: __dirname + '/postcss.config.js'
                             },
-                            plugins: [require("postcss-sprites")({
-                                spritePath: "./dist/images"
-                            })]
+                            // plugins: [require("postcss-sprites")({
+                            //     spritePath: "./dist/images"
+                            // })]
                         },
                     },
                     {
@@ -167,6 +167,7 @@ module.exports = {
     resolve: {
         extensions: ['*', '.js', '.jsx']
     },
+  
     devtool : 'cheap-module-source-map',
     plugins: [
         ...allpages,
@@ -175,6 +176,7 @@ module.exports = {
             template: path.resolve(__dirname, 'src', 'index.html'),
             filename: 'index.html',
             hash: true,
+            excludeChunks:["algorithms/algorithms","dashboard/dashboard","videos/videos"]
         }),
         MiniCssPlugin,
         // PurifyCssPlugin,

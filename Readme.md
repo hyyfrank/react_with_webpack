@@ -3,6 +3,7 @@
 ├── webpack@4.29.0
 ├── webpack-cli@3.2.1
 └── webpack-dev-server@3.1.14
+├── mocha@9.0.2
 * brew install list, if you have window or ubuntu, make sure you install them in advance.
 ├── autoconf
 ├── automake

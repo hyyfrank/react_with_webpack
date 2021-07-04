@@ -4,7 +4,7 @@ const path = require("path");
 const glob = require("glob");
 
 // const PurifyCSSPlugin = require("purifycss-webpack");
-// const StyleCssLintPlugin = require("stylelint-webpack-plugin");
+const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 const webpack = require("webpack");
 const LodashWebpackPlugin = require("lodash-webpack-plugin");
 const {generateHtmlPages, getEntry, getDebugChunk} = require("./src/utils/webpack-utils");
@@ -18,13 +18,13 @@ const allpages = generateHtmlPages("./src/pages");
 //     }
 // });
 
-// const StyleLintPlugin = new StyleCssLintPlugin({
-//     configFile: ".stylelintrc",
-//     context: "src",
-//     files: "**/*.scss",
-//     failOnError: false,
-//     quiet: false
-// });
+const StyleLintPlugin = new StyleCssLintPlugin({
+    configFile: ".stylelintrc",
+    context: "src",
+    files: "**/*.less",
+    failOnError: false,
+    quiet: false
+});
 
 
 
@@ -175,7 +175,7 @@ module.exports = {
             multiStep: true,
         }),
         // PurifyCssPlugin,
-        // StyleLintPlugin,
+        StyleLintPlugin,
         new LodashWebpackPlugin(),
         new webpack.ProvidePlugin({
             //它是一个插件，所以需要按插件的用法new一个
@@ -193,3 +193,6 @@ module.exports = {
         filename: "[name]-bundle.js"
     }
 };
+// "stylelint": "^9.10.1",
+// "stylelint-config-standard": "^18.2.0",
+// "stylelint-webpack-plugin": "^0.10.5",

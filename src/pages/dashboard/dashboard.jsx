@@ -1,12 +1,8 @@
-import React, { Component } from "react";
-import { Button } from 'antd';
+import React, { PureComponent } from 'react';
 
-class DashboardComponent extends Component {
-  
+class DashboardComponent extends PureComponent {
   render() {
-    return <div>
-      dashboard
-    </div>
+    return (<div>dashboard</div>);
   }
 }
 export default DashboardComponent;

@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 import LayoutComponent from '../../common/Layout';
-import AlgorithmComponent from './algorithms';
+import DashboardComponent from './dashboard';
 
 class HomeComponent extends PureComponent {
   render() {
     return (
       <LayoutComponent selectedKey={2}>
-        <AlgorithmComponent />
+        <DashboardComponent />
       </LayoutComponent>
     );
   }

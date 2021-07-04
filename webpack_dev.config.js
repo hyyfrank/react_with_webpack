@@ -1,10 +1,11 @@
-const CleanWebpackPlugin = require("clean-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require("path");
 const glob = require("glob");
 
 // const PurifyCSSPlugin = require("purifycss-webpack");
 const StyleCssLintPlugin = require("stylelint-webpack-plugin");
+const ESLintPlugin = require('eslint-webpack-plugin');
 const webpack = require("webpack");
 const LodashWebpackPlugin = require("lodash-webpack-plugin");
 const {generateHtmlPages, getEntry, getDebugChunk} = require("./src/utils/webpack-utils");
@@ -25,6 +26,8 @@ const StyleLintPlugin = new StyleCssLintPlugin({
     failOnError: false,
     quiet: false
 });
+
+const EslintPluginWithOption = new ESLintPlugin()
 
 
 
@@ -175,6 +178,7 @@ module.exports = {
             multiStep: true,
         }),
         // PurifyCssPlugin,
+        // EslintPluginWithOption,
         StyleLintPlugin,
         new LodashWebpackPlugin(),
         new webpack.ProvidePlugin({

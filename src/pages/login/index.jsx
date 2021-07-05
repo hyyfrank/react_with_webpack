@@ -1,18 +1,23 @@
 import React, { Component } from "react";
 import { Form, Input, Button, Checkbox } from 'antd';
+import { Link } from 'react-router-dom'
 import * as style from '../../css/main.less';
 
-export default class App extends Component {
+export default class LoginComponent extends Component {
 	constructor(){
 		super();
 		this.onFinish = this.onFinish.bind(this);
 		this.onFinishFailed = this.onFinishFailed.bind(this);
+		this.checkLogin = this.checkLogin.bind(this);
 	}
 	onFinish(values){
 		console.log('Success:', values);
 	}
 	onFinishFailed(errorInfos){
 		console.log('Failed:', errorInfo);
+	}
+	checkLogin(){
+
 	}
 	render() {
 		return (
@@ -77,8 +82,8 @@ export default class App extends Component {
 								span: 16,
 								}}
 							>
-								<Button type="primary" htmlType="submit">
-								Login
+								<Button type="primary" htmlType="submit" onClick={this.checkLogin}>
+									<Link to="/algorithms">Login</Link>
 								</Button>
 							</Form.Item>
 						</Form>

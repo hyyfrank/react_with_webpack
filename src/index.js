@@ -1,8 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Home from './home';
+import { renderRoutes } from 'react-router-config';
+import { BrowserRouter as Router } from 'react-router-dom';
+import myroute from './route';
 ReactDOM.render(
-  <Home />,
+  <Router>
+  {renderRoutes(myroute.routes)}
+  </Router>,
   document.getElementById('app')
 )
 

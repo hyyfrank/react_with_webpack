@@ -1,5 +1,6 @@
 import { Layout, Menu } from 'antd';
 import React, { Component } from "react";
+import { NavLink, withRouter } from 'react-router-dom';
 import * as style from '../css/layout.less';
 const {Sider} = Layout;
 import {
@@ -14,7 +15,7 @@ import {
 } from '@ant-design/icons';
   const { SubMenu } = Menu;
 
-export default class SiderComponent extends Component {
+class SiderComponent extends Component {
     constructor(){
         super();
         this.state = {
@@ -45,36 +46,18 @@ export default class SiderComponent extends Component {
           theme="dark"
           inlineCollapsed={this.state.collapsed}
         >
-          <Menu.Item key="1" icon={<PieChartOutlined />}>
-            Dashboard
+          <Menu.Item key="dashboard" icon={<PieChartOutlined />}>
+            <NavLink to="/dashboard">Dashboard</NavLink>
           </Menu.Item>
-          <Menu.Item key="2" icon={<DesktopOutlined />}>
-            Algorithms
+          <Menu.Item key="algorithms" icon={<DesktopOutlined />}>
+            <NavLink to="/algorithms">Algorithms</NavLink>
           </Menu.Item>
-          <Menu.Item key="3" icon={<ContainerOutlined />}>
-            Videos
+          <Menu.Item key="videos" icon={<ContainerOutlined />}>
+            <NavLink to="/videos">Videos</NavLink>
           </Menu.Item>
-          <Menu.Item key="4" icon={<BgColorsOutlined />}>
-            Configs
+          <Menu.Item key="configs" icon={<BgColorsOutlined />}>
+            <NavLink to="/configs">Configs</NavLink>
           </Menu.Item>
-          <SubMenu key="sub1" icon={<MailOutlined />} title="Navigation One">
-            <Menu.Item key="5">Option 5</Menu.Item>
-            <Menu.Item key="6">Option 6</Menu.Item>
-            <Menu.Item key="7">Option 7</Menu.Item>
-            <Menu.Item key="8">Option 8</Menu.Item>
-            <Menu.Item key="55">Option 5</Menu.Item>
-            <Menu.Item key="66">Option 6</Menu.Item>
-            <Menu.Item key="77">Option 7</Menu.Item>
-            <Menu.Item key="88">Option 8</Menu.Item>
-          </SubMenu>
-          <SubMenu key="sub2" icon={<AppstoreOutlined />} title="Navigation Two">
-            <Menu.Item key="9">Option 9</Menu.Item>
-            <Menu.Item key="10">Option 10</Menu.Item>
-            <SubMenu key="sub3" title="Submenu">
-              <Menu.Item key="11">Option 11</Menu.Item>
-              <Menu.Item key="12">Option 12</Menu.Item>
-            </SubMenu>
-          </SubMenu>
         </Menu>
         <div className={style.bottomLink}>
           {React.createElement(this.state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
@@ -85,4 +68,4 @@ export default class SiderComponent extends Component {
       </Sider>)
     }
   }
-             
+  export default withRouter(SiderComponent);

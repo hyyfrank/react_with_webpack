@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import LayoutComponent from "../../common/Layout"
 import VideoComponent from "./video"
 
-class HomeComponent extends Component {
+class Video extends Component {
   
   render() {
     return  <LayoutComponent selectedKey={3}>
@@ -12,4 +12,4 @@ class HomeComponent extends Component {
     
   }
 }
-export default HomeComponent;
+export default Video;

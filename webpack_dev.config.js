@@ -8,9 +8,9 @@ const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
 const webpack = require("webpack");
 const LodashWebpackPlugin = require("lodash-webpack-plugin");
-const {generateHtmlPages, getEntry, getDebugChunk} = require("./src/utils/webpack-utils");
+// const {generateHtmlPages, getEntry, getDebugChunk} = require("./src/utils/webpack-utils");
 
-const allpages = generateHtmlPages("./src/pages");
+// const allpages = generateHtmlPages("./src/pages");
 // const PurifyCssPlugin = new PurifyCSSPlugin({
 //     paths: glob.sync(path.join(__dirname, "../src/index.js")),
 //     styleExtensions: [".css", ".scss"],
@@ -32,7 +32,7 @@ const EslintPluginWithOption = new ESLintPlugin()
 
 
 module.exports = {
-    entry: getEntry("./src/pages"),
+    entry: ["@babel/polyfill", "./src/index.js"],
     module: {
         rules: [
             {
@@ -166,13 +166,11 @@ module.exports = {
     },
     devtool: "cheap-module-source-map",
     plugins: [
-        ...allpages,
         new CleanWebpackPlugin(["dist"]),
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, "src", "index.html"),
             filename: "index.html",
-            hash: true,
-            excludeChunks: getDebugChunk() || []
+            hash: true
         }),
         new webpack.HotModuleReplacementPlugin({
             multiStep: true,
@@ -197,6 +195,3 @@ module.exports = {
         filename: "[name]-bundle.js"
     }
 };
-// "stylelint": "^9.10.1",
-// "stylelint-config-standard": "^18.2.0",
-// "stylelint-webpack-plugin": "^0.10.5",

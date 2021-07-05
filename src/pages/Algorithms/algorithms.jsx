@@ -4,8 +4,9 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
 import {
-  Form, Input, InputNumber, Table, Tag, Space, Button, Modal,
+  Form, Input, InputNumber, Table, Tag, Space, Button, Modal, Breadcrumb
 } from 'antd';
+import { HomeOutlined, PictureOutlined } from '@ant-design/icons';
 import {
   InfoCircleOutlined,
 } from '@ant-design/icons';
@@ -73,7 +74,6 @@ class AlgorithmComponent extends React.Component {
         title: '服务名称',
         dataIndex: 'name',
         key: 'name',
-        // eslint-disable-next-line jsx-a11y/anchor-is-valid
         render: (text) => <a>{text}</a>,
       },
       {
@@ -123,11 +123,7 @@ class AlgorithmComponent extends React.Component {
         title: '操作',
         key: 'action',
         render: (text, record) => (
-          // eslint-disable-next-line react/jsx-no-comment-textnodes
           <Space size="middle">
-            // eslint-disable-next-line
-            // eslint-disable-next-line arrow-spacing
-            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
             <span onClick={() => { this.showDeleteModal(text, record); }}>删除</span>
           </Space>
         ),
@@ -185,6 +181,17 @@ class AlgorithmComponent extends React.Component {
     };
     return (
       <div className={style.mainContent}>
+         <div className={style.BreadcrumbPart}>
+          <Breadcrumb>
+            <Breadcrumb.Item href="/">
+              <HomeOutlined />
+            </Breadcrumb.Item>
+            <Breadcrumb.Item href="/algorithms">
+              <PictureOutlined />
+              <span>algorithms</span>
+            </Breadcrumb.Item>
+          </Breadcrumb>
+        </div>
         <div className={style.btnLayer}>
           <Button type="primary" className={style.addBtn} onClick={this.showModal}>新增</Button>
         </div>
@@ -200,7 +207,7 @@ class AlgorithmComponent extends React.Component {
           <Form {...layout} name="nest-messages" onFinish={this.onFinish} validateMessages={validateMessages}>
             <Form.Item
               name={['user', 'name']}
-              label="Name"
+              label="服务名称"
               rules={[
                 {
                   required: true,
@@ -211,7 +218,7 @@ class AlgorithmComponent extends React.Component {
             </Form.Item>
             <Form.Item
               name={['user', 'email']}
-              label="Email"
+              label="监控种类 "
               rules={[
                 {
                   type: 'email',
@@ -222,7 +229,7 @@ class AlgorithmComponent extends React.Component {
             </Form.Item>
             <Form.Item
               name={['user', 'age']}
-              label="Age"
+              label="监控地址"
               rules={[
                 {
                   type: 'number',
@@ -244,7 +251,7 @@ class AlgorithmComponent extends React.Component {
         <Modal title="删除" mask visible={this.state.isDeleteVisiable} onOk={this.handleOkDelete} onCancel={this.handleCancelDelete}>
           <p>
             <InfoCircleOutlined />
-            确认要删除该算法服务？
+            <span className={style.delInfo}>确认要删除该算法服务？</span>
           </p>
         </Modal>
       </div>

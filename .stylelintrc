@@ -4,7 +4,8 @@
     "no-invalid-position-at-import-rule":null,
     "declaration-colon-newline-after":null,
     "no-irregular-whitespace":null,
-    "no-eol-whitespace":null
+    "no-eol-whitespace":null,
+    
   }
   
 }

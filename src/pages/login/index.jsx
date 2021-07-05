@@ -3,6 +3,7 @@ import { Form, Input, Button, Checkbox } from 'antd';
 import { Link } from 'react-router-dom'
 import * as style from '../../css/main.less';
 
+
 export default class LoginComponent extends Component {
 	constructor(){
 		super();
@@ -83,7 +84,7 @@ export default class LoginComponent extends Component {
 								}}
 							>
 								<Button type="primary" htmlType="submit" onClick={this.checkLogin}>
-									<Link to="/algorithms">Login</Link>
+									<Link to="/dashboard">Login</Link>
 								</Button>
 							</Form.Item>
 						</Form>

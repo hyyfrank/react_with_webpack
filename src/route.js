@@ -3,6 +3,7 @@ import Dashboard from './pages/dashboard'
 import Login from './pages/login'
 import Algorithms from './pages/algorithms'
 import Videos from './pages/videos'
+import Configs from './pages/configs'
 
 const myroute = 
   {
@@ -25,6 +26,12 @@ const myroute =
         label: '算法服务',
         exact: true,
         component: Algorithms
+      },
+      {
+        path: '/configs',
+        label: '配置服务',
+        exact: true,
+        component: Configs
       },
       {
         path: '/videos',

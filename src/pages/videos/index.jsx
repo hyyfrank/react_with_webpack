@@ -6,7 +6,7 @@ import VideoComponent from "./video"
 class Video extends Component {
   
   render() {
-    return  <LayoutComponent selectedKey={3}>
+    return  <LayoutComponent selectedKey={'videos'}>
               <VideoComponent></VideoComponent>
             </LayoutComponent>
     

@@ -6,7 +6,7 @@ import ConfigsComponent from "./configs"
 class Configs extends Component {
   
   render() {
-    return  <LayoutComponent selectedKey={3}>
+    return  <LayoutComponent selectedKey={'configs'}>
               <ConfigsComponent></ConfigsComponent>
             </LayoutComponent>
     

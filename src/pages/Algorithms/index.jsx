@@ -7,7 +7,7 @@ class Algorithms extends PureComponent {
     const id = this.props.match.params.id
     console.log("current id get from path is: " +id);
     return (
-      <LayoutComponent selectedKey={2}>
+      <LayoutComponent selectedKey={'algorithms'}>
         <AlgorithmComponent />
       </LayoutComponent>
     );

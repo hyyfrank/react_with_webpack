@@ -5,7 +5,7 @@ import DashboardComponent from './dashboard';
 class Dashboard extends PureComponent {
   render() {
     return (
-      <LayoutComponent selectedKey={2}>
+      <LayoutComponent selectedKey={'dashboard'}>
         <DashboardComponent />
       </LayoutComponent>
     );

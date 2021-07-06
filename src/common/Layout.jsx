@@ -20,14 +20,15 @@ export default class LayoutComponent extends Component {
                 <Content
                   className="site-layout-background"
                   style={{
-                    margin: '24px 16px',
+                    margin: '0px 16px',
                     padding: 24,
                     minHeight: 280,
                   }}
                 >
                   {this.props.children}
+                  <FooterComponent />  
                 </Content>   
-                <FooterComponent />  
+                
               </Layout>
             </Layout>
 			

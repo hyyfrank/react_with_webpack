@@ -185,12 +185,13 @@ module.exports = {
         })
     ],
     devServer: {
+        historyApiFallback: true,
         contentBase: "./dist",
         hot: true,
         open: true
     },
     output: {
-        publicPath: "",
+        publicPath: "/",
         path: path.resolve(__dirname, "dist"),
         filename: "[name]-bundle.js"
     }

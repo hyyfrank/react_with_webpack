@@ -10,9 +10,9 @@ const LodashWebpackPlugin = require("lodash-webpack-plugin");
 const webpack = require("webpack");
 
 const cssnano = require("cssnano");
-const {generateHtmlPages, getEntry} = require("./src/utils/webpack-utils");
+// const {generateHtmlPages, getEntry} = require("./src/utils/webpack-utils");
 
-const allpages = generateHtmlPages("./src/pages");
+// const allpages = generateHtmlPages("./src/pages");
 
 const MiniCssPlugin = new MiniCssExtractPlugin({
     filename: "[name].css",
@@ -49,7 +49,7 @@ const OptimizeCSSPlugin = new OptimizeCSSAssetsPlugin({
 // });
 
 module.exports = {
-    entry: getEntry("./src/pages"),
+    entry: ["@babel/polyfill", "./src/index.js"],
     module: {
         rules: [
             {
@@ -170,7 +170,6 @@ module.exports = {
   
     devtool : 'cheap-module-source-map',
     plugins: [
-        ...allpages,
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, 'src', 'index.html'),

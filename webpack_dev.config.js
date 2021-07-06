@@ -21,19 +21,9 @@ const StyleLintPlugin = new StyleCssLintPlugin({
     failOnError: false,
     quiet: false
 });
-function getEntry(globPath) {
-    var dirname, name
-    return glob.sync(globPath).reduce((acc, entry) => {
-      dirname = path.dirname(entry)
-      name = dirname.slice(dirname.lastIndexOf('/') + 1)
-      acc[name] = entry
-      acc["ployfill-babel"] = "@babel/polyfill"
-      return acc
-    }, {})
-  }
+
 module.exports = {
-    // entry:["@babel/polyfill", "./src/components/pages/page2/index.js","./src/components/pages/page1/index.js"],
-    entry: getEntry("./src/components/pages/*/index.js"),
+    entry:["@babel/polyfill","./src/components/pages/page1/index.js"],
     module: {
         rules: [
             {

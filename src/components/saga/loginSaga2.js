@@ -13,7 +13,7 @@ export function* loginSaga2() {
        console.log("call return:"+JSON.stringify(data));
        yield put({
          type:'UPDATE_LOGIN',
-         value:-100
+         value:1
         });
       }
       

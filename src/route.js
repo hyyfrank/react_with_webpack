@@ -4,6 +4,7 @@ import Login from './pages/login'
 import Algorithms from './pages/algorithms'
 import Videos from './pages/videos'
 import Configs from './pages/configs'
+import VideoMonitorDetail from './pages/videos/monitorarea'
 
 const myroute = 
   {
@@ -36,18 +37,11 @@ const myroute =
       {
         path: '/videos',
         label: '视频服务',
-        exact: true,
         component: Videos,
         routes: [
           {
-            path: '/videos/monitorarea',
-            label: '移动',
-            exact: true,
-            component: Algorithms
-          },
-          {
-            path: '/videos/config',
-            label: '桌面',
+            path: '/videos/monitorarea/:id',
+            label: '监控区域',
             exact: true,
             component: Algorithms
           }

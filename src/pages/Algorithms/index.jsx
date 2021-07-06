@@ -4,6 +4,8 @@ import AlgorithmComponent from './algorithms';
 
 class Algorithms extends PureComponent {
   render() {
+    const id = this.props.match.params.id
+    console.log("current id get from path is: " +id);
     return (
       <LayoutComponent selectedKey={2}>
         <AlgorithmComponent />

@@ -2,9 +2,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
-  Form, Input, InputNumber, Table, Tag, Space, Button, Modal, Breadcrumb
+  Form, Input, InputNumber, Tag, Space, Button, Modal, Breadcrumb,
+  Table, Popconfirm, Typography
 } from 'antd';
 import { HomeOutlined, VideoCameraAddOutlined } from '@ant-design/icons';
 import {
@@ -12,108 +14,122 @@ import {
 } from '@ant-design/icons';
 import * as style from '../../css/algorithm.less';
 
-class VideoComponent extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      bottom: 'bottomRight',
-      isModalVisible: false,
-      isDeleteVisiable: false,
+  const VideoComponent = () =>{ 
+    const [IsModalVisible,setIsModalVisible] = useState(false);
+    const [IsDeleteVisiable,setIsDeleteVisiable] = useState(false);
+
+
+    const showModal = () => {
+      setIsModalVisible(true);
+    }
+  
+    // eslint-disable-next-line class-methods-use-this
+    const onFinish = () => {
+      console.log('record on finish.');
+    }
+  
+    const AddBtn = () => {
+      
+      return (<Button type="primary" className={style.addBtn} onClick={()=>{setIsModalVisible(true)}}>新增</Button>);
+    }
+    const AddBtnModal = () => {
+      return (<Modal title="新增视频" mask visible={IsModalVisible} onOk={()=>{setIsModalVisible(false)}} onCancel={()=>{setIsModalVisible(false)}}>
+      <Form {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
+        <Form.Item
+          name={['user', 'name']}
+          label="流地址"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name={['user', 'email']}
+          label="IoT地址 "
+          rules={[
+            {
+              type: 'email',
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name={['user', 'age']}
+          label="抽帧间隔"
+          rules={[
+            {
+              type: 'number',
+              min: 0,
+              max: 99,
+            },
+          ]}
+        >
+          <InputNumber />
+        </Form.Item>
+        <Form.Item name={['user', 'website']} label="检测时间">
+          <Input />
+        </Form.Item>
+        <Form.Item name={['user', 'introduction']} label="算法服务">
+          <Input.TextArea />
+        </Form.Item>
+      </Form>
+    </Modal>);
+    }
+    const DelBtnModal =() => {
+      return (<Modal title="删除" mask visible={IsDeleteVisiable} onOk={()=>{setIsDeleteVisiable(false);}} onCancel={()=>{setIsDeleteVisiable(false);}}>
+      <p>
+        <InfoCircleOutlined />
+        <span className={style.delInfo}>确认要删除该视频？</span>
+      </p>
+    </Modal>);
+      
+    }
+    //edit form start
+    const EditableCell = ({
+      editing,
+      dataIndex,
+      title,
+      inputType,
+      record,
+      index,
+      children,
+      ...restProps
+    }) => {
+      const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+      return (
+        <td {...restProps}>
+          {editing ? (
+            <Form.Item
+              name={dataIndex}
+              style={{
+                margin: 0,
+              }}
+              rules={[
+                {
+                  required: true,
+                  message: `Please Input ${title}!`,
+                },
+              ]}
+            >
+              {inputNode}
+            </Form.Item>
+          ) : (
+            children
+          )}
+        </td>
+      );
     };
-    this.showModal = this.showModal.bind(this);
-    this.handleOk = this.handleOk.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
-    this.showDeleteModal = this.showDeleteModal.bind(this);
-    this.handleOkDelete = this.handleOkDelete.bind(this);
-    this.handleCancelDelete = this.handleCancelDelete.bind(this);
-    this.onFinish = this.onFinish.bind(this);
-  }
-
-  componentDidMount() {
-    // console.log("---------yahoo---------");
-    // axios.get("https://weather-ydn-yql.media.yahoo.com/forecastrss?location=sunnyvale,ca&format=json").then((data)=>{
-    //   console.log("data:"+data)
-    // })
-    // console.log("---------yahoo---------");
-  }
-
-  handleOk() {
-    this.setState({ isModalVisible: false });
-  }
-
-  handleCancel() {
-    this.setState({ isModalVisible: false });
-  }
-
-  handleOkDelete(record) {
-    console.log(`delete record${record}`);
-    this.setState({ isDeleteVisiable: false });
-  }
-
-  handleCancelDelete() {
-    this.setState({ isDeleteVisiable: false });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  onFinish() {
-    console.log('record on finish.');
-  }
-
-  showDeleteModal(text, record) {
-    console.log(`clicked${text},record is:${record}`);
-    this.setState({ isDeleteVisiable: true });
-  }
-
-  showModal() {
-    this.setState({ isModalVisible: true });
-  }
-
-  render() {
-    const columns = [
-      {
-        title: '流地址',
-        dataIndex: 'address',
-        key: 'address',
-        render: (text) => <a>{text}</a>,
-      },
-      {
-        title: 'IoT代码',
-        dataIndex: 'iotcode',
-        key: 'iotcode',
-      },
-      {
-        title: '抽帧间隔',
-        dataIndex: 'interval',
-        key: 'interval',
-      },
-      {
-        title: '检测时间',
-        dataIndex: 'detect',
-        key: 'detect',
-      },
-      {
-        title: '算法服务',
-        dataIndex: 'algorithm',
-        key: 'algorithm',
-      },
-      {
-        title: '操作',
-        key: 'action',
-        render: (text, record) => (
-          <Space size="middle">
-            <a>修改监控区域 </a>|<a>修改配置</a>|<a onClick={()=>{this.showDeleteModal(text, record);}}>删除</a>
-          </Space>
-        ),
-      },
-    ];
-
-    const data = [
+    const originData = [
       {
         key: '1',
         address: 'rtsp://user:pass@ip',
         iotcode: '21097000661',
         interval: '5',
-        detect: '600s',
+        detect: '600',
         algorithm: 'Room'
       },
       {
@@ -121,7 +137,7 @@ class VideoComponent extends React.Component {
         address: 'rtsp://user:pass@ip',
         iotcode: '21097000661',
         interval: '5',
-        detect: '600s',
+        detect: '600',
         algorithm: 'StatusLight'
       },
       {
@@ -129,11 +145,159 @@ class VideoComponent extends React.Component {
         address: 'rtsp://user:pass@ip',
         iotcode: '21097000661',
         interval: '5',
-        detect: '600s',
+        detect: '600',
         algorithm: 'SpinSwitch'
       },
-      
     ];
+    const EditableTable = () => {
+      const [form] = Form.useForm();
+      const [data, setData] = useState(originData);
+
+
+      const [editingKey, setEditingKey] = useState('');
+
+      const isEditing = (record) => record.key === editingKey;
+
+      const edit = (record) => {
+        form.setFieldsValue({
+          address: '',
+          iotcode: '',
+          interval: '',
+          detect:'',
+          algorithm:'',
+          ...record,
+        });
+        setEditingKey(record.key);
+      };
+
+      const cancel = () => {
+        setEditingKey('');
+      };
+
+      const save = async (key) => {
+        try {
+          const row = await form.validateFields();
+          const newData = [...data];
+          const index = newData.findIndex((item) => key === item.key);
+
+          if (index > -1) {
+            const item = newData[index];
+            newData.splice(index, 1, { ...item, ...row });
+            setData(newData);
+            setEditingKey('');
+          } else {
+            newData.push(row);
+            setData(newData);
+            setEditingKey('');
+          }
+        } catch (errInfo) {
+          console.log('Validate Failed:', errInfo);
+        }
+      };
+      //end of edit form
+    const columns = [
+      {
+        title: '流地址',
+        dataIndex: 'address',
+        key: 'address',
+        editable: true,
+        render: (text) => <a>{text}</a>,
+      },
+      {
+        title: 'IoT代码',
+        dataIndex: 'iotcode',
+        key: 'iotcode',
+        editable: true,
+      },
+      {
+        title: '抽帧间隔',
+        dataIndex: 'interval',
+        key: 'interval',
+        editable: true,
+      },
+      {
+        title: '检测时间',
+        dataIndex: 'detect',
+        key: 'detect',
+        editable: true,
+      },
+      {
+        title: '算法服务',
+        dataIndex: 'algorithm',
+        key: 'algorithm',
+        editable: true,
+      },
+      {
+        title: '操作',
+        key: 'action',
+        width: '25%',
+        render: (_, record) => {
+          const editable = isEditing(record);
+          return editable ? (
+            <span>
+              <a
+                href="javascript:;"
+                onClick={() => save(record.key)}
+                style={{
+                  marginRight: 8,
+                }}
+              >
+                保存
+              </a>
+              <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+                <a>取消</a>
+              </Popconfirm>
+            </span>
+          ) : (
+            <Space size="middle">
+              
+              <Link to={`/videos/monitorarea/1`} activeClassName="active">修改监控区域</Link>|
+              <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+              修改配置
+              </Typography.Link>|
+              <Typography.Link disabled={editingKey !== ''} onClick={()=>{setIsDeleteVisiable(true)}}>删除</Typography.Link>
+            </Space>
+          );
+      },
+    }
+    ];
+
+    const mergedColumns = columns.map((col) => {
+      if (!col.editable) {
+        return col;
+      }
+  
+      return {
+        ...col,
+        onCell: (record) => ({
+          record,
+          inputType: (col.dataIndex === 'interval'||col.dataIndex === 'detect') ? 'number' : 'text',
+          dataIndex: col.dataIndex,
+          title: col.title,
+          editing: isEditing(record),
+        }),
+      };
+    });
+    return (
+      <Form form={form} component={false}>
+        <Table
+          components={{
+            body: {
+              cell: EditableCell,
+            },
+          }}
+          bordered
+          dataSource={data}
+          columns={mergedColumns}
+          rowClassName="editable-row"
+          pagination={{
+            onChange: cancel,
+          }}
+        />
+      </Form>
+    );
+  };
+
 
     const layout = {
       labelCol: {
@@ -168,71 +332,19 @@ class VideoComponent extends React.Component {
           </Breadcrumb>
         </div>
         <div className={style.btnLayer}>
-          <Button type="primary" className={style.addBtn} onClick={this.showModal}>新增</Button>
+          <AddBtn />
         </div>
         <div className={style.tableLayer}>
-          <Table
-            columns={columns}
-            // eslint-disable-next-line react/destructuring-assignment
-            pagination={{ position: [this.state.bottom] }}
-            dataSource={data}
-          />
+          <EditableTable />
         </div>
-        <Modal title="新增视频" mask visible={this.state.isModalVisible} onOk={this.handleOk} onCancel={this.handleCancel}>
-          <Form {...layout} name="nest-messages" onFinish={this.onFinish} validateMessages={validateMessages}>
-            <Form.Item
-              name={['user', 'name']}
-              label="流地址"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name={['user', 'email']}
-              label="IoT地址 "
-              rules={[
-                {
-                  type: 'email',
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name={['user', 'age']}
-              label="抽帧间隔"
-              rules={[
-                {
-                  type: 'number',
-                  min: 0,
-                  max: 99,
-                },
-              ]}
-            >
-              <InputNumber />
-            </Form.Item>
-            <Form.Item name={['user', 'website']} label="检测时间">
-              <Input />
-            </Form.Item>
-            <Form.Item name={['user', 'introduction']} label="算法服务">
-              <Input.TextArea />
-            </Form.Item>
-          </Form>
-        </Modal>
-        <Modal title="删除" mask visible={this.state.isDeleteVisiable} onOk={this.handleOkDelete} onCancel={this.handleCancelDelete}>
-          <p>
-            <InfoCircleOutlined />
-            <span className={style.delInfo}>确认要删除该视频？</span>
-          </p>
-        </Modal>
+
+        <AddBtnModal />
+        <DelBtnModal />
+        
       </div>
     );
   }
-}
+
 
 
 export default VideoComponent;

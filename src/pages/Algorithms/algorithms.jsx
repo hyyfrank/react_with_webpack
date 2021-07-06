@@ -69,6 +69,11 @@ class AlgorithmComponent extends React.Component {
   }
 
   render() {
+    let { 
+    bottom,
+    isModalVisible,
+    isDeleteVisiable
+  } = this.state;
     const columns = [
       {
         title: '服务名称',
@@ -199,11 +204,11 @@ class AlgorithmComponent extends React.Component {
           <Table
             columns={columns}
             // eslint-disable-next-line react/destructuring-assignment
-            pagination={{ position: [this.state.bottom] }}
+            pagination={{ position: [bottom] }}
             dataSource={data}
           />
         </div>
-        <Modal title="新增算法服务" mask visible={this.state.isModalVisible} onOk={this.handleOk} onCancel={this.handleCancel}>
+        <Modal title="新增算法服务" mask visible={isModalVisible} onOk={this.handleOk} onCancel={this.handleCancel}>
           <Form {...layout} name="nest-messages" onFinish={this.onFinish} validateMessages={validateMessages}>
             <Form.Item
               name={['user', 'name']}
@@ -240,15 +245,12 @@ class AlgorithmComponent extends React.Component {
             >
               <InputNumber />
             </Form.Item>
-            <Form.Item name={['user', 'website']} label="Website">
-              <Input />
-            </Form.Item>
-            <Form.Item name={['user', 'introduction']} label="Introduction">
+            <Form.Item name={['user', 'introduction']} label="监控内容">
               <Input.TextArea />
             </Form.Item>
           </Form>
         </Modal>
-        <Modal title="删除" mask visible={this.state.isDeleteVisiable} onOk={this.handleOkDelete} onCancel={this.handleCancelDelete}>
+        <Modal title="删除" mask visible={isDeleteVisiable} onOk={this.handleOkDelete} onCancel={this.handleCancelDelete}>
           <p>
             <InfoCircleOutlined />
             <span className={style.delInfo}>确认要删除该算法服务？</span>

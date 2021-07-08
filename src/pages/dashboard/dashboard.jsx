@@ -13,22 +13,58 @@ class DashboardComponent extends PureComponent {
     this.onFocus = this.onFocus.bind(this);
     this.onBlur = this.onBlur.bind(this);
     this.onSearch = this.onSearch.bind(this);
+    this.state={
+      imageLists: [],
+      channels: [],
+      day: 0,
+      start: 0,
+      end: 24
+    }
   }
   
   componentDidMount(){
-    fetchDashboardList(1).then(({data})=>{
+    fetchDashboardList(0).then(({data})=>{
       const dayOneData = data.filter((item)=>{
         return item.event!="DISCONNECTED"
       })
-      const channels =[];
+      const tmpChannels =[]
       dayOneData.map((item)=>{
         if(item.hasOwnProperty("config")){
-          if(!channels.includes(item["config"]["IoTCode"])){
-            channels.push(item["config"]["IoTCode"]);
+          if(!tmpChannels.includes(item["config"]["IoTCode"])){
+            tmpChannels.push(item["config"]["IoTCode"]);
           }
         }
       })
-      console.log("channels"+JSON.stringify(channels))
+      this.setState({channels: tmpChannels});
+      
+      // console.log("one data:"+JSON.stringify(dayOneData));
+
+      let imgSrcList = [];
+      let typeOfKey = 'jpgs';
+      dayOneData.map(item=>{
+          if(item.hasOwnProperty("jpg_D")){
+            typeOfKey='jpg_D'
+          }
+          let allImages = item[typeOfKey]||[];
+          console.log("before images:"+allImages)
+          const LEN = 3;
+          const tmpArr = new Array(LEN).fill("");
+          if(allImages.length==3){
+            imgSrcList.concat(allImages)
+          } else {
+            for(let i = 0;i<allImages.length;i++){
+              tmpArr[i] = allImages[i];
+            }
+            imgSrcList.concat(tmpArr)
+          }
+      })
+      console.log("imgSrcList:"+JSON.stringify(imgSrcList))
+
+      this.setState({
+        imageLists: imgSrcList
+      })
+
+      console.log("channels"+JSON.stringify(this.channels))
       sessionStorage.setItem(1,dayOneData)
     })
     
@@ -50,7 +86,17 @@ class DashboardComponent extends PureComponent {
   }
   
   render() {
+    // channel list init
+    const channelList = [];
+    let { channels } = this.state;
     const images = [];
+    if(channels.length>0){
+      channelList.push(<Option key='all' value='all'>All</Option>);
+      for(let i=0;i<channels.length;i++){
+        channelList.push(<Option key={channels[i]} value={channels[i]}>{channels[i]}</Option>);
+      }
+    }
+    
     
     for(let i=0;i<9;i++){
       images.push(<Col key={'col'+i} span={8} >
@@ -72,10 +118,11 @@ class DashboardComponent extends PureComponent {
         </Breadcrumb>
         </div>
         <div className={style.filterBlock}>
-          <div className={style.firstFilter}>
-            <span>选择时间:</span> 
+          <div className={style.filterblock}>
+            <span className={style.selectTimeText}>选择时间:</span> 
             <Select
               showSearch
+              defaultValue={"0"}
               style={{ width: 200 }}
               placeholder="Select a timeperiod"
               optionFilterProp="children"
@@ -105,13 +152,12 @@ class DashboardComponent extends PureComponent {
               <Option key="15" value="15">最近15天</Option>
             </Select>
           </div> 
-          <div className={style.secondBlock}>
-            <TimePicker.RangePicker />
-          </div>
-          <div className={style.firstFilter}>
-            <span>相机:</span> 
+          
+          <div className={style.filterblock}>
+            <span className={style.selectTimeText}>相机:</span> 
             <Select
               showSearch
+              defaultValue={'all'}
               style={{ width: 200 }}
               placeholder="Select a carema"
               optionFilterProp="children"
@@ -123,12 +169,33 @@ class DashboardComponent extends PureComponent {
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >
-              <Option key="1" value="1">21097000648</Option>
-              <Option key="2" value="2">21097000661</Option>
-              <Option key="3" value="3">21097000651</Option>
-              <Option key="4" value="4">21097000654</Option>
+              {channelList}
             </Select>
           </div> 
+
+          <div className={style.filterblock}>
+            <span className={style.selectTimeText}>类型:</span>
+            <Select
+                showSearch
+                defaultValue={"0"}
+                style={{ width: 200 }}
+                placeholder="选择类型"
+                optionFilterProp="children"
+                onChange={this.onChange}
+                onFocus={this.onFocus}
+                onBlur={this.onBlur}
+                onSearch={this.onSearch}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                <Option key="0" value="0">图像</Option>
+                <Option key="1" value="1">视频</Option>
+              </Select>
+          </div>
+          
+
+
           <div>
             <Button type="link">确定</Button>
           </div>

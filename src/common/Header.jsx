@@ -28,7 +28,7 @@ export default class HeaderComponent extends Component {
                 <a href="#">个人设置</a>
                 </Menu.Item>
                 <Menu.Item key="3" icon={<DesktopOutlined />}>
-                <a href="/login/">退出登录</a>
+                <a href="/">退出登录</a>
                 </Menu.Item>
             </Menu>
           );

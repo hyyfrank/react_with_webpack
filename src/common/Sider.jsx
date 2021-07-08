@@ -44,7 +44,6 @@ class SiderComponent extends Component {
           defaultOpenKeys={[selectedStr]}
           mode="inline"
           theme="dark"
-          inlineCollapsed={this.state.collapsed}
         >
           <Menu.Item key="dashboard" icon={<PieChartOutlined />}>
             <NavLink to="/dashboard">Dashboard</NavLink>

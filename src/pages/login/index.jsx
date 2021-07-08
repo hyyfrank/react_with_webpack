@@ -1,24 +1,37 @@
 import React, { Component } from "react";
-import { Form, Input, Button, Checkbox } from 'antd';
+import { Form, Input, Button, Checkbox, message } from 'antd';
 import { Link } from 'react-router-dom'
+import fetchLoginStaus from '../../services/login'
+import { FormInstance } from 'antd/lib/form';
 import * as style from '../../css/main.less';
 
 
 export default class LoginComponent extends Component {
 	constructor(){
 		super();
-		this.onFinish = this.onFinish.bind(this);
-		this.onFinishFailed = this.onFinishFailed.bind(this);
+		this.formRef = React.createRef();
 		this.checkLogin = this.checkLogin.bind(this);
 	}
-	onFinish(values){
-		console.log('Success:', values);
-	}
-	onFinishFailed(errorInfos){
-		console.log('Failed:', errorInfo);
-	}
+	
+	
 	checkLogin(){
-
+		this.formRef.current.validateFields()
+		.then((data)=>{
+			return fetchLoginStaus(data.username,data.password);
+		})
+		.then(({data})=>{
+			if(data.response.state === "OK"){
+				this.props.history.push("/dashboard")
+			}else{
+				console.log("login checked failed.")
+				message.error('用户名或者密码错误!请重试',1)
+			}
+		})
+		.catch((errorInfo) => {
+			console.log('errorInfo ...', errorInfo);
+		});
+		
+		
 	}
 	render() {
 		return (
@@ -26,6 +39,7 @@ export default class LoginComponent extends Component {
 				<div className={style.centerArea}>
 					<div className={style.plsLogo}></div>
 						<Form
+							ref={this.formRef}
 							name="basic"
 							className={style.formContainer}
 							labelCol={{
@@ -37,8 +51,6 @@ export default class LoginComponent extends Component {
 							initialValues={{
 								remember: true,
 							}}
-							onFinish={this.onFinish}
-							onFinishFailed={this.onFinishFailed}
 							>
 							<Form.Item
 								label="Username"
@@ -67,24 +79,13 @@ export default class LoginComponent extends Component {
 							</Form.Item>
 
 							<Form.Item
-								name="remember"
-								valuePropName="checked"
-								wrapperCol={{
-								offset: 8,
-								span: 16,
-								}}
-							>
-								<Checkbox>Remember me</Checkbox>
-							</Form.Item>
-
-							<Form.Item
 								wrapperCol={{
 								offset: 8,
 								span: 16,
 								}}
 							>
 								<Button type="primary" htmlType="submit" onClick={this.checkLogin}>
-									<Link to="/dashboard">Login</Link>
+									<Link to="">Login</Link>
 								</Button>
 							</Form.Item>
 						</Form>

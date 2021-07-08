@@ -17,6 +17,12 @@ const myroute =
         component: Login
       },
       {
+        path: '/login',
+        label: '登录',
+        exact: true,
+        component: Login
+      },
+      {
         path: '/dashboard',
         label: '面板',
         exact: true,

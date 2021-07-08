@@ -1,10 +1,12 @@
 import axios from "axios"
-const DashboardService = {
-    fetchAllServiceData: function() {
-        return axios.get("http://cvp.g2link.cn:20065/?filename=./15/work_record.txt?t=1625479407511");
-    },
-    filterServiceData: function(data,filter){
-        return data;
-    }
+import APICONST from './APIConst'
+
+const fetchDashboardList = (day) => {
+    const { BASE_URL, PREFIX, DASHBOARD_REQUEST} = APICONST;
+    const dashboardFetchBaseUrl = BASE_URL+ PREFIX + DASHBOARD_REQUEST;
+    const currentTime = new Date();
+    const dashboardFetchUrl = `${dashboardFetchBaseUrl}?day=${day}&timestamp=${currentTime.getTime()}`
+    return axios.get(dashboardFetchUrl);
 }
-export default DashboardService;
+export default fetchDashboardList;
+

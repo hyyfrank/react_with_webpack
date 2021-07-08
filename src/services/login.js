@@ -1,10 +1,10 @@
 import axios from "axios"
-// const baseUrl = "http://cvp.g2link.cn:20065"
-const baseUrl = "/api"
+import APICONST from './APIConst'
 
 const fetchLoginStaus = (username,password) => {
-    let result;
-    const LoginFetchUrl = baseUrl + "/manager"
+    const { BASE_URL, PREFIX, LOGIN_REQUEST} = APICONST;
+    const LoginFetchUrl = BASE_URL+ PREFIX + LOGIN_REQUEST;
+
     const postBody = {
         type: "LOGIN",
         login: {

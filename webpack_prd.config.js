@@ -6,7 +6,6 @@ const glob = require("glob");
 // const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const LodashWebpackPlugin = require("lodash-webpack-plugin");
 const webpack = require("webpack");
 
 const cssnano = require("cssnano");
@@ -181,10 +180,10 @@ module.exports = {
         // PurifyCssPlugin,
         // StyleLintPlugin,
         OptimizeCSSPlugin,
-        new LodashWebpackPlugin(),
-        new webpack.ProvidePlugin({    //它是一个插件，所以需要按插件的用法new一个
-            $:'jquery',    //接收名字:模块名
-        }),
+        // new LodashWebpackPlugin(),
+        // new webpack.ProvidePlugin({    //它是一个插件，所以需要按插件的用法new一个
+        //     $:'jquery',    //接收名字:模块名
+        // }),
     ],
     output: {
         publicPath: "",

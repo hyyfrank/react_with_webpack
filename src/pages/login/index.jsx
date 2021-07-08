@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Form, Input, Button, Checkbox, message } from 'antd';
 import { Link } from 'react-router-dom'
 import fetchLoginStaus from '../../services/login'
-import { FormInstance } from 'antd/lib/form';
 import * as style from '../../css/main.less';
 
 

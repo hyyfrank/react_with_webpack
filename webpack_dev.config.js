@@ -7,7 +7,7 @@ const glob = require("glob");
 const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
 const webpack = require("webpack");
-const LodashWebpackPlugin = require("lodash-webpack-plugin");
+// const LodashWebpackPlugin = require("lodash-webpack-plugin");
 // const {generateHtmlPages, getEntry, getDebugChunk} = require("./src/utils/webpack-utils");
 
 // const allpages = generateHtmlPages("./src/pages");
@@ -178,11 +178,11 @@ module.exports = {
         // PurifyCssPlugin,
         // EslintPluginWithOption,
         StyleLintPlugin,
-        new LodashWebpackPlugin(),
-        new webpack.ProvidePlugin({
-            //它是一个插件，所以需要按插件的用法new一个
-            $: "jquery" //接收名字:模块名
-        })
+        // new LodashWebpackPlugin(),
+        // new webpack.ProvidePlugin({
+        //     //它是一个插件，所以需要按插件的用法new一个
+        //     $: "jquery" //接收名字:模块名
+        // })
     ],
     devServer: {
         historyApiFallback: true,

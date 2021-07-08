@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Image, Row, Col, Pagination, PageHeader, Select, TimePicker, Button, Breadcrumb } from 'antd';
-import { HomeOutlined, UserOutlined } from '@ant-design/icons';
+import { DatabaseOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
 import * as style from '../../css/dashboard.less'
-import DashboardService from '../../services/dashboard';
-import { data } from 'autoprefixer';
+import fetchDashboardList from '../../services/dashboard'
 const { Option } = Select;
 
 class DashboardComponent extends PureComponent {
@@ -15,8 +14,24 @@ class DashboardComponent extends PureComponent {
     this.onBlur = this.onBlur.bind(this);
     this.onSearch = this.onSearch.bind(this);
   }
+  
   componentDidMount(){
-    // const data = DashboardService.fetchAllServiceData();
+    fetchDashboardList(1).then(({data})=>{
+      const dayOneData = data.filter((item)=>{
+        return item.event!="DISCONNECTED"
+      })
+      const channels =[];
+      dayOneData.map((item)=>{
+        if(item.hasOwnProperty("config")){
+          if(!channels.includes(item["config"]["IoTCode"])){
+            channels.push(item["config"]["IoTCode"]);
+          }
+        }
+      })
+      console.log("channels"+JSON.stringify(channels))
+      sessionStorage.setItem(1,dayOneData)
+    })
+    
   }
   onPageChange(){
     console.log("change page!!")
@@ -72,6 +87,7 @@ class DashboardComponent extends PureComponent {
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >
+              <Option key="0" value="0">今天</Option>
               <Option key="1" value="1">最近1天</Option>
               <Option key="2" value="2">最近2天</Option>
               <Option key="3" value="3">最近3天</Option>

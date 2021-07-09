@@ -13,21 +13,93 @@ class DashboardComponent extends PureComponent {
     this.onFocus = this.onFocus.bind(this);
     this.onBlur = this.onBlur.bind(this);
     this.onSearch = this.onSearch.bind(this);
+    this.getImageFullAddress = this.getImageFullAddress.bind(this);
+    this.getImageInfos = this.getImageInfos.bind(this);
+    this.updateIotTableData = this.updateIotTableData.bind(this);
     this.state={
-      imageLists: [],
-      channels: [],
-      day: 0,
-      start: 0,
-      end: 24
+      talbeData: [], // 某一天的channel的图片的数据信息，用于加载和分页
+      channels: [], // 下拉框的iot 相机列表
+      current:'', // 当前相机
+      day: 0,  // 哪一天
+     
     }
   }
   
+  getImageFullAddress(day,imgSrc){
+    const baseUrl = "http://cvp.g2link.cn:20065"
+    if(day==0){
+      return `${baseUrl}/?filename=${imgSrc}`;
+    }else{
+      return `${baseUrl}/?filename=./${day}/${imgSrc}`;
+    }
+  }
+  getImageInfos(obj){
+    // possible need different description for different type.
+    let plateClassDesc = '';
+    let len = obj["result"].length;
+    for(var i=0;i<len;i++){
+      if (obj["result"][i]["class"]=="plate"){
+        if(len == 1){
+          plateClassDesc+=`${obj["result"][i]["license"]["license_s"]}`
+        }else{
+          plateClassDesc+=`,${obj["result"][i]["license"]["license_s"]}`
+        }
+      }
+    }
+    return `[${obj['eventserial']}],${obj['event']},${obj['time']}${plateClassDesc}`;
+  }
+  getFreeImageByEventSerial(datas,serialId){
+    let jpgs = []
+    let { day } = this.state;
+    datas.filter(item=>{
+      if(item['eventserial'] == serialId && item['event'] == 'FREE'){
+        if(item.hasOwnProperty('jpgs') && item['jpgs'].length>0){
+          let imgs = [].concat(item['jpgs']);
+          for(let i=0;i<imgs.length;i++){
+            jpgs.push({
+              'img': this.getImageFullAddress(day,imgs[i]),
+              'info': this.getImageInfos(item)
+            })
+          }
+        }else{
+          jpgs.push({
+            'img': this.getImageFullAddress(day,item('jpg')),
+            'info': this.getImageInfos(item)
+          })
+        }
+      }
+    })
+   
+    console.log(`getFreeImageByEventSerial ${serialId} is: ${JSON.stringify(jpgs)}`)
+
+    return jpgs;
+  }
+  updateIotTableData(iotTableData){
+    let { day } = this.state;
+    let newTableData =[];
+    iotTableData.map(item=>{
+      if(item['event']==='TAKEUP'){
+        newTableData.push({
+          "eventserial": item["eventserial"],
+          "src":this.getImageFullAddress(day,item["jpg"]),
+          "infos": this.getImageInfos(item),
+          "color":  "red",
+          "related": this.getFreeImageByEventSerial(iotTableData,item["eventserial"])
+        })
+      }
+    })
+    console.log(`get filtered table data ${JSON.stringify(newTableData)}`)
+    this.setState({talbeData:newTableData})
+  }
+
   componentDidMount(){
-    fetchDashboardList(0).then(({data})=>{
+    let { day } = this.state;
+    fetchDashboardList(day).then(({data})=>{
       const dayOneData = data.filter((item)=>{
         return item.event!="DISCONNECTED"
       })
       const tmpChannels =[]
+      // init the dropdown list of IoT
       dayOneData.map((item)=>{
         if(item.hasOwnProperty("config")){
           if(!tmpChannels.includes(item["config"]["IoTCode"])){
@@ -36,35 +108,22 @@ class DashboardComponent extends PureComponent {
         }
       })
       this.setState({channels: tmpChannels});
-      
-      // console.log("one data:"+JSON.stringify(dayOneData));
+      this.setState({current: tmpChannels[0]});
 
-      let imgSrcList = [];
-      let typeOfKey = 'jpgs';
+      //filter result via defult IoT Channel
+      const iotRawTableData = [];
       dayOneData.map(item=>{
-          if(item.hasOwnProperty("jpg_D")){
-            typeOfKey='jpg_D'
+        if(item.hasOwnProperty("config")){
+          if(item['config']['IoTCode']==tmpChannels[0]){
+            iotRawTableData.push(item);
           }
-          let allImages = item[typeOfKey]||[];
-          console.log("before images:"+allImages)
-          const LEN = 3;
-          const tmpArr = new Array(LEN).fill("");
-          if(allImages.length==3){
-            imgSrcList.concat(allImages)
-          } else {
-            for(let i = 0;i<allImages.length;i++){
-              tmpArr[i] = allImages[i];
-            }
-            imgSrcList.concat(tmpArr)
-          }
+        }
       })
-      console.log("imgSrcList:"+JSON.stringify(imgSrcList))
+  
+      // add releated image for each TAKEUP image
+      
+      this.updateIotTableData(iotRawTableData);
 
-      this.setState({
-        imageLists: imgSrcList
-      })
-
-      console.log("channels"+JSON.stringify(this.channels))
       sessionStorage.setItem(1,dayOneData)
     })
     
@@ -88,22 +147,66 @@ class DashboardComponent extends PureComponent {
   render() {
     // channel list init
     const channelList = [];
-    let { channels } = this.state;
+    let { 
+      talbeData,
+      channels,
+      day,
+      current
+    } = this.state;
+    console.log("当前选择的相机是："+current)
     const images = [];
     if(channels.length>0){
-      channelList.push(<Option key='all' value='all'>All</Option>);
       for(let i=0;i<channels.length;i++){
         channelList.push(<Option key={channels[i]} value={channels[i]}>{channels[i]}</Option>);
       }
     }
     
     
-    for(let i=0;i<9;i++){
-      images.push(<Col key={'col'+i} span={8} >
-        <Image
-          src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-        />
-      </Col>)
+    for(let i=0;i<talbeData.length;i++){
+      images.push(
+        <Row>
+          <Col key={'col1'+i} span={6} >
+            <div className={style.takeColor}>
+              <Image
+                src={`${talbeData[i]['src']}`}
+              />
+              <span>{talbeData[i]['infos']}</span>
+            </div>
+          
+          </Col>
+          <Col key={'col2'+i} span={6} >
+            {
+              talbeData[i]['related'].length > 0 ? 
+              <div className={style.freeColor}>
+                  <Image src={`${talbeData[i]['related'][0]['img']}`} /> 
+                  <span>{talbeData[i]['related'][0]['info']}</span>
+              </div>
+              : <span></span>
+            }
+          </Col>
+          <Col key={'col3'+i} span={6} >
+            {
+              talbeData[i]['related'].length > 1 ? 
+              <div className={style.freeColor}>
+                  <Image src={`${talbeData[i]['related'][1]['img']}`} /> 
+                  <span>{talbeData[i]['related'][1]['info']}</span>
+              </div>
+              : <span></span>
+            }
+          </Col>
+          <Col key={'col4'+i} span={6} >
+            {
+              talbeData[i]['related'].length > 2 ? 
+              <div className={style.freeColor}>
+                  <Image src={`${talbeData[i]['related'][2]['img']}`} /> 
+                  <span>{talbeData[i]['related'][1]['info']}</span>
+              </div>
+              : <span></span>
+            }
+          </Col>
+        </Row>
+        
+      )
     }
     return (<div className={style.dashboard}>
         <div className={style.BreadcrumbPart}>
@@ -157,7 +260,7 @@ class DashboardComponent extends PureComponent {
             <span className={style.selectTimeText}>相机:</span> 
             <Select
               showSearch
-              defaultValue={'all'}
+              value={current}
               style={{ width: 200 }}
               placeholder="Select a carema"
               optionFilterProp="children"

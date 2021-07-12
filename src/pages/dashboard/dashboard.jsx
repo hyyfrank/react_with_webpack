@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Image, Row, Col, Pagination, PageHeader, Select, TimePicker, Button, Breadcrumb } from 'antd';
-import { DatabaseOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
+import { DownOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
 import * as style from '../../css/dashboard.less'
 import fetchDashboardList from '../../services/dashboard'
 const { Option } = Select;
@@ -9,28 +9,56 @@ class DashboardComponent extends PureComponent {
   constructor(){
     super()
     this.onPageChange = this.onPageChange.bind(this);
-    this.onChange = this.onChange.bind(this);
-    this.onFocus = this.onFocus.bind(this);
-    this.onBlur = this.onBlur.bind(this);
-    this.onSearch = this.onSearch.bind(this);
+    this.onTimeChange = this.onTimeChange.bind(this);
+    this.onCaremaChange = this.onCaremaChange.bind(this);
+    this.onTypeChange = this.onTypeChange.bind(this);
+    this.loadCertainDayData = this.loadCertainDayData.bind(this);
+    this.confirmFilter = this.confirmFilter.bind(this);
     this.getImageFullAddress = this.getImageFullAddress.bind(this);
     this.getImageInfos = this.getImageInfos.bind(this);
     this.updateIotTableData = this.updateIotTableData.bind(this);
+    this.loadMore = this.loadMore.bind(this);
+    this.fetchDataAndFilter = this.fetchDataAndFilter.bind(this);
     this.state={
-      talbeData: [], // 某一天的channel的图片的数据信息，用于加载和分页
+      rawData:[], // 过滤前的数据，单纯从day请求来的数据
+      caremaStatus: false, //默认相机下拉框可选
+      tableData: [], // 过滤后数据，某一天的carema的图片的数据信息，用于加载和分页
       channels: [], // 下拉框的iot 相机列表
       current:'', // 当前相机
       day: 0,  // 哪一天
-     
+      paginationData: [],//当前分页的数据
+      PAGE_SIZE: 3, //每一页几个，一行表示一个
+      page: 1, // 默认页
+      loadmorePage:1, // 加载更多的默认页
+      shouldLoadMore: true, // 是否到了最后一页，不能加载更多
+      type: 'img' // 加载类型，图片或者视频
     }
   }
   
-  getImageFullAddress(day,imgSrc){
+  getImageFullAddress(day,item,type){
     const baseUrl = "http://cvp.g2link.cn:20065"
-    if(day==0){
-      return `${baseUrl}/?filename=${imgSrc}`;
-    }else{
-      return `${baseUrl}/?filename=./${day}/${imgSrc}`;
+    let mkey='';
+    if(type === "img"){
+      mkey = 'jpg'
+    }
+    if(item.hasOwnProperty("jpg_D")){
+      mkey = 'jpg_D'
+    }
+    if(type == "video"){
+      mkey = 'mp4'
+    }
+    if(day==0) {
+      return `${baseUrl}/?filename=${item[mkey]}`;
+    } else {
+      return `${baseUrl}/?filename=./${day}/${item[mkey]}`;
+    }
+  }
+  getFreeImageFullAddress(day,imageSrc,type){
+    const baseUrl = "http://cvp.g2link.cn:20065"
+    if(day==0) {
+      return `${baseUrl}/?filename=${imageSrc}`;
+    } else {
+      return `${baseUrl}/?filename=./${day}/${imageSrc}`;
     }
   }
   getImageInfos(obj){
@@ -48,22 +76,23 @@ class DashboardComponent extends PureComponent {
     }
     return `[${obj['eventserial']}],${obj['event']},${obj['time']}${plateClassDesc}`;
   }
-  getFreeImageByEventSerial(datas,serialId){
+  getFreeImageByEventSerial(datas,serialId,type){
     let jpgs = []
     let { day } = this.state;
     datas.filter(item=>{
       if(item['eventserial'] == serialId && item['event'] == 'FREE'){
+        console.log("debugging..."+JSON.stringify(item))
         if(item.hasOwnProperty('jpgs') && item['jpgs'].length>0){
           let imgs = [].concat(item['jpgs']);
           for(let i=0;i<imgs.length;i++){
             jpgs.push({
-              'img': this.getImageFullAddress(day,imgs[i]),
+              'img': this.getFreeImageFullAddress(day,imgs[i],type),
               'info': this.getImageInfos(item)
             })
           }
         }else{
           jpgs.push({
-            'img': this.getImageFullAddress(day,item('jpg')),
+            'img': this.getFreeImageFullAddress(day,item['jpg'],type),
             'info': this.getImageInfos(item)
           })
         }
@@ -74,140 +103,260 @@ class DashboardComponent extends PureComponent {
 
     return jpgs;
   }
-  updateIotTableData(iotTableData){
-    let { day } = this.state;
+  updateIotTableData(iotTableData,type){
+    let { day, PAGE_SIZE } = this.state;
     let newTableData =[];
     iotTableData.map(item=>{
       if(item['event']==='TAKEUP'){
         newTableData.push({
           "eventserial": item["eventserial"],
-          "src":this.getImageFullAddress(day,item["jpg"]),
+          "src":this.getImageFullAddress(day,item,type),
           "infos": this.getImageInfos(item),
           "color":  "red",
-          "related": this.getFreeImageByEventSerial(iotTableData,item["eventserial"])
+          "related": this.getFreeImageByEventSerial(iotTableData,item["eventserial"],type)
         })
       }
     })
     console.log(`get filtered table data ${JSON.stringify(newTableData)}`)
-    this.setState({talbeData:newTableData})
+    this.setState({tableData:newTableData})
+    this.setState({paginationData:newTableData.slice(0,PAGE_SIZE)})
   }
-
+  fetchDataAndFilter(carema,type){
+    let { rawData } = this.state;
+    console.log("raw data:"+JSON.stringify(rawData))
+    // 3. filter the data via carema
+    const iotRawTableData = [];
+    rawData.map(item=>{
+      if(item.hasOwnProperty("config")){
+        if(item['config']['IoTCode']==carema){
+          iotRawTableData.push(item);
+        }
+      }
+    })
+    console.log("3. filter the data via carema:"+JSON.stringify(iotRawTableData));
+    // 4. filter the data via type and reframe the data to new structure
+    this.updateIotTableData(iotRawTableData,type);
+    sessionStorage.setItem(1,rawData)
+    
+  }
   componentDidMount(){
-    let { day } = this.state;
-    fetchDashboardList(day).then(({data})=>{
-      const dayOneData = data.filter((item)=>{
+    this.loadCertainDayData(0).then(()=>{
+      let { current } = this.state;
+      console.log("after load, get current carema:"+current)
+      this.fetchDataAndFilter(current,"img")
+    })
+  }
+  onPageChange(pageNumber){
+    this.setState({page: pageNumber})
+    let { tableData, PAGE_SIZE} = this.state;
+    let lastIndex = (PAGE_SIZE*pageNumber > tableData.length ? tableData.length : PAGE_SIZE*pageNumber)
+    if(lastIndex == tableData.length){
+      this.setState({shouldLoadMore: false})
+    }else{
+      this.setState({shouldLoadMore: true})
+    }
+    let tmp = tableData.slice(PAGE_SIZE*(pageNumber-1),lastIndex);
+    this.setState({paginationData:[...tmp]})
+    this.setState({loadmorePage: pageNumber})
+  }
+  loadMore(){
+    let { page, paginationData, PAGE_SIZE, tableData,shouldLoadMore,loadmorePage } = this.state;
+   
+    let nextPageNum = loadmorePage+1;
+    
+    let lastIndex = (PAGE_SIZE*nextPageNum > tableData.length ? tableData.length : PAGE_SIZE*nextPageNum)
+    if(shouldLoadMore){
+      let nextPageData = tableData.slice(PAGE_SIZE*(nextPageNum-1),lastIndex);
+      let tmp = paginationData.concat(nextPageData)
+      console.log(`load one page from ${PAGE_SIZE*(nextPageNum-1)} to ${lastIndex}`)
+      console.log("load one page data is :"+JSON.stringify(tmp))
+      this.setState({paginationData: [...tmp]})
+    }
+    
+    if(lastIndex == tableData.length){
+      this.setState({shouldLoadMore: false})
+    }
+    this.setState({loadmorePage:nextPageNum})
+  }
+  loadCertainDayData(newDay){
+    this.setState({day: newDay});
+    // 0. disabled carema droplist
+    this.setState({caremaStatus: true});
+    // let isInCache = sessionStorage.getItem(newDay) == null ? false : true;
+
+    // if(isInCache){
+    //   this.setState({
+    //     tableData: sessionStorage.getItem(newDay)
+    //   })
+    // }
+    // 1. didn't find in cache, so we request via ajax
+    return fetchDashboardList(newDay).then(({data})=>{
+      const newOneDayRawData = data.filter((item)=>{
         return item.event!="DISCONNECTED"
       })
       const tmpChannels =[]
-      // init the dropdown list of IoT
-      dayOneData.map((item)=>{
+    // 2. fill the carema list
+      newOneDayRawData.map((item)=>{
         if(item.hasOwnProperty("config")){
           if(!tmpChannels.includes(item["config"]["IoTCode"])){
             tmpChannels.push(item["config"]["IoTCode"]);
           }
         }
       })
+    // 3. fill the carema dropdown list
       this.setState({channels: tmpChannels});
       this.setState({current: tmpChannels[0]});
-
-      //filter result via defult IoT Channel
-      const iotRawTableData = [];
-      dayOneData.map(item=>{
-        if(item.hasOwnProperty("config")){
-          if(item['config']['IoTCode']==tmpChannels[0]){
-            iotRawTableData.push(item);
-          }
-        }
-      })
-  
-      // add releated image for each TAKEUP image
       
-      this.updateIotTableData(iotRawTableData);
-
-      sessionStorage.setItem(1,dayOneData)
+    // 4. didn't find in cache, so we request via ajax
+      console.log("4. step:"+JSON.stringify(newOneDayRawData))
+      this.setState({
+        rawData: [...newOneDayRawData]
+      })
+      
+    // enable carema droplist and set default value.
+      this.setState({
+        channels: tmpChannels,
+        current: tmpChannels[0],
+        caremaStatus: false
+      })
     })
-    
   }
-  onPageChange(){
-    console.log("change page!!")
+  onTimeChange(newDay){
+    loadCertainDayData(newDay);
   }
-  onChange(){
+  onCaremaChange(value){
+    this.setState({current: value})
+  }
+  onTypeChange(value){
+    this.setState({type: value})
+  }
+  confirmFilter(){
+    let { day, current, type } = this.state;
+    this.setState({
+       age: 1,
+       loadmorePage:1,
+       shouldLoadMore: true
+    });
+    this.fetchDataAndFilter(current,type);
 
   }
-  onFocus(){
-    
-  }
-  onBlur(){
-    
-  }
-  onSearch(){
-    
-  }
+
   
   render() {
     // channel list init
     const channelList = [];
     let { 
-      talbeData,
+      tableData,
       channels,
-      day,
-      current
+      type,
+      current,
+      PAGE_SIZE,
+      paginationData,
+      caremaStatus
     } = this.state;
-    console.log("当前选择的相机是："+current)
     const images = [];
+    const videos = [];
     if(channels.length>0){
       for(let i=0;i<channels.length;i++){
         channelList.push(<Option key={channels[i]} value={channels[i]}>{channels[i]}</Option>);
       }
     }
-    
-    
-    for(let i=0;i<talbeData.length;i++){
-      images.push(
-        <Row>
-          <Col key={'col1'+i} span={6} >
-            <div className={style.takeColor}>
-              <Image
-                src={`${talbeData[i]['src']}`}
-              />
-              <span>{talbeData[i]['infos']}</span>
-            </div>
+    if(type=="img"){
+      for(let i=0;i<paginationData.length;i++){
+        images.push(
+          <Row>
+            <Col key={'col1'+i} span={6} >
+              <div className={style.takeColor}>
+                <Image
+                  src={`${paginationData[i]['src']}`}
+                />
+                <span>{paginationData[i]['infos']}</span>
+              </div>
+            
+            </Col>
+            <Col key={'col2'+i} span={6} >
+              {
+                paginationData[i]['related'].length > 0 ? 
+                <div className={style.freeColor}>
+                    <Image src={`${paginationData[i]['related'][0]['img']}`} /> 
+                    <span>{paginationData[i]['related'][0]['info']}</span>
+                </div>
+                : <span></span>
+              }
+            </Col>
+            <Col key={'col3'+i} span={6} >
+              {
+                paginationData[i]['related'].length > 1 ? 
+                <div className={style.freeColor}>
+                    <Image src={`${paginationData[i]['related'][1]['img']}`} /> 
+                    <span>{paginationData[i]['related'][1]['info']}</span>
+                </div>
+                : <span></span>
+              }
+            </Col>
+            <Col key={'col4'+i} span={6} >
+              {
+                paginationData[i]['related'].length > 2 ? 
+                <div className={style.freeColor}>
+                    <Image src={`${paginationData[i]['related'][2]['img']}`} /> 
+                    <span>{paginationData[i]['related'][1]['info']}</span>
+                </div>
+                : <span></span>
+              }
+            </Col>
+          </Row>
           
-          </Col>
-          <Col key={'col2'+i} span={6} >
-            {
-              talbeData[i]['related'].length > 0 ? 
-              <div className={style.freeColor}>
-                  <Image src={`${talbeData[i]['related'][0]['img']}`} /> 
-                  <span>{talbeData[i]['related'][0]['info']}</span>
+        )
+      }
+    }else{
+      for(let i=0;i<paginationData.length;i++){
+        videos.push(
+          <Row>
+            <Col key={'col1'+i} span={6} >
+              <div className={style.takeColor}>
+                <video
+                  src={`${paginationData[i]['src']}`}
+                />
+                <span>{paginationData[i]['infos']}</span>
               </div>
-              : <span></span>
-            }
-          </Col>
-          <Col key={'col3'+i} span={6} >
-            {
-              talbeData[i]['related'].length > 1 ? 
-              <div className={style.freeColor}>
-                  <Image src={`${talbeData[i]['related'][1]['img']}`} /> 
-                  <span>{talbeData[i]['related'][1]['info']}</span>
-              </div>
-              : <span></span>
-            }
-          </Col>
-          <Col key={'col4'+i} span={6} >
-            {
-              talbeData[i]['related'].length > 2 ? 
-              <div className={style.freeColor}>
-                  <Image src={`${talbeData[i]['related'][2]['img']}`} /> 
-                  <span>{talbeData[i]['related'][1]['info']}</span>
-              </div>
-              : <span></span>
-            }
-          </Col>
-        </Row>
-        
-      )
+            
+            </Col>
+            <Col key={'col2'+i} span={6} >
+              {
+                paginationData[i]['related'].length > 0 ? 
+                <div className={style.freeColor}>
+                    <video src={`${paginationData[i]['related'][0]['img']}`} /> 
+                    <span>{paginationData[i]['related'][0]['info']}</span>
+                </div>
+                : <span></span>
+              }
+            </Col>
+            <Col key={'col3'+i} span={6} >
+              {
+                paginationData[i]['related'].length > 1 ? 
+                <div className={style.freeColor}>
+                    <video src={`${paginationData[i]['related'][1]['img']}`} /> 
+                    <span>{paginationData[i]['related'][1]['info']}</span>
+                </div>
+                : <span></span>
+              }
+            </Col>
+            <Col key={'col4'+i} span={6} >
+              {
+                paginationData[i]['related'].length > 2 ? 
+                <div className={style.freeColor}>
+                    <video src={`${paginationData[i]['related'][2]['img']}`} /> 
+                    <span>{paginationData[i]['related'][1]['info']}</span>
+                </div>
+                : <span></span>
+              }
+            </Col>
+          </Row>
+          
+        )
+      }
     }
+    
     return (<div className={style.dashboard}>
         <div className={style.BreadcrumbPart}>
         <Breadcrumb>
@@ -229,10 +378,7 @@ class DashboardComponent extends PureComponent {
               style={{ width: 200 }}
               placeholder="Select a timeperiod"
               optionFilterProp="children"
-              onChange={this.onChange}
-              onFocus={this.onFocus}
-              onBlur={this.onBlur}
-              onSearch={this.onSearch}
+              onChange={this.onTimeChange}
               filterOption={(input, option) =>
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
@@ -261,13 +407,11 @@ class DashboardComponent extends PureComponent {
             <Select
               showSearch
               value={current}
+              disabled={caremaStatus}
               style={{ width: 200 }}
               placeholder="Select a carema"
               optionFilterProp="children"
-              onChange={this.onChange}
-              onFocus={this.onFocus}
-              onBlur={this.onBlur}
-              onSearch={this.onSearch}
+              onChange={this.onCaremaChange}
               filterOption={(input, option) =>
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
@@ -280,36 +424,34 @@ class DashboardComponent extends PureComponent {
             <span className={style.selectTimeText}>类型:</span>
             <Select
                 showSearch
-                defaultValue={"0"}
+                defaultValue={"img"}
                 style={{ width: 200 }}
                 placeholder="选择类型"
                 optionFilterProp="children"
-                onChange={this.onChange}
-                onFocus={this.onFocus}
-                onBlur={this.onBlur}
-                onSearch={this.onSearch}
+                onChange={this.onTypeChange}
                 filterOption={(input, option) =>
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
               >
-                <Option key="0" value="0">图像</Option>
-                <Option key="1" value="1">视频</Option>
+                <Option key="0" value="img">图像</Option>
+                <Option key="1" value="video" disabled>视频</Option>
               </Select>
           </div>
           
 
 
           <div>
-            <Button type="link">确定</Button>
+            <Button type="link" onClick={this.confirmFilter}>确定</Button>
           </div>
         </div>
         <div className={style.imagesPart}>
           <Row gutter={[8, 8]}>
-            {images}
+            {type=="img"?images:videos}
           </Row>
         </div>
         <div className={style.rightPosition}>
-          <Pagination defaultCurrent={1} pageSize={9} total={50} onChange={this.onPageChange}/>
+          <span className={style.downoutline}><a href="#" onClick={this.loadMore}><DownOutlined /></a></span>
+          <Pagination defaultCurrent={1} pageSize={PAGE_SIZE} total={tableData.length} onChange={this.onPageChange}/>
         </div>
       </div>);
   }

@@ -1,0 +1,49 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "commonjs": true,
+        "es6": true,
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:jsx-a11y/strict",
+        "plugin:react/recommended",
+        "airbnb",
+        "plugin:prettier/recommended",
+        "plugin:compat/recommended",
+        "plugin:cypress/recommended"
+    ],
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true,
+            "modules": true,
+            "experimentalObjectRestSpread": true
+        },
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "plugins":  ["react", "react-hooks", "jsx-a11y", "prettier", "compat"],
+    "rules": {
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-filename-extension": [
+            1,
+            {
+              "extensions": [".js", ".jsx"]
+            }
+        ],
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
+        "no-console": "off",
+        "react/prop-types": 0,
+        "prettier/prettier": ["error"],
+        "compat/compat": "off",
+        "array-callback-return":"off",
+        "class-methods-use-this":"off",
+        "no-plusplus":"off",
+        "no-prototype-builtins":"off",
+        "jsx-a11y/anchor-is-valid":"off"
+    }
+}

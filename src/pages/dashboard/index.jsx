@@ -1,6 +1,6 @@
-import React, { PureComponent } from 'react';
-import LayoutComponent from '../../common/Layout';
-import DashboardComponent from './dashboard';
+import React, { PureComponent } from "react";
+import LayoutComponent from "../../common/Layout";
+import DashboardComponent from "./dashboard";
 
 class Dashboard extends PureComponent {
   render() {

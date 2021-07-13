@@ -1,8 +1,6 @@
-import { Layout, Menu } from 'antd';
+import { Layout, Menu } from "antd";
 import React, { Component } from "react";
-import { NavLink, withRouter } from 'react-router-dom';
-import * as style from '../css/layout.less';
-const {Sider} = Layout;
+import { NavLink, withRouter } from "react-router-dom";
 import {
   BgColorsOutlined,
   MenuUnfoldOutlined,
@@ -10,38 +8,40 @@ import {
   PieChartOutlined,
   DesktopOutlined,
   ContainerOutlined,
-  MailOutlined,
-  AppstoreOutlined
-} from '@ant-design/icons';
-  const { SubMenu } = Menu;
+} from "@ant-design/icons";
+import * as style from "../css/layout.less";
+
+const { Sider } = Layout;
 
 class SiderComponent extends Component {
-    constructor(){
-        super();
-        this.state = {
-            collapsed: false
-        };
-        this.toggle = this.toggle.bind(this);
-    }
-    toggle(){
-      this.setState({
-          collapsed: !this.state.collapsed,
-      });
+  constructor() {
+    super();
+    this.state = {
+      collapsed: false,
+    };
+    this.toggle = this.toggle.bind(this);
   }
-    render(){
-      const selectedStr = this.props.selectedKey.toString();
-      console.log("selected in sider.jsx"+selectedStr)
-      return (<Sider trigger={null} collapsible collapsed={this.state.collapsed}>
+
+  toggle() {
+    const { collapsed } = this.state;
+    this.setState({
+      collapsed: !collapsed,
+    });
+  }
+
+  render() {
+    const { collapsed } = this.state;
+    const { selectedKey } = this.props;
+    return (
+      <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className={style.topLogo}>
-            <div className={style.logoLayout}>
-              {
-                this.state.collapsed ? <div className={style.detailLogo}></div>:<h1>GLP</h1>
-              }  
-            </div>
+          <div className={style.logoLayout}>
+            {collapsed ? <div className={style.detailLogo} /> : <h1>GLP</h1>}
+          </div>
         </div>
         <Menu
-          defaultSelectedKeys={[selectedStr]}
-          defaultOpenKeys={[selectedStr]}
+          defaultSelectedKeys={[selectedKey]}
+          defaultOpenKeys={[selectedKey]}
           mode="inline"
           theme="dark"
         >
@@ -59,12 +59,16 @@ class SiderComponent extends Component {
           </Menu.Item>
         </Menu>
         <div className={style.bottomLink}>
-          {React.createElement(this.state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
-            className: 'trigger',
-            onClick: this.toggle,
-          })}
+          {React.createElement(
+            collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
+            {
+              className: "trigger",
+              onClick: this.toggle,
+            }
+          )}
         </div>
-      </Sider>)
-    }
+      </Sider>
+    );
   }
-  export default withRouter(SiderComponent);
+}
+export default withRouter(SiderComponent);

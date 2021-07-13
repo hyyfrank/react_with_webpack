@@ -1,18 +1,12 @@
-* npm global list install 
-├── npm@6.14.13
-├── webpack@4.29.0
-├── webpack-cli@3.2.1
-└── webpack-dev-server@3.1.14
-├── mocha@9.0.2
-* brew install list, if you have window or ubuntu, make sure you install them in advance.
-├── autoconf
-├── automake
-├── jpeg
-├── libpng
-└──pkg-config
-├── pngquant
+1. npm global list install
+<div><image src="./src/images/npm.png" /></div>
 
-* how to run
+2. brew install list, if you have window or ubuntu, make sure you install them
+in
+<div><image src="./src/images/brew.png" /></div>
+
+3. how to run
+
 ```shell
     rm -rf node_modules && rm package-lock.json
     npm install

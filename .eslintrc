@@ -44,6 +44,7 @@
         "class-methods-use-this":"off",
         "no-plusplus":"off",
         "no-prototype-builtins":"off",
-        "jsx-a11y/anchor-is-valid":"off"
+        "jsx-a11y/anchor-is-valid":"off",
+        "import/no-extraneous-dependencies":"off"
     }
 }

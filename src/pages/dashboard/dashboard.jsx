@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Image, Row, Col, Pagination, PageHeader, Select, TimePicker, Button, Breadcrumb } from 'antd';
+import { Row, Col, Pagination, Select, Button, Breadcrumb } from 'antd';
+import {Image as AntdImage} from 'antd'
 import { DownOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
 import * as style from '../../css/dashboard.less'
 import fetchDashboardList from '../../services/dashboard'
@@ -84,15 +85,20 @@ class DashboardComponent extends PureComponent {
         console.log("debugging..."+JSON.stringify(item))
         if(item.hasOwnProperty('jpgs') && item['jpgs'].length>0){
           let imgs = [].concat(item['jpgs']);
+          
           for(let i=0;i<imgs.length;i++){
+            let imageSrc = this.getFreeImageFullAddress(day,imgs[i],type)
+            new Image().src = imageSrc;
             jpgs.push({
-              'img': this.getFreeImageFullAddress(day,imgs[i],type),
+              'img': imageSrc,
               'info': this.getImageInfos(item)
             })
           }
         }else{
+          let imgSrc = this.getFreeImageFullAddress(day,item['jpg'],type);
+          new Image().src = imgSrc;
           jpgs.push({
-            'img': this.getFreeImageFullAddress(day,item['jpg'],type),
+            'img': imgSrc,
             'info': this.getImageInfos(item)
           })
         }
@@ -106,20 +112,29 @@ class DashboardComponent extends PureComponent {
   updateIotTableData(iotTableData,type){
     let { day, PAGE_SIZE } = this.state;
     let newTableData =[];
+    let preImages = [];
     iotTableData.map(item=>{
       if(item['event']==='TAKEUP'){
+        let tmpImage = new Image();
+        tmpImage.src= this.getImageFullAddress(day,item,type);
+        console.log("tmpImage:"+JSON.stringify(tmpImage))
         newTableData.push({
           "eventserial": item["eventserial"],
           "src":this.getImageFullAddress(day,item,type),
           "infos": this.getImageInfos(item),
           "color":  "red",
+          "imgElement": tmpImage,
           "related": this.getFreeImageByEventSerial(iotTableData,item["eventserial"],type)
         })
       }
     })
+   
+    
     console.log(`get filtered table data ${JSON.stringify(newTableData)}`)
-    this.setState({tableData:newTableData})
-    this.setState({paginationData:newTableData.slice(0,PAGE_SIZE)})
+    this.setState({
+      tableData:newTableData,
+      paginationData:newTableData.slice(0,PAGE_SIZE)
+    })
   }
   fetchDataAndFilter(carema,type){
     let { rawData } = this.state;
@@ -136,7 +151,7 @@ class DashboardComponent extends PureComponent {
     console.log("3. filter the data via carema:"+JSON.stringify(iotRawTableData));
     // 4. filter the data via type and reframe the data to new structure
     this.updateIotTableData(iotRawTableData,type);
-    sessionStorage.setItem(1,rawData)
+    // sessionStorage.setItem(1,rawData)
     
   }
   componentDidMount(){
@@ -267,7 +282,7 @@ class DashboardComponent extends PureComponent {
           <Row>
             <Col key={'col1'+i} span={6} >
               <div className={style.takeColor}>
-                <Image
+                <AntdImage
                   src={`${paginationData[i]['src']}`}
                 />
                 <span>{paginationData[i]['infos']}</span>
@@ -278,7 +293,7 @@ class DashboardComponent extends PureComponent {
               {
                 paginationData[i]['related'].length > 0 ? 
                 <div className={style.freeColor}>
-                    <Image src={`${paginationData[i]['related'][0]['img']}`} /> 
+                   <AntdImage src={`${paginationData[i]['related'][0]['img']}`} /> 
                     <span>{paginationData[i]['related'][0]['info']}</span>
                 </div>
                 : <span></span>
@@ -288,7 +303,7 @@ class DashboardComponent extends PureComponent {
               {
                 paginationData[i]['related'].length > 1 ? 
                 <div className={style.freeColor}>
-                    <Image src={`${paginationData[i]['related'][1]['img']}`} /> 
+                    <AntdImage src={`${paginationData[i]['related'][1]['img']}`} /> 
                     <span>{paginationData[i]['related'][1]['info']}</span>
                 </div>
                 : <span></span>
@@ -298,7 +313,7 @@ class DashboardComponent extends PureComponent {
               {
                 paginationData[i]['related'].length > 2 ? 
                 <div className={style.freeColor}>
-                    <Image src={`${paginationData[i]['related'][2]['img']}`} /> 
+                   <AntdImage src={`${paginationData[i]['related'][2]['img']}`} /> 
                     <span>{paginationData[i]['related'][1]['info']}</span>
                 </div>
                 : <span></span>

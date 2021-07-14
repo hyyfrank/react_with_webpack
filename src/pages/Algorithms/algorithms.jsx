@@ -20,13 +20,20 @@ class AlgorithmComponent extends Component {
     const formData = new FormData();
     const obj = {
       type: "SERVICE_SUPPORT",
-      ctrl_key: -1,
+      ctrl_key:
+        sessionStorage.getItem("ctrl_key") == null
+          ? -1
+          : sessionStorage.getItem("ctrl_key"),
     };
     formData.append("req", JSON.stringify(obj));
 
     fetchDeployedAlgorithm(formData).then(({ data }) => {
-      const res = data.response.detail.servicesCFG;
-      this.setState({ tableData: res });
+      if (data.response.state === "error") {
+        console.log("state error, please retry.");
+        this.setState({ tableData: [] });
+      } else {
+        this.setState({ tableData: data.response.detail.servicesCFG });
+      }
     });
   }
 

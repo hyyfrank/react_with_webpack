@@ -30,6 +30,7 @@ export default class LoginComponent extends Component {
       .then(({ data }) => {
         if (data.response.detail === "OK") {
           const { history } = this.props;
+          sessionStorage.setItem("ctrl_key", data.ctrl_key);
           history.push("/dashboard");
         } else {
           console.log("login checked failed.");

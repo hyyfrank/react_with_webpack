@@ -14,13 +14,6 @@ class AlgorithmComponent extends Component {
       isDeleteVisiable: false,
       tableData: [],
     };
-    this.showModal = this.showModal.bind(this);
-    this.handleOk = this.handleOk.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
-    this.showDeleteModal = this.showDeleteModal.bind(this);
-    this.handleOkDelete = this.handleOkDelete.bind(this);
-    this.handleCancelDelete = this.handleCancelDelete.bind(this);
-    this.onFinish = this.onFinish.bind(this);
   }
 
   componentDidMount() {
@@ -30,48 +23,11 @@ class AlgorithmComponent extends Component {
       ctrl_key: -1,
     };
     formData.append("req", JSON.stringify(obj));
-    const config = {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    };
-    fetchDeployedAlgorithm(formData, config).then(({ data }) => {
-      console.log(`service list is:`);
+
+    fetchDeployedAlgorithm(formData).then(({ data }) => {
       const res = data.response.detail.servicesCFG;
-      console.log(res);
       this.setState({ tableData: res });
     });
-  }
-
-  handleOk() {
-    this.setState({ isModalVisible: false });
-  }
-
-  handleCancel() {
-    this.setState({ isModalVisible: false });
-  }
-
-  handleOkDelete(record) {
-    console.log(`delete record${record}`);
-    this.setState({ isDeleteVisiable: false });
-  }
-
-  handleCancelDelete() {
-    this.setState({ isDeleteVisiable: false });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  onFinish() {
-    console.log("record on finish.");
-  }
-
-  showDeleteModal(text, record) {
-    console.log(`clicked${text},record is:${record}`);
-    this.setState({ isDeleteVisiable: true });
-  }
-
-  showModal() {
-    this.setState({ isModalVisible: true });
   }
 
   render() {
@@ -165,8 +121,8 @@ class AlgorithmComponent extends Component {
         </div>
         <div className={style.tableLayer}>
           <Table
+            rowKey={(record) => record.name}
             columns={columns}
-            // eslint-disable-next-line react/destructuring-assignment
             pagination={{ position: [bottom] }}
             dataSource={tableData}
           />

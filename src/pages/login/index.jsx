@@ -15,10 +15,20 @@ export default class LoginComponent extends Component {
     this.formRef.current
       .validateFields()
       .then((data) => {
-        return fetchLoginStaus(data.username, data.password);
+        const formData = new FormData();
+        const obj = {
+          type: "LOGIN",
+          login: {
+            user: data.username,
+            pass: data.password,
+          },
+          ctrl_key: -1,
+        };
+        formData.append("req", JSON.stringify(obj));
+        return fetchLoginStaus(formData);
       })
       .then(({ data }) => {
-        if (data.response.state === "OK") {
+        if (data.response.detail === "OK") {
           const { history } = this.props;
           history.push("/dashboard");
         } else {

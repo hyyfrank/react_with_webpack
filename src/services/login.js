@@ -1,18 +1,14 @@
 import axios from "axios";
 import APICONST from "./APIConst";
 
-const fetchLoginStaus = (username, password) => {
-  const { BASE_URL, PREFIX, LOGIN_REQUEST } = APICONST;
-  const LoginFetchUrl = BASE_URL + PREFIX + LOGIN_REQUEST;
-
-  const postBody = {
-    type: "LOGIN",
-    login: {
-      user: username,
-      pass: password
+const fetchLoginStaus = (payload) => {
+  const { BASE_URL, LOGIN_REQUEST } = APICONST;
+  const LoginFetchUrl = BASE_URL + LOGIN_REQUEST;
+  const config = {
+    headers: {
+      "Content-Type": "multipart/form-data",
     },
-    ctrl_key: -1
   };
-  return axios.post(LoginFetchUrl, postBody);
+  return axios.post(LoginFetchUrl, payload, config);
 };
 export default fetchLoginStaus;

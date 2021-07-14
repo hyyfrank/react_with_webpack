@@ -7,12 +7,15 @@ import {
   Button,
   Breadcrumb,
   Image as AntdImage,
+  message,
 } from "antd";
 import { DownOutlined, HomeOutlined, UserOutlined } from "@ant-design/icons";
 import * as style from "../../css/dashboard.less";
 import fetchDashboardList from "../../services/dashboard";
+import APICONST from "../../services/APIConst";
 
 const { Option } = Select;
+const { BASE_URL } = APICONST;
 
 class DashboardComponent extends PureComponent {
   constructor() {
@@ -47,7 +50,6 @@ class DashboardComponent extends PureComponent {
   componentDidMount() {
     this.loadCertainDayData(0).then(() => {
       const { current } = this.state;
-      console.log(`after load, get current carema:${current}`);
       this.fetchDataAndFilter(current, "img");
     });
   }
@@ -82,7 +84,6 @@ class DashboardComponent extends PureComponent {
   }
 
   getImageFullAddress(day, item, type) {
-    const baseUrl = "http://cvp.g2link.cn:20065";
     let mkey = "";
     if (type === "img") {
       mkey = "jpg";
@@ -95,18 +96,18 @@ class DashboardComponent extends PureComponent {
       mkey = "mp4";
     }
     if (day === 0) {
-      return `${baseUrl}/?filename=${item[mkey]}`;
+      return `${BASE_URL}/?filename=${item[mkey]}`;
     }
-    return `${baseUrl}/?filename=./${day}/${item[mkey]}`;
+    return `${BASE_URL}/?filename=./${day}/${item[mkey]}`;
   }
 
+  // eslint-disable-next-line no-unused-vars
   getFreeImageFullAddress(day, imageSrc, type) {
-    const baseUrl = "http://cvp.g2link.cn:20065";
-    console.log(`type could be ${type}`);
+    // console.log(`type could be ${type}`);
     if (day === 0) {
-      return `${baseUrl}/?filename=${imageSrc}`;
+      return `${BASE_URL}/?filename=${imageSrc}`;
     }
-    return `${baseUrl}/?filename=./${day}/${imageSrc}`;
+    return `${BASE_URL}/?filename=./${day}/${imageSrc}`;
   }
 
   getImageInfos(obj) {
@@ -130,7 +131,6 @@ class DashboardComponent extends PureComponent {
     const { day } = this.state;
     datas.filter((item) => {
       if (item.eventserial === serialId && item.event === "FREE") {
-        console.log(`debugging...${JSON.stringify(item)}`);
         if (item.hasOwnProperty("jpgs") && item.jpgs.length > 0) {
           const imgs = [].concat(item.jpgs);
           for (let i = 0; i < imgs.length; i++) {
@@ -151,9 +151,6 @@ class DashboardComponent extends PureComponent {
         }
       }
     });
-    console.log(
-      `getFreeImageByEventSerial ${serialId} is: ${JSON.stringify(jpgs)}`
-    );
     return jpgs;
   }
 
@@ -164,7 +161,6 @@ class DashboardComponent extends PureComponent {
       if (item.event === "TAKEUP") {
         const tmpImage = new Image();
         tmpImage.src = this.getImageFullAddress(day, item, type);
-        console.log(`tmpImage:${JSON.stringify(tmpImage)}`);
         newTableData.push({
           eventserial: item.eventserial,
           src: this.getImageFullAddress(day, item, type),
@@ -180,7 +176,6 @@ class DashboardComponent extends PureComponent {
       }
     });
 
-    console.log(`get filtered table data ${JSON.stringify(newTableData)}`);
     this.setState({
       tableData: newTableData,
       paginationData: newTableData.slice(0, PAGE_SIZE),
@@ -189,7 +184,6 @@ class DashboardComponent extends PureComponent {
 
   fetchDataAndFilter(carema, type) {
     const { rawData } = this.state;
-    console.log(`raw data:${JSON.stringify(rawData)}`);
     // 3. filter the data via carema
     const iotRawTableData = [];
     rawData.map((item) => {
@@ -199,9 +193,6 @@ class DashboardComponent extends PureComponent {
         }
       }
     });
-    console.log(
-      `3. filter the data via carema:${JSON.stringify(iotRawTableData)}`
-    );
     // 4. filter the data via type and reframe the data to new structure
     this.updateIotTableData(iotRawTableData, type);
     // sessionStorage.setItem(1,rawData)
@@ -227,14 +218,12 @@ class DashboardComponent extends PureComponent {
         lastIndex
       );
       const tmp = paginationData.concat(nextPageData);
-      console.log(
-        `load one page from ${PAGE_SIZE * (nextPageNum - 1)} to ${lastIndex}`
-      );
-      console.log(`load one page data is :${JSON.stringify(tmp)}`);
+
       this.setState({ paginationData: [...tmp] });
     }
 
     if (lastIndex === tableData.length) {
+      message.info("提示:最后一页已加载,不能再下拉了！");
       this.setState({ shouldLoadMore: false });
     }
     this.setState({ loadmorePage: nextPageNum });
@@ -253,7 +242,14 @@ class DashboardComponent extends PureComponent {
     // }
     // 1. didn't find in cache, so we request via ajax
     return fetchDashboardList(newDay).then(({ data }) => {
-      const newOneDayRawData = data.filter((item) => {
+      const arrData = [];
+      data
+        .trim()
+        .split("\n")
+        .forEach((v) => {
+          arrData.push(JSON.parse(v));
+        });
+      const newOneDayRawData = arrData.filter((item) => {
         return item.event !== "DISCONNECTED";
       });
       const tmpChannels = [];
@@ -270,7 +266,6 @@ class DashboardComponent extends PureComponent {
       this.setState({ current: tmpChannels[0] });
 
       // 4. didn't find in cache, so we request via ajax
-      console.log(`4. step:${JSON.stringify(newOneDayRawData)}`);
       this.setState({
         rawData: [...newOneDayRawData],
       });
@@ -321,7 +316,7 @@ class DashboardComponent extends PureComponent {
     if (type === "img") {
       for (let i = 0; i < paginationData.length; i++) {
         images.push(
-          <Row>
+          <Row key={`rowkey${i}`}>
             <Col key={`col1${i}`} span={6}>
               <div className={style.takeColor}>
                 <AntdImage src={`${paginationData[i].src}`} />
@@ -364,8 +359,8 @@ class DashboardComponent extends PureComponent {
     } else {
       for (let i = 0; i < paginationData.length; i++) {
         videos.push(
-          <Row>
-            <Col key={`col1${i}`} span={6}>
+          <Row key={`rowkey${i}`}>
+            <Col key={`col${i}`} span={6}>
               <div className={style.takeColor}>
                 <video src={`${paginationData[i].src}`}>
                   <track kind="captions" />
@@ -373,7 +368,7 @@ class DashboardComponent extends PureComponent {
                 <span>{paginationData[i].infos}</span>
               </div>
             </Col>
-            <Col key={`col2${i}`} span={6}>
+            <Col key={`col${i}`} span={6}>
               {paginationData[i].related.length > 0 ? (
                 <div className={style.freeColor}>
                   <video src={`${paginationData[i].related[0].img}`}>
@@ -385,7 +380,7 @@ class DashboardComponent extends PureComponent {
                 <span />
               )}
             </Col>
-            <Col key={`col3${i}`} span={6}>
+            <Col key={`col${i}`} span={6}>
               {paginationData[i].related.length > 1 ? (
                 <div className={style.freeColor}>
                   <video src={`${paginationData[i].related[1].img}`}>
@@ -397,7 +392,7 @@ class DashboardComponent extends PureComponent {
                 <span />
               )}
             </Col>
-            <Col key={`col4${i}`} span={6}>
+            <Col key={`col${i}`} span={6}>
               {paginationData[i].related.length > 2 ? (
                 <div className={style.freeColor}>
                   <video src={`${paginationData[i].related[2].img}`}>

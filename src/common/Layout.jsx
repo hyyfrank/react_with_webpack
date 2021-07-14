@@ -10,7 +10,6 @@ const { Content } = Layout;
 export default class LayoutComponent extends PureComponent {
   render() {
     const { selectedKey, children } = this.props;
-    console.log(`selected in layout.jsx${selectedKey}`);
     return (
       <Layout className={style.layoutContainer}>
         <SiderComponent selectedKey={selectedKey} />

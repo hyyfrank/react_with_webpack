@@ -24,7 +24,7 @@ const StyleLintPlugin = new StyleCssLintPlugin({
   context: "src",
   files: "**/*.less",
   failOnError: false,
-  quiet: false
+  quiet: false,
 });
 
 // const EslintPluginWithOption = new ESLintPlugin();
@@ -37,50 +37,50 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
-        }
+          loader: "babel-loader",
+        },
       },
       {
         test: /\.(css|less)$/,
         use: [
           {
-            loader: "style-loader"
+            loader: "style-loader",
           },
           {
             loader: "css-loader",
             options: {
               modules: true, // 支持css module的配置
-              localIdentName: "[name]__[local]--[hash:base64:5]"
+              localIdentName: "[name]__[local]--[hash:base64:5]",
               // url:(url, resourcePath) => {
               //     if (url.includes("img.png")) {
               //       return false;
               //     }
               //     return true;
               //   },
-            }
+            },
           },
           {
             loader: "postcss-loader",
             options: {
               sourceMap: true,
               config: {
-                path: `${__dirname}/postcss.config.js`
+                path: `${__dirname}/postcss.config.js`,
               },
               plugins: [
                 // require("postcss-sprites")({
                 //     spritePath: "./dist/images"
                 // })
-              ]
-            }
+              ],
+            },
           },
           {
             loader: "less-loader",
             options: {
-              sourceMap: true
-            }
-          }
+              sourceMap: true,
+            },
+          },
         ],
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
@@ -91,8 +91,8 @@ module.exports = {
               name: "[name]-[hash:5].min.[ext]",
               limit: 10000, // size <= 20KB
               publicPath: "images/",
-              outputPath: "images/"
-            }
+              outputPath: "images/",
+            },
           },
           {
             loader: "img-loader",
@@ -102,12 +102,12 @@ module.exports = {
                 require("imagemin-mozjpeg")({}),
                 require("imagemin-pngquant")({}),
                 require("imagemin-svgo")({
-                  plugins: [{ removeTitle: true }, { convertPathData: false }]
-                })
-              ]
-            }
-          }
-        ]
+                  plugins: [{ removeTitle: true }, { convertPathData: false }],
+                }),
+              ],
+            },
+          },
+        ],
       },
       {
         test: /\.(svg)$/,
@@ -120,10 +120,10 @@ module.exports = {
               noquotes: true,
               limit: 5000, // fonts file size <= 5KB, use 'base64'; else, output svg file
               publicPath: "fonts/",
-              outputPath: "fonts/"
-            }
-          }
-        ]
+              outputPath: "fonts/",
+            },
+          },
+        ],
       },
       {
         test: /.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
@@ -134,12 +134,12 @@ module.exports = {
             loader: "file-loader",
             options: {
               outputPath: "fonts/",
-              name: "[name][hash].[ext]"
-            }
-          }
-        ]
-      }
-    ]
+              name: "[name][hash].[ext]",
+            },
+          },
+        ],
+      },
+    ],
   },
   optimization: {
     splitChunks: {
@@ -150,19 +150,19 @@ module.exports = {
           chunks: "initial",
           name: "vendor", // 打包后的文件名，任意命名
           // 设置优先级，防止和自定义的公共代码提取时被覆盖，不进行打包
-          priority: 10
+          priority: 10,
         },
         common: {
           // 抽离自己写的公共代码，common这个名字可以随意起
           chunks: "initial",
           name: "common", // 任意命名
-          minSize: 0 // 只要超出0字节就生成一个新包
-        }
-      }
-    }
+          minSize: 0, // 只要超出0字节就生成一个新包
+        },
+      },
+    },
   },
   resolve: {
-    extensions: ["*", ".js", ".jsx"]
+    extensions: ["*", ".js", ".jsx"],
   },
   devtool: "cheap-module-source-map",
   plugins: [
@@ -170,14 +170,14 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "src", "index.html"),
       filename: "index.html",
-      hash: true
+      hash: true,
     }),
     new webpack.HotModuleReplacementPlugin({
-      multiStep: true
+      multiStep: true,
     }),
     // PurifyCssPlugin,
     // EslintPluginWithOption,
-    StyleLintPlugin
+    StyleLintPlugin,
   ],
   devServer: {
     historyApiFallback: true,
@@ -185,15 +185,15 @@ module.exports = {
     proxy: {
       "/api": {
         target: "http://127.0.0.1:5000",
-        changeOrigin: true
-      }
+        changeOrigin: true,
+      },
     },
     hot: true,
-    open: true
+    open: true,
   },
   output: {
     publicPath: "/",
     path: path.resolve(__dirname, "dist"),
-    filename: "[name]-bundle.js"
-  }
+    filename: "[name]-bundle.js",
+  },
 };

@@ -45,6 +45,7 @@
         "no-plusplus":"off",
         "no-prototype-builtins":"off",
         "jsx-a11y/anchor-is-valid":"off",
-        "import/no-extraneous-dependencies":"off"
+        "import/no-extraneous-dependencies":"off",
+        "react/no-unused-state": "off"
     }
 }

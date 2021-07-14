@@ -11,31 +11,31 @@ const myroute = {
       path: "/",
       label: "登录",
       exact: true,
-      component: Login,
+      component: Login
     },
     {
       path: "/login",
       label: "登录",
       exact: true,
-      component: Login,
+      component: Login
     },
     {
       path: "/dashboard",
       label: "面板",
       exact: true,
-      component: Dashboard,
+      component: Dashboard
     },
     {
       path: "/algorithms",
       label: "算法服务",
       exact: true,
-      component: Algorithms,
+      component: Algorithms
     },
     {
       path: "/configs",
       label: "配置服务",
       exact: true,
-      component: Configs,
+      component: Configs
     },
     {
       path: "/videos",
@@ -46,11 +46,11 @@ const myroute = {
           path: "/videos/monitorarea/:id",
           label: "监控区域",
           exact: true,
-          component: Algorithms,
-        },
-      ],
-    },
-  ],
+          component: Algorithms
+        }
+      ]
+    }
+  ]
 };
 
 export default myroute;

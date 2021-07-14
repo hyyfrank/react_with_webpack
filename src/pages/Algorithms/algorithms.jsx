@@ -1,24 +1,18 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-import React from 'react';
-import {
-  Form, Input, InputNumber, Table, Tag, Space, Button, Modal, Breadcrumb
-} from 'antd';
-import { HomeOutlined, PictureOutlined } from '@ant-design/icons';
-import {
-  InfoCircleOutlined,
-} from '@ant-design/icons';
-import * as style from '../../css/algorithm.less';
+import React, { Component } from "react";
+import { Table, Breadcrumb } from "antd";
+import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 
-class AlgorithmComponent extends React.Component {
+import fetchDeployedAlgorithm from "../../services/algorithm";
+import * as style from "../../css/algorithm.less";
+
+class AlgorithmComponent extends Component {
   constructor() {
     super();
     this.state = {
-      bottom: 'bottomRight',
+      bottom: "bottomRight",
       isModalVisible: false,
       isDeleteVisiable: false,
+      tableData: [],
     };
     this.showModal = this.showModal.bind(this);
     this.handleOk = this.handleOk.bind(this);
@@ -30,11 +24,23 @@ class AlgorithmComponent extends React.Component {
   }
 
   componentDidMount() {
-    // console.log("---------yahoo---------");
-    // axios.get("https://weather-ydn-yql.media.yahoo.com/forecastrss?location=sunnyvale,ca&format=json").then((data)=>{
-    //   console.log("data:"+data)
-    // })
-    // console.log("---------yahoo---------");
+    const formData = new FormData();
+    const obj = {
+      type: "SERVICE_SUPPORT",
+      ctrl_key: -1,
+    };
+    formData.append("req", JSON.stringify(obj));
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+    fetchDeployedAlgorithm(formData, config).then(({ data }) => {
+      console.log(`service list is:`);
+      const res = data.response.detail.servicesCFG;
+      console.log(res);
+      this.setState({ tableData: res });
+    });
   }
 
   handleOk() {
@@ -56,7 +62,7 @@ class AlgorithmComponent extends React.Component {
 
   // eslint-disable-next-line class-methods-use-this
   onFinish() {
-    console.log('record on finish.');
+    console.log("record on finish.");
   }
 
   showDeleteModal(text, record) {
@@ -69,124 +75,84 @@ class AlgorithmComponent extends React.Component {
   }
 
   render() {
-    let { 
-    bottom,
-    isModalVisible,
-    isDeleteVisiable
-  } = this.state;
+    const { bottom } = this.state;
     const columns = [
       {
-        title: '服务名称',
-        dataIndex: 'name',
-        key: 'name',
-        render: (text) => <a>{text}</a>,
+        title: "算法场景名称",
+        dataIndex: "name",
+        key: "name",
+        render: (name) => {
+          if (name[0] === "Platform") {
+            return <span className={style.platform}>月台车辆分析</span>;
+          }
+          if (name[0] === "Road" && name[1] === "Room") {
+            return <span className={style.road}>消防通道分析</span>;
+          }
+          if (name[0] === "WareHouse") {
+            return <span className={style.warehouse}>仓库占用分析</span>;
+          }
+          if (name[0] === "HelmetEntrance") {
+            return (
+              <span className={style.helmetentrance}>工地进出口安全帽分析</span>
+            );
+          }
+          if (name[0] === "HelmetWork") {
+            return (
+              <span className={style.helmetwork}>工地作业区安全帽分析</span>
+            );
+          }
+          return <span>name</span>;
+        },
       },
       {
-        title: '监控种类',
-        dataIndex: 'type',
-        key: 'type',
+        title: "算法类型",
+        dataIndex: "Type",
+        key: "Type",
+        render: (text) => {
+          if (text === "ObjectDetection") {
+            return <span className={style.objectDetect}>对象检测</span>;
+          }
+          if (text === "Classification") {
+            return <span className={style.classification}>分类算法</span>;
+          }
+          return <span className={style.others}>其他</span>;
+        },
       },
       {
-        title: '监控地址',
-        dataIndex: 'url',
-        key: 'url',
+        title: "GPU需求",
+        dataIndex: "GPUMemory",
+        key: "GPUMemory",
+        render: (text) => {
+          return <span>{text}G</span>;
+        },
       },
       {
-        title: '监控内容',
-        dataIndex: 'monitor',
-        key: 'monitor',
+        title: "最大负载",
+        dataIndex: "MaxLoad",
+        key: "MaxLoad",
       },
       {
-        title: '显存',
-        dataIndex: 'gpu',
-        key: 'gpu',
+        title: "描述",
+        dataIndex: "Description",
+        key: "Description",
       },
       {
-        title: '标签',
-        key: 'tags',
-        dataIndex: 'tags',
-        render: (tags) => (
-          <span>
-            {tags.map((tag) => {
-              let color = tag.length > 5 ? 'geekblue' : 'green';
-              if (tag === '月台') {
-                color = 'volcano';
-              }
-              if (tag === '视频') {
-                color = 'geekblue';
-              }
-              return (
-                <Tag color={color} key={tag}>
-                  {tag.toUpperCase()}
-                </Tag>
-              );
-            })}
-          </span>
-        ),
-      },
-      {
-        title: '操作',
-        key: 'action',
-        render: (text, record) => (
-          <Space size="middle">
-            <span onClick={() => { this.showDeleteModal(text, record); }}>删除</span>
-          </Space>
-        ),
+        title: "启用状态",
+        dataIndex: "Enable",
+        key: "Enable",
+        render: (text) => {
+          if (text) {
+            return <span className={style.enableAlgo}>已启用</span>;
+          }
+          return <span className={style.disableAlgo}>未启用</span>;
+        },
       },
     ];
 
-    const data = [
-      {
-        key: '1',
-        name: '消防轩状态',
-        type: '图像',
-        url: 'http://124.204.79.2/upload',
-        monitor: '监控区域内的状态指示灯亮暗',
-        gpu: '5G',
-        tags: ['月台', '分析服务'],
-      },
-      {
-        key: '2',
-        name: '消防通道',
-        type: '视频',
-        url: 'http://124.204.79.2/reference',
-        monitor: '监控区域内的状态指示灯亮暗',
-        gpu: '4G',
-        tags: ['视频', '分析服务'],
-      },
-      {
-        key: '3',
-        name: '消防轩状态指示灯',
-        type: '图像',
-        url: 'http://124.204.79.2/upload',
-        monitor: '监控区域内的状态指示灯亮暗',
-        gpu: '5G',
-        tags: ['月台', '分析服务'],
-      },
-    ];
-
-    const layout = {
-      labelCol: {
-        span: 8,
-      },
-      wrapperCol: {
-        span: 16,
-      },
-    };
-      /* eslint-disable no-template-curly-in-string */
-    const validateMessages = {
-      required: '${label} is required!',
-      types: {
-        email: '${label} is not a valid email!',
-        number: '${label} is not a valid number!',
-      },
-      number: {
-        range: '${label} must be between ${min} and ${max}',
-      },
-    };
+    const { tableData } = this.state;
     return (
       <div className={style.mainContent}>
-         <div className={style.BreadcrumbPart}>
+        <div className={style.BreadcrumbPart}>
           <Breadcrumb>
             <Breadcrumb.Item href="/">
               <HomeOutlined />
@@ -197,65 +163,14 @@ class AlgorithmComponent extends React.Component {
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
-        <div className={style.btnLayer}>
-          <Button type="primary" className={style.addBtn} onClick={this.showModal}>新增</Button>
-        </div>
         <div className={style.tableLayer}>
           <Table
             columns={columns}
             // eslint-disable-next-line react/destructuring-assignment
             pagination={{ position: [bottom] }}
-            dataSource={data}
+            dataSource={tableData}
           />
         </div>
-        <Modal title="新增算法服务" mask visible={isModalVisible} onOk={this.handleOk} onCancel={this.handleCancel}>
-          <Form {...layout} name="nest-messages" onFinish={this.onFinish} validateMessages={validateMessages}>
-            <Form.Item
-              name={['user', 'name']}
-              label="服务名称"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name={['user', 'email']}
-              label="监控种类 "
-              rules={[
-                {
-                  type: 'email',
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              name={['user', 'age']}
-              label="监控地址"
-              rules={[
-                {
-                  type: 'number',
-                  min: 0,
-                  max: 99,
-                },
-              ]}
-            >
-              <InputNumber />
-            </Form.Item>
-            <Form.Item name={['user', 'introduction']} label="监控内容">
-              <Input.TextArea />
-            </Form.Item>
-          </Form>
-        </Modal>
-        <Modal title="删除" mask visible={isDeleteVisiable} onOk={this.handleOkDelete} onCancel={this.handleCancelDelete}>
-          <p>
-            <InfoCircleOutlined />
-            <span className={style.delInfo}>确认要删除该算法服务？</span>
-          </p>
-        </Modal>
       </div>
     );
   }

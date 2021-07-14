@@ -15,7 +15,7 @@ const cssnano = require("cssnano");
 const MiniCssPlugin = new MiniCssExtractPlugin({
   filename: "[name].css",
   allChunks: true,
-  disable: false,
+  disable: false
 });
 // const ExtractTextPlugin = require("extract-text-webpack-plugin");
 // const PurifyCssPlugin = new PurifyCSSPlugin({
@@ -30,11 +30,11 @@ const OptimizeCSSPlugin = new OptimizeCSSAssetsPlugin({
   cssProcessor: cssnano,
   cssProcessorOptions: {
     discardComments: {
-      removeAll: true,
+      removeAll: true
     },
-    safe: true,
+    safe: true
   },
-  canPrint: true,
+  canPrint: true
 });
 
 // const StyleLintPlugin = new StyleCssLintPlugin({
@@ -53,42 +53,42 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
-        },
+          loader: "babel-loader"
+        }
       },
       {
         test: /\.(css|less)$/,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader,
+            loader: MiniCssExtractPlugin.loader
           },
           {
             loader: "css-loader",
             options: {
               modules: true,
-              localIdentName: "purify_[hash:base64:5]",
-            },
+              localIdentName: "purify_[hash:base64:5]"
+            }
           },
           {
             loader: "postcss-loader",
             options: {
               sourceMap: true,
               config: {
-                path: `${__dirname}/postcss.config.js`,
-              },
+                path: `${__dirname}/postcss.config.js`
+              }
               // plugins: [require("postcss-sprites")({
               //     spritePath: "./dist/images"
               // })]
-            },
+            }
           },
           {
             loader: "less-loader",
             options: {
-              sourceMap: true,
-            },
-          },
+              sourceMap: true
+            }
+          }
         ],
-        exclude: /node_modules/,
+        exclude: /node_modules/
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
@@ -102,12 +102,12 @@ module.exports = {
                 require("imagemin-mozjpeg")({}),
                 require("imagemin-pngquant")({}),
                 require("imagemin-svgo")({
-                  plugins: [{ removeTitle: true }, { convertPathData: false }],
-                }),
-              ],
-            },
-          },
-        ],
+                  plugins: [{ removeTitle: true }, { convertPathData: false }]
+                })
+              ]
+            }
+          }
+        ]
       },
       {
         test: /\.(svg)$/,
@@ -117,10 +117,10 @@ module.exports = {
           {
             loader: "svg-url-loader",
             options: {
-              noquotes: true,
-            },
-          },
-        ],
+              noquotes: true
+            }
+          }
+        ]
       },
       {
         test: /.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
@@ -133,12 +133,12 @@ module.exports = {
               name: "[name][hash].[ext]",
               limit: 5000, // fonts file size <= 5KB, use 'base64'; else, output svg file
               publicPath: "fonts/",
-              outputPath: "fonts/",
-            },
-          },
-        ],
-      },
-    ],
+              outputPath: "fonts/"
+            }
+          }
+        ]
+      }
+    ]
   },
   optimization: {
     splitChunks: {
@@ -149,19 +149,19 @@ module.exports = {
           chunks: "initial",
           name: "vendor", // 打包后的文件名，任意命名
           // 设置优先级，防止和自定义的公共代码提取时被覆盖，不进行打包
-          priority: 10,
+          priority: 10
         },
         common: {
           // 抽离自己写的公共代码，common这个名字可以随意起
           chunks: "initial",
           name: "common", // 任意命名
-          minSize: 0, // 只要超出0字节就生成一个新包
-        },
-      },
-    },
+          minSize: 0 // 只要超出0字节就生成一个新包
+        }
+      }
+    }
   },
   resolve: {
-    extensions: ["*", ".js", ".jsx"],
+    extensions: ["*", ".js", ".jsx"]
   },
 
   devtool: "cheap-module-source-map",
@@ -174,13 +174,13 @@ module.exports = {
       excludeChunks: [
         "algorithms/algorithms",
         "dashboard/dashboard",
-        "videos/videos",
-      ],
+        "videos/videos"
+      ]
     }),
     MiniCssPlugin,
     // PurifyCssPlugin,
     // StyleLintPlugin,
-    OptimizeCSSPlugin,
+    OptimizeCSSPlugin
     // new LodashWebpackPlugin(),
     // new webpack.ProvidePlugin({    //它是一个插件，所以需要按插件的用法new一个
     //     $:'jquery',    //接收名字:模块名
@@ -189,6 +189,6 @@ module.exports = {
   output: {
     publicPath: "",
     path: path.resolve(__dirname, "dist"),
-    filename: "[name]-bundle.js",
-  },
+    filename: "[name]-bundle.js"
+  }
 };

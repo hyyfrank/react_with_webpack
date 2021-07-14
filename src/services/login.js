@@ -9,9 +9,9 @@ const fetchLoginStaus = (username, password) => {
     type: "LOGIN",
     login: {
       user: username,
-      pass: password,
+      pass: password
     },
-    ctrl_key: -1,
+    ctrl_key: -1
   };
   return axios.post(LoginFetchUrl, postBody);
 };

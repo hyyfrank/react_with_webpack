@@ -1,13 +1,14 @@
-import React, { PureComponent } from 'react';
-import LayoutComponent from '../../common/Layout';
-import AlgorithmComponent from './algorithms';
+import React, { PureComponent } from "react";
+import LayoutComponent from "../../common/Layout";
+import AlgorithmComponent from "./algorithms";
 
 class Algorithms extends PureComponent {
   render() {
-    const id = this.props.match.params.id
-    console.log("current id get from path is: " +id);
+    const { match } = this.props;
+    const { id } = match.params;
+    console.log(`current id get from path is: ${id}`);
     return (
-      <LayoutComponent selectedKey={'algorithms'}>
+      <LayoutComponent selectedKey="algorithms">
         <AlgorithmComponent />
       </LayoutComponent>
     );

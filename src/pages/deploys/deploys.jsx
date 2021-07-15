@@ -444,9 +444,9 @@ class DeploysComponent extends Component {
         dataIndex: "detail",
         key: "detail",
         width: "8%",
-        render: () => {
+        render: (text, record, index) => {
           return (
-            <Link to="#">
+            <Link to={`/deploys/detail/${record.IoTCode}`}>
               <span>查看详情</span>
             </Link>
           );

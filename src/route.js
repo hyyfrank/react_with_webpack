@@ -50,7 +50,7 @@ const myroute = {
       component: Deploys,
       routes: [
         {
-          path: "/videos/monitorarea/:id",
+          path: "/deploys/detail/:IoTCode",
           label: "监控区域",
           exact: true,
           component: Deploys,

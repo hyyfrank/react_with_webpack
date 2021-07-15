@@ -25,7 +25,7 @@ class MachineComponent extends Component {
     const { bottom } = this.state;
     const columns = [
       {
-        title: "机器地址",
+        title: "园区地址",
         dataIndex: "address",
         key: "address",
         width: "15%",
@@ -38,19 +38,19 @@ class MachineComponent extends Component {
         width: "10%",
       },
       {
-        title: "机器IP",
+        title: "服务器IP",
         dataIndex: "ip",
         key: "ip",
         width: "12%",
       },
       {
-        title: "机器端口",
+        title: "服务器端口",
         dataIndex: "port",
         key: "port",
         width: "8%",
       },
       {
-        title: "机器账户",
+        title: "服务器账户",
         dataIndex: "account",
         key: "account",
         width: "10%",

@@ -33,7 +33,8 @@ class AlgorithmComponent extends Component {
         console.log("state error, please retry.");
         this.setState({ tableData: [] });
       } else {
-        this.setState({ tableData: data.response.detail.servicesCFG });
+        console.log(`algorithms data:${JSON.stringify()}`);
+        this.setState({ tableData: data.response.detail[0].servicesCFG });
       }
     });
   }

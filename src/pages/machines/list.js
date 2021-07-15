@@ -1,5 +1,13 @@
 const MachineList = [
   {
+    address: "北京-GTX1080Ti",
+    ip: "cvp.g2link.cn",
+    port: "20044",
+    account: "g2link",
+    type: "在线算法服务器",
+    note: "公网地址：124.204.79.221;映射端口：27010-27020;本地端口跟互联网端口相同",
+  },
+  {
     address: "壹米滴答无锡园区",
     ip: "cvp.g2link.cn",
     port: "20046",
@@ -126,14 +134,6 @@ const MachineList = [
     account: "g2link",
     type: "算法服务器",
     note: "",
-  },
-  {
-    address: "北京-GTX1080Ti",
-    ip: "cvp.g2link.cn",
-    port: "20044",
-    account: "g2link",
-    type: "在线算法服务器",
-    note: "公网地址：124.204.79.221;映射端口：27010-27020;本地端口跟互联网端口相同",
   },
 ];
 

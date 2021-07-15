@@ -6,11 +6,8 @@ const APICONST = {
   DASHBOARD_REQUEST: "/?filename=",
   // ALGORITHM
   ALGORITHM_REQUEST: "/manager",
-  // VIDEO
-
-  // VIDEO DETAIL
-
-  // CONFIG
+  // DEPLOYED SERVICE
+  SERVICE_LIST_REQUEST: "/manager",
 };
 
 export default APICONST;

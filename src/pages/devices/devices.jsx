@@ -168,6 +168,7 @@ class DevicesComponent extends Component {
         title: "设备场景类型",
         dataIndex: "DeviceType",
         key: "DeviceType",
+        width: "12%",
         render: (name) => {
           if (name === "Platform") {
             return <span className={style.platform}>月台车辆分析</span>;
@@ -198,11 +199,13 @@ class DevicesComponent extends Component {
         title: "IoT代码",
         dataIndex: "IoTCode",
         key: "IoTCode",
+        width: "14%",
       },
       {
         title: "抽帧间隔",
         dataIndex: "interval",
         key: "interval",
+        width: "8%",
         render: (text) => {
           return <span>{text}s</span>;
         },
@@ -211,6 +214,7 @@ class DevicesComponent extends Component {
         title: "检测时间",
         dataIndex: "times",
         key: "times",
+        width: "8%",
         render: (text) => {
           return <span>{text}s</span>;
         },
@@ -219,11 +223,13 @@ class DevicesComponent extends Component {
         title: "流地址",
         dataIndex: "url",
         key: "url",
+        ellipsis: true,
       },
       {
         title: "启用状态",
         dataIndex: "enable",
         key: "enable",
+        width: "8%",
         render: (text) => {
           if (text) {
             return <span className={style.enableAlgo}>已启用</span>;
@@ -235,6 +241,7 @@ class DevicesComponent extends Component {
         title: "部署详情",
         dataIndex: "detail",
         key: "detail",
+        width: "8%",
         render: (text) => {
           return (
             <Link to="#">

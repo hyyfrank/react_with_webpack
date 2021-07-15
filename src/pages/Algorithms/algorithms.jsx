@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Table, Breadcrumb } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 
+import { Link } from "react-router-dom";
 import fetchDeployedAlgorithm from "../../services/algorithm";
 import * as style from "../../css/algorithm.less";
 
@@ -44,6 +45,7 @@ class AlgorithmComponent extends Component {
         title: "算法场景名称",
         dataIndex: "name",
         key: "name",
+        width: "16%",
         render: (name) => {
           if (name[0] === "Platform") {
             return <span className={style.platform}>月台车辆分析</span>;
@@ -71,6 +73,7 @@ class AlgorithmComponent extends Component {
         title: "算法类型",
         dataIndex: "Type",
         key: "Type",
+        width: "10%",
         render: (text) => {
           if (text === "ObjectDetection") {
             return <span className={style.objectDetect}>对象检测</span>;
@@ -85,6 +88,7 @@ class AlgorithmComponent extends Component {
         title: "GPU需求",
         dataIndex: "GPUMemory",
         key: "GPUMemory",
+        width: "8%",
         render: (text) => {
           return <span>{text}G</span>;
         },
@@ -93,21 +97,38 @@ class AlgorithmComponent extends Component {
         title: "最大负载",
         dataIndex: "MaxLoad",
         key: "MaxLoad",
+        width: "8%",
       },
       {
         title: "描述",
         dataIndex: "Description",
         key: "Description",
+        ellipsis: true,
       },
       {
         title: "启用状态",
         dataIndex: "Enable",
         key: "Enable",
+        width: "8%",
         render: (text) => {
           if (text) {
             return <span className={style.enableAlgo}>已启用</span>;
           }
           return <span className={style.disableAlgo}>未启用</span>;
+        },
+      },
+      {
+        title: "部署详情",
+        dataIndex: "detail",
+        key: "detail",
+        width: "10%",
+        // eslint-disable-next-line no-unused-vars
+        render: (text) => {
+          return (
+            <Link to="#">
+              <span>查看详情</span>
+            </Link>
+          );
         },
       },
     ];

@@ -175,6 +175,7 @@ class DashboardComponent extends PureComponent {
         });
       }
     });
+    newTableData.reverse();
 
     this.setState({
       tableData: newTableData,

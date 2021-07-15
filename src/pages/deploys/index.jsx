@@ -5,7 +5,7 @@ import DeploysComponent from "./deploys";
 class Deploys extends PureComponent {
   render() {
     return (
-      <LayoutComponent selectedKey="configs">
+      <LayoutComponent selectedKey="deploys">
         <DeploysComponent />
       </LayoutComponent>
     );

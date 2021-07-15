@@ -28,31 +28,44 @@ class MachineComponent extends Component {
         title: "机器地址",
         dataIndex: "address",
         key: "address",
+        width: "15%",
+        ellipsis: true,
+      },
+      {
+        title: "机器类型",
+        dataIndex: "type",
+        key: "type",
+        width: "10%",
       },
       {
         title: "机器IP",
         dataIndex: "ip",
         key: "ip",
+        width: "12%",
       },
       {
         title: "机器端口",
         dataIndex: "port",
         key: "port",
+        width: "8%",
       },
       {
         title: "机器账户",
         dataIndex: "account",
         key: "account",
+        width: "10%",
       },
       {
         title: "备注",
         dataIndex: "note",
         key: "note",
+        ellipsis: true,
       },
       {
         title: "部署详情",
         dataIndex: "detail",
         key: "detail",
+        width: "8%",
         // eslint-disable-next-line no-unused-vars
         render: (text) => {
           return (

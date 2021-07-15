@@ -1,8 +1,9 @@
 import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
 import Algorithms from "./pages/algorithms";
-import Videos from "./pages/videos";
-import Configs from "./pages/configs";
+import Machines from "./pages/machines";
+import Devices from "./pages/devices";
+import Deploys from "./pages/deploys";
 
 const myroute = {
   component: Login,
@@ -11,46 +12,52 @@ const myroute = {
       path: "/",
       label: "登录",
       exact: true,
-      component: Login
+      component: Login,
     },
     {
       path: "/login",
       label: "登录",
       exact: true,
-      component: Login
+      component: Login,
     },
     {
       path: "/dashboard",
       label: "面板",
       exact: true,
-      component: Dashboard
+      component: Dashboard,
     },
     {
       path: "/algorithms",
       label: "算法服务",
       exact: true,
-      component: Algorithms
+      component: Algorithms,
     },
     {
-      path: "/configs",
-      label: "配置服务",
+      path: "/devices",
+      label: "相机管理",
       exact: true,
-      component: Configs
+      component: Devices,
     },
     {
-      path: "/videos",
-      label: "视频服务",
-      component: Videos,
+      path: "/machines",
+      label: "服务器列表",
+      exact: true,
+      component: Machines,
+    },
+    {
+      path: "/deploys",
+      label: "部署列表",
+      component: Deploys,
       routes: [
         {
           path: "/videos/monitorarea/:id",
           label: "监控区域",
           exact: true,
-          component: Algorithms
-        }
-      ]
-    }
-  ]
+          component: Deploys,
+        },
+      ],
+    },
+  ],
 };
 
 export default myroute;

@@ -46,16 +46,19 @@ class SiderComponent extends Component {
           theme="dark"
         >
           <Menu.Item key="dashboard" icon={<PieChartOutlined />}>
-            <NavLink to="/dashboard">Dashboard</NavLink>
+            <NavLink to="/dashboard">算法结果</NavLink>
+          </Menu.Item>
+          <Menu.Item key="deploys" icon={<BgColorsOutlined />}>
+            <NavLink to="/deploys">部署列表</NavLink>
           </Menu.Item>
           <Menu.Item key="algorithms" icon={<DesktopOutlined />}>
-            <NavLink to="/algorithms">Algorithms</NavLink>
+            <NavLink to="/algorithms">算法列表</NavLink>
           </Menu.Item>
-          <Menu.Item key="videos" icon={<ContainerOutlined />}>
-            <NavLink to="/videos">Videos</NavLink>
+          <Menu.Item key="devices" icon={<ContainerOutlined />}>
+            <NavLink to="/devices">相机列表</NavLink>
           </Menu.Item>
-          <Menu.Item key="configs" icon={<BgColorsOutlined />}>
-            <NavLink to="/configs">Configs</NavLink>
+          <Menu.Item key="machines" icon={<ContainerOutlined />}>
+            <NavLink to="/machines">服务器列表</NavLink>
           </Menu.Item>
         </Menu>
         <div className={style.bottomLink}>

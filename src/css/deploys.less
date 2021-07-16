@@ -1,11 +1,95 @@
-.addLayer {
-  display: flex;
-  justify-content: flex-end;
-  margin: 10px 0;
-}
+.mainContent {
+  background-color: white;
+  padding: 10px;
 
-.enableAlgo {
-  color: rgb(5, 218, 5);
-  padding: 2px;
-  border: 1px solid rgb(151, 216, 247);
+  .addLayer {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 0;
+  }
+
+  .enableAlgo {
+    color: rgb(5, 218, 5);
+    padding: 2px;
+    border: 1px solid rgb(151, 216, 247);
+  }
+
+  .tableLayer {
+    .basicInfo {
+      width: 100%;
+
+      .basicTitle {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 1.5715;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .basicInfoLayout {
+        display: flex;
+        justify-content: flex-start;
+        margin-left: 6%;
+
+        .basicSubTitle {
+          color: rgba(0, 0, 0, 0.85);
+          font-weight: bold;
+          font-size: 14px;
+          line-height: 1.5715;
+        }
+
+        .basicSubContent {
+          margin-right: 20px;
+          margin-left: 10px;
+          color: rgba(0, 0, 0, 0.85);
+          font-size: 14px;
+          line-height: 1.5715;
+          word-break: break-word;
+          overflow-wrap: break-word;
+        }
+      }
+    }
+
+    .IOTInfo {
+      width: 100%;
+
+      .iotInfoLayout {
+        display: flex;
+        justify-content: flex-start;
+        margin-left: 6%;
+
+        .editItemLayout {
+          display: flex;
+        }
+
+        .basicSubTitle {
+          color: rgba(0, 0, 0, 0.85);
+          font-weight: bold;
+          font-size: 14px;
+          line-height: 2;
+        }
+
+        .basicSubTitleWithMargin {
+          color: rgba(0, 0, 0, 0.85);
+          font-weight: bold;
+          font-size: 14px;
+          line-height: 2;
+          margin-left: 15px;
+        }
+      }
+    }
+
+    .monitorArea {
+      width: 100%;
+
+      .btnLayer {
+        width: 960px;
+        display: flex;
+        justify-content: flex-end;
+        margin: 10px 15px;
+        margin-left: 6%;
+      }
+    }
+  }
 }

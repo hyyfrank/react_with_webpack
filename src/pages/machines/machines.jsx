@@ -13,7 +13,7 @@ class MachineComponent extends Component {
       bottom: "bottomRight",
       isModalVisible: false,
       isDeleteVisiable: false,
-      tableData: [],
+      tableData: []
     };
   }
 
@@ -29,37 +29,37 @@ class MachineComponent extends Component {
         dataIndex: "address",
         key: "address",
         width: "15%",
-        ellipsis: true,
+        ellipsis: true
       },
       {
         title: "机器类型",
         dataIndex: "type",
         key: "type",
-        width: "10%",
+        width: "10%"
       },
       {
         title: "服务器IP",
         dataIndex: "ip",
         key: "ip",
-        width: "12%",
+        width: "12%"
       },
       {
         title: "服务器端口",
         dataIndex: "port",
         key: "port",
-        width: "8%",
+        width: "10%"
       },
       {
         title: "服务器账户",
         dataIndex: "account",
         key: "account",
-        width: "10%",
+        width: "10%"
       },
       {
         title: "备注",
         dataIndex: "note",
         key: "note",
-        ellipsis: true,
+        ellipsis: true
       },
       {
         title: "部署详情",
@@ -73,8 +73,8 @@ class MachineComponent extends Component {
               <span>查看详情</span>
             </Link>
           );
-        },
-      },
+        }
+      }
     ];
 
     const { tableData } = this.state;

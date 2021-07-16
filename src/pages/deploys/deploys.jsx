@@ -14,7 +14,7 @@ class DeploysComponent extends Component {
       isModalVisible: false,
       isDeleteVisiable: false,
       tableData: [],
-      showStepPage: false,
+      showStepPage: false
     };
   }
 
@@ -25,7 +25,7 @@ class DeploysComponent extends Component {
       ctrl_key:
         sessionStorage.getItem("ctrl_key") == null
           ? -1
-          : Number(sessionStorage.getItem("ctrl_key")),
+          : Number(sessionStorage.getItem("ctrl_key"))
     };
     formData.append("req", JSON.stringify(obj));
 
@@ -46,7 +46,7 @@ class DeploysComponent extends Component {
                     "月台（图像）分析服务，输出车辆靠台和离开事件，包含车牌识别结果",
                   GPUMemory: 5,
                   MaxLoad: 10,
-                  Algorithm: { A1: "Vehicle", A2: "License", A3: "OCR" },
+                  Algorithm: { A1: "Vehicle", A2: "License", A3: "OCR" }
                 },
                 {
                   ID: [1, 2],
@@ -59,8 +59,8 @@ class DeploysComponent extends Component {
                   Algorithm: { A1: "DNVehiclePersonV4" },
                   CheckOBJS: [
                     ["car", "truck", "minibus", "forklift"],
-                    ["person"],
-                  ],
+                    ["person"]
+                  ]
                 },
                 {
                   ID: [4],
@@ -71,7 +71,7 @@ class DeploysComponent extends Component {
                   GPUMemory: 2,
                   MaxLoad: 30,
                   Algorithm: { A1: "PT_V5_Hat" },
-                  Enable: true,
+                  Enable: true
                 },
                 {
                   ID: [3],
@@ -82,7 +82,7 @@ class DeploysComponent extends Component {
                   GPUMemory: 0.7,
                   MaxLoad: 100,
                   Algorithm: { A1: "TF_WareHouse" },
-                  Enable: true,
+                  Enable: true
                 },
                 {
                   ID: [6],
@@ -93,7 +93,7 @@ class DeploysComponent extends Component {
                   GPUMemory: 0.7,
                   MaxLoad: 100,
                   Algorithm: { A1: "PT_3RS_Classify.API" },
-                  Enable: true,
+                  Enable: true
                 },
                 {
                   ID: [7],
@@ -104,7 +104,7 @@ class DeploysComponent extends Component {
                   GPUMemory: 1.1,
                   MaxLoad: 100,
                   Algorithm: { A1: "PT_LED_Detection" },
-                  Enable: true,
+                  Enable: true
                 },
                 {
                   ID: [8],
@@ -115,9 +115,9 @@ class DeploysComponent extends Component {
                   GPUMemory: 0.7,
                   MaxLoad: 100,
                   Algorithm: { A1: "PT_Status_Light_Classify" },
-                  Enable: true,
-                },
-              ],
+                  Enable: true
+                }
+              ]
             },
             {
               WorkCFG: {
@@ -126,14 +126,14 @@ class DeploysComponent extends Component {
                     ID: 8,
                     Description:
                       "消防轩状态指示灯（图像）分析服务，输出监控区域内的状态指示灯的亮暗[占用显存：0.7G]",
-                    CloudURL: "http://124.204.79.221:27017/upload",
+                    CloudURL: "http://124.204.79.221:27017/upload"
                   },
                   {
                     ID: 1,
                     Description:
                       "消防通道/消控室（图像）分析服务，输出通道堵塞和恢复畅通事件/人员离岗和复岗事件[占用显存：4G]",
-                    CloudURL: "http://124.204.79.221:27018/inference",
-                  },
+                    CloudURL: "http://124.204.79.221:27018/inference"
+                  }
                 ],
                 History: 15,
                 VideoSource: [
@@ -149,9 +149,9 @@ class DeploysComponent extends Component {
                       [38, 30],
                       [24, 1050],
                       [1692, 1050],
-                      [1590, 10],
+                      [1590, 10]
                     ],
-                    index2: 0,
+                    index2: 0
                   },
                   {
                     enable: true,
@@ -165,9 +165,9 @@ class DeploysComponent extends Component {
                       [48, 72],
                       [1890, 54],
                       [1892, 1068],
-                      [20, 1068],
+                      [20, 1068]
                     ],
-                    index2: 1,
+                    index2: 1
                   },
                   {
                     enable: true,
@@ -181,9 +181,9 @@ class DeploysComponent extends Component {
                       [89, 244],
                       [180, 230],
                       [801, 632],
-                      [132, 698],
+                      [132, 698]
                     ],
-                    index2: 2,
+                    index2: 2
                   },
                   {
                     enable: true,
@@ -197,9 +197,9 @@ class DeploysComponent extends Component {
                       [672, 1068],
                       [1732, 1060],
                       [1064, 504],
-                      [984, 508],
+                      [984, 508]
                     ],
-                    index2: 3,
+                    index2: 3
                   },
                   {
                     enable: true,
@@ -213,9 +213,9 @@ class DeploysComponent extends Component {
                       [1014, 488],
                       [1458, 618],
                       [1594, 234],
-                      [1434, 200],
+                      [1434, 200]
                     ],
-                    index2: 4,
+                    index2: 4
                   },
                   {
                     enable: true,
@@ -229,9 +229,9 @@ class DeploysComponent extends Component {
                       [10, 10],
                       [100, 10],
                       [100, 100],
-                      [10, 100],
+                      [10, 100]
                     ],
-                    index2: 6,
+                    index2: 6
                   },
                   {
                     enable: true,
@@ -245,35 +245,35 @@ class DeploysComponent extends Component {
                       [10, 10],
                       [100, 10],
                       [100, 100],
-                      [10, 100],
+                      [10, 100]
                     ],
-                    index2: 7,
-                  },
-                ],
-              },
+                    index2: 7
+                  }
+                ]
+              }
             },
             {
               CloudURL: [
                 {
                   name: ["Platform"],
-                  url: "http://124.204.79.221:27018/inference",
+                  url: "http://124.204.79.221:27018/inference"
                 },
                 {
                   name: ["Road/Room"],
-                  url: "http://124.204.79.221:27018/inference",
+                  url: "http://124.204.79.221:27018/inference"
                 },
                 {
                   name: ["WareHouse"],
-                  url: "http://124.204.79.221:27017/upload",
+                  url: "http://124.204.79.221:27017/upload"
                 },
                 {
                   name: ["Instruments"],
-                  url: "http://124.204.79.221:27017/upload",
-                },
-              ],
-            },
-          ],
-        },
+                  url: "http://124.204.79.221:27017/upload"
+                }
+              ]
+            }
+          ]
+        }
       };
       const algoFieldIdMapping = [];
       // const details = data.response.detail;
@@ -285,14 +285,14 @@ class DeploysComponent extends Component {
             algoFieldIdMapping.push({
               ID: item.ID[i],
               algoName: item.name[i],
-              gpu: item.GPUMemory,
+              gpu: item.GPUMemory
             });
           }
         } else {
           algoFieldIdMapping.push({
             ID: item.ID[0],
             algoName: item.name[0],
-            gpu: item.GPUMemory,
+            gpu: item.GPUMemory
           });
         }
       });
@@ -355,7 +355,7 @@ class DeploysComponent extends Component {
         width: "10%",
         render: () => {
           return <span>北京-GTX1080Ti</span>;
-        },
+        }
       },
       {
         title: "算法场景",
@@ -386,7 +386,7 @@ class DeploysComponent extends Component {
             return <span className={style.helmetwork}>状态灯检测</span>;
           }
           return <span>{algoName}</span>;
-        },
+        }
       },
       {
         title: "显存",
@@ -395,13 +395,13 @@ class DeploysComponent extends Component {
         width: "8%",
         render: (text) => {
           return <span>{text}G</span>;
-        },
+        }
       },
       {
         title: "IoT代码",
         dataIndex: "IoTCode",
         key: "IoTCode",
-        width: "14%",
+        width: "14%"
       },
       {
         title: "抽帧间隔",
@@ -410,7 +410,7 @@ class DeploysComponent extends Component {
         width: "8%",
         render: (text) => {
           return <span>{text}s</span>;
-        },
+        }
       },
       {
         title: "检测时间",
@@ -419,13 +419,13 @@ class DeploysComponent extends Component {
         width: "8%",
         render: (text) => {
           return <span>{text}s</span>;
-        },
+        }
       },
       {
         title: "流地址",
         dataIndex: "url",
         key: "url",
-        ellipsis: true,
+        ellipsis: true
       },
       {
         title: "启用状态",
@@ -437,7 +437,7 @@ class DeploysComponent extends Component {
             return <span className={style.enableAlgo}>已启用</span>;
           }
           return <span className={style.disableAlgo}>未启用</span>;
-        },
+        }
       },
       {
         title: "部署详情",
@@ -446,12 +446,14 @@ class DeploysComponent extends Component {
         width: "8%",
         render: (text, record, index) => {
           return (
-            <Link to={`/deploys/detail/${record.IoTCode}`}>
-              <span>查看详情</span>
+            <Link
+              to={`/deploys/detail/${record.IoTCode}?algoName=${record.algoName}&gpu=${record.gpu}`}
+            >
+              <span>编辑</span>
             </Link>
           );
-        },
-      },
+        }
+      }
     ];
 
     const { tableData } = this.state;

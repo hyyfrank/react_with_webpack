@@ -73,11 +73,13 @@ class CanavasComponet extends Component {
     console.log("start to save detail informations.")
   }
   initCanvasWithPloygon(w,h,initImage,monitorArea,ctx){
+    const { fillcolor } = this.state;
     const ratioWidth = w/960;
     const ratioHeight = h/540;
     ctx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
     ctx.beginPath();
     ctx.strokeStyle = "red";
+    ctx.fillStyle = fillcolor;
     if (monitorArea.length > 0) {
       console.log(`init area: ${JSON.stringify(monitorArea)}`);
       ctx.moveTo(
@@ -94,6 +96,7 @@ class CanavasComponet extends Component {
         (monitorArea[0][0])/ratioWidth,
         (monitorArea[0][1])/ratioHeight
       );
+      ctx.fill()
       ctx.stroke();
     }
   }

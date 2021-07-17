@@ -1,25 +1,37 @@
-.monitorCanvas {
-  width: 960px;
-  height: 540px;
-  margin-left: 6%;
-  border: 1px solid green;
-  position: relative;
+.monitorArea {
+  width: 100%;
 
-  .originalCanvas {
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 1;
+  .btnLayer {
     width: 960px;
-    height: 540px;
-    cursor: crosshair;
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 15px;
+    margin-left: 6%;
   }
 
-  .newCanvas {
-    position: absolute;
-    left: 0;
-    top: 0;
+  .monitorCanvas {
     width: 960px;
     height: 540px;
+    margin-left: 6%;
+    border: 1px solid green;
+    position: relative;
+
+    .originalCanvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 1;
+      width: 960px;
+      height: 540px;
+      cursor: crosshair;
+    }
+
+    .newCanvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 960px;
+      height: 540px;
+    }
   }
 }

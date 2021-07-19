@@ -13,7 +13,7 @@ class AlgorithmComponent extends Component {
       bottom: "bottomRight",
       isModalVisible: false,
       isDeleteVisiable: false,
-      tableData: [],
+      tableData: []
     };
   }
 
@@ -24,7 +24,7 @@ class AlgorithmComponent extends Component {
       ctrl_key:
         sessionStorage.getItem("ctrl_key") == null
           ? -1
-          : sessionStorage.getItem("ctrl_key"),
+          : sessionStorage.getItem("ctrl_key")
     };
     formData.append("req", JSON.stringify(obj));
 
@@ -68,7 +68,7 @@ class AlgorithmComponent extends Component {
             );
           }
           return <span>name</span>;
-        },
+        }
       },
       {
         title: "算法类型",
@@ -83,7 +83,7 @@ class AlgorithmComponent extends Component {
             return <span className={style.classification}>分类算法</span>;
           }
           return <span className={style.others}>其他</span>;
-        },
+        }
       },
       {
         title: "GPU需求",
@@ -92,19 +92,19 @@ class AlgorithmComponent extends Component {
         width: "8%",
         render: (text) => {
           return <span>{text}G</span>;
-        },
+        }
       },
       {
         title: "最大负载",
         dataIndex: "MaxLoad",
         key: "MaxLoad",
-        width: "8%",
+        width: "8%"
       },
       {
         title: "描述",
         dataIndex: "Description",
         key: "Description",
-        ellipsis: true,
+        ellipsis: true
       },
       {
         title: "启用状态",
@@ -116,7 +116,7 @@ class AlgorithmComponent extends Component {
             return <span className={style.enableAlgo}>已启用</span>;
           }
           return <span className={style.disableAlgo}>未启用</span>;
-        },
+        }
       },
       {
         title: "部署详情",
@@ -130,8 +130,8 @@ class AlgorithmComponent extends Component {
               <span>查看详情</span>
             </Link>
           );
-        },
-      },
+        }
+      }
     ];
 
     const { tableData } = this.state;

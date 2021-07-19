@@ -1,19 +1,27 @@
 import React, { Component } from "react";
-import { Table, Breadcrumb } from "antd";
+import { Table, Breadcrumb, Button, Modal, Input, Select } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
 import fetchAllDevices from "../../services/devices";
 import * as style from "../../css/devices.less";
 
+const { Option } = Select;
 class DevicesComponent extends Component {
   constructor() {
     super();
+    this.addNewCarema = this.addNewCarema.bind(this);
+    this.onCompleted = this.onCompleted.bind(this);
+    this.onCancel = this.onCancel.bind(this);
+    this.onChouzhenTimeChange = this.onChouzhenTimeChange.bind(this);
+    this.onDetectTimeChange = this.onDetectTimeChange.bind(this);
     this.state = {
       bottom: "bottomRight",
       isModalVisible: false,
       isDeleteVisiable: false,
       tableData: [],
+      isCreateModalVisible: false,
+      algoMapping: []
     };
   }
 
@@ -24,7 +32,7 @@ class DevicesComponent extends Component {
       ctrl_key:
         sessionStorage.getItem("ctrl_key") == null
           ? -1
-          : Number(sessionStorage.getItem("ctrl_key")),
+          : Number(sessionStorage.getItem("ctrl_key"))
     };
     formData.append("req", JSON.stringify(obj));
 
@@ -52,9 +60,9 @@ class DevicesComponent extends Component {
                   [38, 30],
                   [24, 1050],
                   [1692, 1050],
-                  [1590, 10],
+                  [1590, 10]
                 ],
-                index2: 0,
+                index2: 0
               },
               {
                 enable: true,
@@ -68,9 +76,9 @@ class DevicesComponent extends Component {
                   [48, 72],
                   [1890, 54],
                   [1892, 1068],
-                  [20, 1068],
+                  [20, 1068]
                 ],
-                index2: 1,
+                index2: 1
               },
               {
                 enable: true,
@@ -84,9 +92,9 @@ class DevicesComponent extends Component {
                   [89, 244],
                   [180, 230],
                   [801, 632],
-                  [132, 698],
+                  [132, 698]
                 ],
-                index2: 2,
+                index2: 2
               },
               {
                 enable: true,
@@ -100,9 +108,9 @@ class DevicesComponent extends Component {
                   [672, 1068],
                   [1732, 1060],
                   [1064, 504],
-                  [984, 508],
+                  [984, 508]
                 ],
-                index2: 3,
+                index2: 3
               },
               {
                 enable: true,
@@ -116,9 +124,9 @@ class DevicesComponent extends Component {
                   [1014, 488],
                   [1458, 618],
                   [1594, 234],
-                  [1434, 200],
+                  [1434, 200]
                 ],
-                index2: 4,
+                index2: 4
               },
               {
                 enable: true,
@@ -132,9 +140,9 @@ class DevicesComponent extends Component {
                   [10, 10],
                   [100, 10],
                   [100, 100],
-                  [10, 100],
+                  [10, 100]
                 ],
-                index2: 6,
+                index2: 6
               },
               {
                 enable: true,
@@ -148,12 +156,12 @@ class DevicesComponent extends Component {
                   [10, 10],
                   [100, 10],
                   [100, 100],
-                  [10, 100],
+                  [10, 100]
                 ],
-                index2: 7,
-              },
-            ],
-          },
+                index2: 7
+              }
+            ]
+          }
         };
         this.setState({ tableData: mockdata.response.detail });
         // this.setState({ tableData: data.response.detail });
@@ -161,8 +169,37 @@ class DevicesComponent extends Component {
     });
   }
 
+  onCompleted() {
+    console.log("create new carema.");
+    this.setState({
+      isModalVisible: false
+    });
+  }
+
+  onCancel() {
+    console.log("cancel...");
+    this.setState({
+      isModalVisible: false
+    });
+  }
+
+  onChouzhenTimeChange(val) {
+    console.log(`chouzhen time change${val}`);
+  }
+
+  onDetectTimeChange(val) {
+    console.log(`detect time change ${val}`);
+  }
+
+  addNewCarema() {
+    console.log("add new carema...");
+    this.setState({
+      isModalVisible: true
+    });
+  }
+
   render() {
-    const { bottom } = this.state;
+    const { bottom, isModalVisible, algoMapping } = this.state;
     const columns = [
       {
         title: "设备场景类型",
@@ -193,13 +230,13 @@ class DevicesComponent extends Component {
             return <span className={style.helmetwork}>状态灯检测</span>;
           }
           return <span>{name}</span>;
-        },
+        }
       },
       {
         title: "IoT代码",
         dataIndex: "IoTCode",
         key: "IoTCode",
-        width: "14%",
+        width: "14%"
       },
       {
         title: "抽帧间隔",
@@ -208,7 +245,7 @@ class DevicesComponent extends Component {
         width: "8%",
         render: (text) => {
           return <span>{text}s</span>;
-        },
+        }
       },
       {
         title: "检测时间",
@@ -217,13 +254,13 @@ class DevicesComponent extends Component {
         width: "8%",
         render: (text) => {
           return <span>{text}s</span>;
-        },
+        }
       },
       {
         title: "流地址",
         dataIndex: "url",
         key: "url",
-        ellipsis: true,
+        ellipsis: true
       },
       {
         title: "启用状态",
@@ -235,7 +272,7 @@ class DevicesComponent extends Component {
             return <span className={style.enableAlgo}>已启用</span>;
           }
           return <span className={style.disableAlgo}>未启用</span>;
-        },
+        }
       },
       {
         title: "部署详情",
@@ -248,11 +285,19 @@ class DevicesComponent extends Component {
               <span>查看详情</span>
             </Link>
           );
-        },
-      },
+        }
+      }
     ];
 
     const { tableData } = this.state;
+    const algorithmsOptions = [];
+    algoMapping.map((item) => {
+      algorithmsOptions.push(
+        <Option key={item.ID} value={item.ID}>
+          {item.algoName}
+        </Option>
+      );
+    });
     return (
       <div className={style.mainContent}>
         <div className={style.BreadcrumbPart}>
@@ -266,13 +311,109 @@ class DevicesComponent extends Component {
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
-        <div className={style.tableLayer}>
+        <div className={style.contentLayer}>
+          <div className={style.addBtnLayer}>
+            <div className={style.btnStyle}>
+              <Button
+                type="primary"
+                onClick={() => {
+                  this.addNewCarema();
+                }}
+              >
+                新增
+              </Button>
+            </div>
+          </div>
           <Table
             rowKey={(record) => record.name}
             columns={columns}
             pagination={{ position: [bottom] }}
             dataSource={tableData}
           />
+          <Modal
+            title="创建新的相机"
+            visible={isModalVisible}
+            onOk={this.onCompleted}
+            onCancel={this.onCancel}
+          >
+            <div className={style.items}>
+              <div className={style.item}>
+                <div className={style.labelName}>Video:</div>
+                <Input
+                  className={style.inputStyle}
+                  placeholder="rtsp://user:pass@ip"
+                />
+              </div>
+              <div className={style.item}>
+                <div className={style.labelName}>IoTCode:</div>
+                <Input className={style.inputStyle} placeholder="XXXXXXXX" />
+              </div>
+              <div className={style.item}>
+                <div className={style.labelName}>Algorithm:</div>
+                <Select
+                  showSearch
+                  defaultValue=""
+                  style={{ width: 200 }}
+                  placeholder="选择一种算法"
+                  optionFilterProp="children"
+                  onChange={this.onAlgorithmChange}
+                  filterOption={(input, option) =>
+                    option.children
+                      .toLowerCase()
+                      .indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {algorithmsOptions}
+                </Select>
+              </div>
+              <div className={style.item}>
+                <div className={style.labelName}>Interval:</div>
+                <Select
+                  defaultValue="5"
+                  style={{ width: 200 }}
+                  onChange={this.onChouzhenTimeChange}
+                >
+                  <Option value="1">1s</Option>
+                  <Option value="2">2s</Option>
+                  <Option value="3">3s</Option>
+                  <Option value="4">4s</Option>
+                  <Option value="5">5s</Option>
+                  <Option value="6">6s</Option>
+                  <Option value="7">7s</Option>
+                  <Option value="8">8s</Option>
+                  <Option value="15">15s</Option>
+                  <Option value="30">30s</Option>
+                  <Option value="60">60s</Option>
+                  <Option value="300">300s</Option>
+                  <Option value="600">600s</Option>
+                </Select>
+              </div>
+              <div className={style.item}>
+                <div className={style.labelName}>Detect Time:</div>
+                <Select
+                  defaultValue="600"
+                  style={{ width: 200 }}
+                  onChange={this.onDetectTimeChange}
+                >
+                  <Option value="15">15s</Option>
+                  <Option value="30">30s</Option>
+                  <Option value="60">60s</Option>
+                  <Option value="120">120s</Option>
+                  <Option value="180">180s</Option>
+                  <Option value="240">240s</Option>
+                  <Option value="300">300s</Option>
+                  <Option value="360">360s</Option>
+                  <Option value="420">420s</Option>
+                  <Option value="480">480s</Option>
+                  <Option value="540">540s</Option>
+                  <Option value="600">600s</Option>
+                  <Option value="720">720s</Option>
+                  <Option value="900">900s</Option>
+                  <Option value="1800">1800s</Option>
+                </Select>
+              </div>
+            </div>
+          </Modal>
         </div>
       </div>
     );

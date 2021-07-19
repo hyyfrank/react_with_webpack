@@ -1,20 +1,35 @@
 import React, { Component } from "react";
-import { Table, Breadcrumb, Button } from "antd";
+import { Table, Breadcrumb, Button, Select, Divider } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import StepsComponent from "./steps";
 import fetchDeloyedServices from "../../services/deploys";
 import * as style from "../../css/deploys.less";
+
+const { Option } = Select;
 
 class DeploysComponent extends Component {
   constructor() {
     super();
     this.addNewDeploy = this.addNewDeploy.bind(this);
+    this.filterCurrentTable = this.filterCurrentTable.bind(this);
+    this.createOkHandler = this.createOkHandler.bind(this);
+    this.createCancelHandler = this.createCancelHandler.bind(this);
+    this.onAlgorithmChange = this.onAlgorithmChange.bind(this);
+    this.onCaremaChange = this.onCaremaChange.bind(this);
+    this.delRecord = this.delRecord.bind(this);
+    this.resetTableData = this.resetTableData.bind(this);
+
     this.state = {
-      bottom: "bottomRight",
       isModalVisible: false,
       isDeleteVisiable: false,
       tableData: [],
-      showStepPage: false
+      filterData: [],
+      showStepPage: false,
+      algoIdNameMapping: [],
+      bottom: "bottomRight",
+      caremaSelected: "",
+      algoSelected: ""
     };
   }
 
@@ -297,6 +312,7 @@ class DeploysComponent extends Component {
         }
       });
       console.log(`获取所有idMapAlgos:${JSON.stringify(algoFieldIdMapping)}`);
+      this.setState({ algoIdNameMapping: algoFieldIdMapping });
       const idToCaremaMapping = details[1].WorkCFG.VideoSource;
       console.log(
         `获取serviceIdMapCamera:${JSON.stringify(
@@ -336,17 +352,106 @@ class DeploysComponent extends Component {
         console.log("state error, please retry.");
         this.setState({ tableData: [] });
       } else {
-        this.setState({ tableData: tableDataFin });
+        this.setState({
+          tableData: tableDataFin,
+          filterData: tableDataFin
+        });
       }
     });
+  }
+
+  onAlgorithmChange(val) {
+    console.log(`algo selected: ${val}`);
+    this.setState({
+      algoSelected: val || ""
+    });
+  }
+
+  onCaremaChange(val) {
+    console.log(`carema selected: ${val}`);
+    this.setState({
+      caremaSelected: val || ""
+    });
+  }
+
+  delRecord(record) {
+    console.log(`will delete iotID:${JSON.stringify(record)}`);
+  }
+
+  resetTableData() {
+    const { tableData } = this.state;
+    this.setState({
+      filterData: tableData,
+      caremaSelected: "",
+      algoSelected: ""
+    });
+  }
+
+  createCancelHandler() {
+    this.setState({
+      showStepPage: false
+    });
+  }
+
+  filterCurrentTable() {
+    const { caremaSelected, algoSelected, tableData } = this.state;
+    console.log(`before filter is:${caremaSelected},algo is:${algoSelected}`);
+    let filterResult = [];
+    if (caremaSelected === "" && algoSelected === "") {
+      console.log(`both null${JSON.stringify(tableData)}`);
+      this.setState({
+        filterData: tableData
+      });
+    } else if (caremaSelected !== "" && algoSelected === "") {
+      filterResult = tableData.filter((item) => {
+        return item.IoTCode === caremaSelected;
+      });
+      this.setState({
+        filterData: filterResult
+      });
+      console.log(`only carema:${JSON.stringify(filterResult)}`);
+    } else if (caremaSelected === "" && algoSelected !== "") {
+      filterResult = tableData.filter((item) => {
+        return item.serviceID === algoSelected;
+      });
+      this.setState({
+        filterData: filterResult
+      });
+      console.log(`only algos:${JSON.stringify(filterResult)}`);
+    } else {
+      filterResult = tableData.filter((item) => {
+        return (
+          item.serviceID === algoSelected && item.IoTCode === caremaSelected
+        );
+      });
+      this.setState({
+        filterData: filterResult
+      });
+      console.log(`both:${JSON.stringify(filterResult)}`);
+    }
   }
 
   addNewDeploy() {
     this.setState({ showStepPage: true });
   }
 
+  createOkHandler(result) {
+    console.log(`i can get params from steps:${JSON.stringify(result)}`);
+    this.setState({
+      showStepPage: false
+    });
+  }
+
   render() {
-    const { bottom } = this.state;
+    const {
+      bottom,
+      algoIdNameMapping,
+      showStepPage,
+      algoSelected,
+      caremaSelected,
+      filterData,
+      tableData
+    } = this.state;
     const columns = [
       {
         title: "园区",
@@ -440,23 +545,72 @@ class DeploysComponent extends Component {
         }
       },
       {
-        title: "部署详情",
+        title: "操作",
         dataIndex: "detail",
         key: "detail",
-        width: "8%",
+        width: "12%",
         render: (text, record, index) => {
+          const iotID = record.IoTCode;
           return (
-            <Link
-              to={`/deploys/detail/${record.IoTCode}?algoName=${record.algoName}&gpu=${record.gpu}`}
-            >
-              <span>编辑</span>
-            </Link>
+            <div>
+              <Link
+                to={`/deploys/detail/${record.IoTCode}?algoName=${record.algoName}&gpu=${record.gpu}`}
+              >
+                <span>编辑 </span>
+              </Link>
+              <Divider type="vertical" />
+              <Button
+                className={style.delBtn}
+                type="link"
+                onClick={() => {
+                  this.delRecord(iotID);
+                }}
+              >
+                删除
+              </Button>
+            </div>
           );
         }
       }
     ];
 
-    const { tableData } = this.state;
+    // console.log(`tableData:${JSON.stringify(tableData)}`);
+    const caremaList = tableData.map((item) => item.IoTCode);
+    // console.log(`carema items:${JSON.stringify(caremaList)}`);
+
+    const algoList = tableData.map((item) => {
+      return { algoName: item.algoName, serviceID: item.serviceID };
+    });
+    // console.log(`algo items:${JSON.stringify(algoList)}`);
+    const stepParams = {
+      isModalVisible: showStepPage,
+      algoMapping: algoIdNameMapping,
+      caremaMapping: caremaList,
+      createOkHandler: (result) => {
+        this.createOkHandler(result);
+      },
+      createCancelHandler: () => {
+        this.createCancelHandler();
+      }
+    };
+    const caremaOptions = [];
+    const algorithmsOptions = [];
+    caremaList.map((item) => {
+      caremaOptions.push(
+        <Option key={item} value={item}>
+          {item}
+        </Option>
+      );
+    });
+
+    algoIdNameMapping.map((item) => {
+      algorithmsOptions.push(
+        <Option key={item.ID} value={item.ID}>
+          {item.algoName}
+        </Option>
+      );
+    });
+
     return (
       <div className={style.mainContent}>
         <div className={style.BreadcrumbPart}>
@@ -471,22 +625,92 @@ class DeploysComponent extends Component {
           </Breadcrumb>
         </div>
         <div className={style.tableLayer}>
-          <div className={style.addLayer}>
-            <Button
-              type="primary"
-              onClick={() => {
-                this.addNewDeploy();
-              }}
-            >
-              新增
-            </Button>
+          <div className={style.topLayer}>
+            <div className={style.filterBlock}>
+              <div className={style.block}>
+                <span className={style.blockLabel}>相机：</span>
+                <div className={style.blockFilterItem}>
+                  <Select
+                    showSearch
+                    defaultValue=""
+                    value={caremaSelected}
+                    allowClear
+                    style={{ width: 200 }}
+                    placeholder="选择一个相机"
+                    optionFilterProp="children"
+                    onChange={this.onCaremaChange}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {caremaOptions}
+                  </Select>
+                </div>
+              </div>
+              <div className={style.block}>
+                <span className={style.blockLabel}>算法：</span>
+                <div className={style.blockFilterItem}>
+                  <Select
+                    showSearch
+                    defaultValue=""
+                    value={algoSelected}
+                    allowClear
+                    style={{ width: 200 }}
+                    placeholder="选择一种算法"
+                    optionFilterProp="children"
+                    onChange={this.onAlgorithmChange}
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {algorithmsOptions}
+                  </Select>
+                </div>
+              </div>
+              <div className={style.block}>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    this.filterCurrentTable();
+                  }}
+                >
+                  筛选
+                </Button>
+                <Button
+                  type="link"
+                  className={style.filterBtns}
+                  onClick={() => {
+                    this.resetTableData();
+                  }}
+                >
+                  重置
+                </Button>
+              </div>
+            </div>
+            <div>
+              <Button
+                type="primary"
+                onClick={() => {
+                  this.addNewDeploy();
+                }}
+              >
+                新增
+              </Button>
+            </div>
           </div>
           <Table
             rowKey={(record) => record.uid}
             columns={columns}
             pagination={{ position: [bottom] }}
-            dataSource={tableData}
+            dataSource={filterData}
           />
+          <div>
+            {showStepPage ? <StepsComponent {...stepParams} /> : <div />}
+          </div>
         </div>
       </div>
     );

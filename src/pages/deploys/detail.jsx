@@ -4,7 +4,7 @@ import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 
 import fetchAllDevices from "../../services/devices";
 import CanavasComponet from "./area";
-import * as style from "../../css/deploys.less";
+import * as style from "../../css/detail.less";
 
 const { Option } = Select;
 class DeployDetailComponent extends Component {
@@ -336,15 +336,6 @@ class DeployDetailComponent extends Component {
           </div>
           <Divider orientation="left">监控区域</Divider>
           <div className={style.monitorArea}>
-            <div className={style.btnLayer}>
-              <Button type="primary" onClick={this.clearMonitorArea}>
-                重画
-              </Button>
-              <Divider type="vertical" />
-              <Button type="primary" onClick={this.clearMonitorArea}>
-                保存所有
-              </Button>
-            </div>
             <CanavasComponet {...imageInfos} />
           </div>
         </div>

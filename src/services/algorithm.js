@@ -6,8 +6,8 @@ const fetchDeployedAlgorithm = (payload) => {
   const algorithmServiceListURL = BASE_URL + ALGORITHM_REQUEST;
   const config = {
     headers: {
-      "Content-Type": "multipart/form-data",
-    },
+      "Content-Type": "multipart/form-data"
+    }
   };
   return axios.post(algorithmServiceListURL, payload, config);
 };

@@ -8,6 +8,8 @@ const APICONST = {
   ALGORITHM_REQUEST: "/manager",
   // DEPLOYED SERVICE
   SERVICE_LIST_REQUEST: "/manager",
+  // ADD NEW CAREMA
+  ADD_CAREMA: "/manager"
 };
 
 export default APICONST;

@@ -6,8 +6,8 @@ const fetchLoginStaus = (payload) => {
   const LoginFetchUrl = BASE_URL + LOGIN_REQUEST;
   const config = {
     headers: {
-      "Content-Type": "multipart/form-data",
-    },
+      "Content-Type": "multipart/form-data"
+    }
   };
   return axios.post(LoginFetchUrl, payload, config);
 };

@@ -7,7 +7,7 @@ import {
   Button,
   Breadcrumb,
   Image as AntdImage,
-  message,
+  message
 } from "antd";
 import { DownOutlined, HomeOutlined, UserOutlined } from "@ant-design/icons";
 import * as style from "../../css/dashboard.less";
@@ -43,7 +43,7 @@ class DashboardComponent extends PureComponent {
       page: 1, // 默认页
       loadmorePage: 1, // 加载更多的默认页
       shouldLoadMore: true, // 是否到了最后一页，不能加载更多
-      type: "img", // 加载类型，图片或者视频
+      type: "img" // 加载类型，图片或者视频
     };
   }
 
@@ -138,7 +138,7 @@ class DashboardComponent extends PureComponent {
             new Image().src = imageSrc;
             jpgs.push({
               img: imageSrc,
-              info: this.getImageInfos(item),
+              info: this.getImageInfos(item)
             });
           }
         } else {
@@ -146,7 +146,7 @@ class DashboardComponent extends PureComponent {
           new Image().src = imgSrc;
           jpgs.push({
             img: imgSrc,
-            info: this.getImageInfos(item),
+            info: this.getImageInfos(item)
           });
         }
       }
@@ -171,7 +171,7 @@ class DashboardComponent extends PureComponent {
             iotTableData,
             item.eventserial,
             type
-          ),
+          )
         });
       }
     });
@@ -179,7 +179,7 @@ class DashboardComponent extends PureComponent {
 
     this.setState({
       tableData: newTableData,
-      paginationData: newTableData.slice(0, PAGE_SIZE),
+      paginationData: newTableData.slice(0, PAGE_SIZE)
     });
   }
 
@@ -205,7 +205,7 @@ class DashboardComponent extends PureComponent {
       PAGE_SIZE,
       tableData,
       shouldLoadMore,
-      loadmorePage,
+      loadmorePage
     } = this.state;
     const nextPageNum = loadmorePage + 1;
 
@@ -268,14 +268,14 @@ class DashboardComponent extends PureComponent {
 
       // 4. didn't find in cache, so we request via ajax
       this.setState({
-        rawData: [...newOneDayRawData],
+        rawData: [...newOneDayRawData]
       });
 
       // enable carema droplist and set default value.
       this.setState({
         channels: tmpChannels,
         current: tmpChannels[0],
-        caremaStatus: false,
+        caremaStatus: false
       });
     });
   }
@@ -285,7 +285,7 @@ class DashboardComponent extends PureComponent {
     this.setState({
       page: 1,
       loadmorePage: 1,
-      shouldLoadMore: true,
+      shouldLoadMore: true
     });
     this.fetchDataAndFilter(current, type);
   }
@@ -301,7 +301,7 @@ class DashboardComponent extends PureComponent {
       current,
       PAGE_SIZE,
       paginationData,
-      caremaStatus,
+      caremaStatus
     } = this.state;
     const images = [];
     const videos = [];

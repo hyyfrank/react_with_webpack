@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Breadcrumb, Divider, Select, Button } from "antd";
+import { Breadcrumb, Divider, Select } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 
-import fetchAllDevices from "../../services/devices";
+import { fetchAllDevices } from "../../services/devices";
 import CanavasComponet from "./area";
 import * as style from "../../css/detail.less";
 

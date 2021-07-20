@@ -12,37 +12,37 @@ const myroute = {
       path: "/",
       label: "登录",
       exact: true,
-      component: Login,
+      component: Login
     },
     {
       path: "/login",
       label: "登录",
       exact: true,
-      component: Login,
+      component: Login
     },
     {
       path: "/dashboard",
       label: "面板",
       exact: true,
-      component: Dashboard,
+      component: Dashboard
     },
     {
       path: "/algorithms",
       label: "算法服务",
       exact: true,
-      component: Algorithms,
+      component: Algorithms
     },
     {
       path: "/devices",
       label: "相机管理",
       exact: true,
-      component: Devices,
+      component: Devices
     },
     {
       path: "/machines",
       label: "服务器列表",
       exact: true,
-      component: Machines,
+      component: Machines
     },
     {
       path: "/deploys",
@@ -53,11 +53,11 @@ const myroute = {
           path: "/deploys/detail/:IoTCode",
           label: "监控区域",
           exact: true,
-          component: Deploys,
-        },
-      ],
-    },
-  ],
+          component: Deploys
+        }
+      ]
+    }
+  ]
 };
 
 export default myroute;

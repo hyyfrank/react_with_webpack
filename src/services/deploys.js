@@ -6,8 +6,8 @@ const fetchDeloyedServices = (payload) => {
   const deployedServiceListURL = BASE_URL + SERVICE_LIST_REQUEST;
   const config = {
     headers: {
-      "Content-Type": "multipart/form-data",
-    },
+      "Content-Type": "multipart/form-data"
+    }
   };
   return axios.post(deployedServiceListURL, payload, config);
 };

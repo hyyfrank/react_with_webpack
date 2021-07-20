@@ -348,7 +348,8 @@ class DeploysComponent extends Component {
       });
       console.log(`new finalData:${JSON.stringify(tableDataFin)}`);
 
-      if (data.response.state === "error") {
+      if (mockData.response.state === "error") {
+        // if (data.response.state === "error") {
         console.log("state error, please retry.");
         this.setState({ tableData: [] });
       } else {

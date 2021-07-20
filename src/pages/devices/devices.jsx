@@ -726,7 +726,7 @@ class DevicesComponent extends Component {
                 <Select
                   showSearch
                   defaultValue=""
-                  style={{ width: 200 }}
+                  style={{ width: 300 }}
                   placeholder="选择一种算法"
                   optionFilterProp="children"
                   onChange={this.onAlgorithmChange}
@@ -743,7 +743,7 @@ class DevicesComponent extends Component {
                 <div className={style.labelName}>Interval:</div>
                 <Select
                   defaultValue="5"
-                  style={{ width: 200 }}
+                  style={{ width: 300 }}
                   onChange={this.onChouzhenTimeChange}
                 >
                   <Option value="1">1s</Option>
@@ -765,7 +765,7 @@ class DevicesComponent extends Component {
                 <div className={style.labelName}>Detect Time:</div>
                 <Select
                   defaultValue="600"
-                  style={{ width: 200 }}
+                  style={{ width: 300 }}
                   onChange={this.onDetectTimeChange}
                 >
                   <Option value="15">15s</Option>

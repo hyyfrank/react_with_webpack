@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 
 import { Steps, Modal, Divider, Select } from "antd";
-
+import { Link } from "react-router-dom";
 import * as style from "../../css/steps.less";
 
 const { Step } = Steps;
@@ -162,6 +162,9 @@ class StepsComponent extends PureComponent {
                   >
                     {algorithmsOptions}
                   </Select>
+                  <Link className={style.createNew} to="/devices">
+                    <span>没找到算法？点击这里去新建一个 </span>
+                  </Link>
                 </div>
               </div>
               <div className={style.modalItem}>
@@ -183,6 +186,9 @@ class StepsComponent extends PureComponent {
                   >
                     {caremaOptions}
                   </Select>
+                  <Link className={style.createNew} to="/devices">
+                    <span>没找到相机？点击这里去新建一个 </span>
+                  </Link>
                 </div>
               </div>
               <div className={style.modalItem}>

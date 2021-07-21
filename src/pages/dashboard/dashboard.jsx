@@ -248,7 +248,9 @@ class DashboardComponent extends PureComponent {
         .trim()
         .split("\n")
         .forEach((v) => {
-          arrData.push(JSON.parse(v));
+          if (v.length > 0) {
+            arrData.push(JSON.parse(v));
+          }
         });
       const newOneDayRawData = arrData.filter((item) => {
         return item.event !== "DISCONNECTED";

@@ -2,13 +2,19 @@
   background-color: white;
 
   .enableAlgo {
-    color: rgb(5, 218, 5);
-    padding: 2px;
-    border: 1px solid rgb(151, 216, 247);
+    color: #05da05;
+    padding: 6px;
+    border: 1px solid #97d8f7;
+    width: 73px;
+    text-align: center;
   }
 
   .disableAlgo {
-    border: 1px solid grey;
+    color: rgb(106, 165, 241);
+    padding: 6px;
+    border: 1px solid #97d8f7;
+    width: 73px;
+    text-align: center;
   }
 
   .objectDetect {
@@ -17,6 +23,64 @@
 
   .classification {
     color: green;
+  }
+
+  .runningBlock {
+    display: flex;
+
+    .container {
+      position: relative;
+      top: 7px;
+      left: 0;
+      width: 10px;
+      height: 10px;
+
+      .circle {
+        display: inline-block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: green;
+        width: 10px;
+        height: 10px;
+        border-radius: 25px;
+      }
+    }
+
+    .running {
+      margin-left: 5px;
+      color: green;
+    }
+  }
+
+  .disabledBlock {
+    display: flex;
+
+    .container {
+      position: relative;
+      top: 7px;
+      left: 0;
+      width: 10px;
+      height: 10px;
+
+      .circle {
+        display: inline-block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #7b757f;
+        width: 10px;
+        height: 10px;
+        border-radius: 25px;
+      }
+    }
+
+    .running {
+      margin-left: 5px;
+      color: #7b757f;
+    }
   }
 
   .other {

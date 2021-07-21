@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Form, Input, Button, message } from "antd";
 import { Link } from "react-router-dom";
-import fetchLoginStaus from "../../services/login";
+import { fetchLoginStaus, fetchGardenInfos } from "../../services/login";
 import * as style from "../../css/main.less";
+import APICONST from "../../services/APIConst";
 
 export default class LoginComponent extends Component {
   constructor() {
@@ -20,22 +21,50 @@ export default class LoginComponent extends Component {
           type: "LOGIN",
           login: {
             user: data.username,
-            pass: data.password,
+            pass: data.password
           },
-          ctrl_key: -1,
+          ctrl_key: -1
         };
         formData.append("req", JSON.stringify(obj));
         return fetchLoginStaus(formData);
       })
       .then(({ data }) => {
         if (data.response.detail === "OK") {
-          const { history } = this.props;
           sessionStorage.setItem("ctrl_key", data.ctrl_key);
-          history.push("/dashboard");
         } else {
           console.log("login checked failed.");
           message.error("用户名或者密码错误!请重试", 1);
         }
+      })
+      .then(() => {
+        // start to load garden infos.
+        const obj = { type: "SERVER_CONFIG" };
+        return fetchGardenInfos(obj);
+      })
+      .then(({ data }) => {
+        console.log(`get machine infos: ${JSON.stringify(data)}`);
+        const { BASE_URL } = APICONST;
+        const port = BASE_URL.split(":")[2];
+        console.log(`port is:${port}`);
+        const mockPort = 20061;
+        const gardenInfo = data.response.detail.filter((item) => {
+          return item.HttpPort === mockPort;
+        });
+        if (gardenInfo.length > 0) {
+          sessionStorage.setItem(
+            "gardenName",
+            `${gardenInfo[0].DeviceName}[${gardenInfo[0].DeviceType}]`
+          );
+          sessionStorage.setItem(
+            "isAlgoritmServer",
+            gardenInfo[0].DeviceName.indexOf("算法") !== -1
+          );
+          console.log(
+            `isAlgorithm: ${gardenInfo[0].DeviceName.indexOf("算法")}`
+          );
+        }
+        const { history } = this.props;
+        history.push("/dashboard");
       })
       .catch((errorInfo) => {
         console.log("errorInfo ...", errorInfo);
@@ -52,13 +81,13 @@ export default class LoginComponent extends Component {
             name="basic"
             className={style.formContainer}
             labelCol={{
-              span: 8,
+              span: 8
             }}
             wrapperCol={{
-              span: 16,
+              span: 16
             }}
             initialValues={{
-              remember: true,
+              remember: true
             }}
           >
             <Form.Item
@@ -67,8 +96,8 @@ export default class LoginComponent extends Component {
               rules={[
                 {
                   required: true,
-                  message: "Please input your username!",
-                },
+                  message: "Please input your username!"
+                }
               ]}
             >
               <Input />
@@ -80,8 +109,8 @@ export default class LoginComponent extends Component {
               rules={[
                 {
                   required: true,
-                  message: "Please input your password!",
-                },
+                  message: "Please input your password!"
+                }
               ]}
             >
               <Input.Password />
@@ -90,7 +119,7 @@ export default class LoginComponent extends Component {
             <Form.Item
               wrapperCol={{
                 offset: 8,
-                span: 16,
+                span: 16
               }}
             >
               <Button

@@ -11,7 +11,7 @@ export default class HeaderComponent extends Component {
   constructor() {
     super();
     this.state = {
-      collapsed: false,
+      collapsed: false
     };
   }
 
@@ -29,11 +29,14 @@ export default class HeaderComponent extends Component {
         </Menu.Item>
       </Menu>
     );
+    const gardenName = sessionStorage.getItem("gardenName");
+    console.log(`header get garden name : ${gardenName}`);
     return (
       <Header
         className="site-layout-background topdropdown"
         style={{ padding: 0 }}
       >
+        <div className="gardenName">{gardenName} </div>
         <Dropdown overlay={menu} arrow={false}>
           <a
             className="ant-dropdown-link headermenuright"

@@ -11,4 +11,16 @@ const fetchLoginStaus = (payload) => {
   };
   return axios.post(LoginFetchUrl, payload, config);
 };
-export default fetchLoginStaus;
+
+const fetchGardenInfos = (payload) => {
+  const { SERVER_MACHINE_BASE, SERVER_MACHINE_FETCH_MACHINE_INFO } = APICONST;
+  const fetchGardenUrl =
+    SERVER_MACHINE_BASE + SERVER_MACHINE_FETCH_MACHINE_INFO;
+  const config = {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+  return axios.post(fetchGardenUrl, payload, config);
+};
+export { fetchLoginStaus, fetchGardenInfos };

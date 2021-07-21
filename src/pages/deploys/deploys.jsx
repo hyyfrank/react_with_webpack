@@ -292,7 +292,7 @@ class DeploysComponent extends Component {
       };
       const algoFieldIdMapping = [];
       // const details = data.response.detail;
-      const details = mockData.response.detail;
+      const details = data.response.detail;
       // get id and gpu and platform from the all servicesCFG map.
       details[0].servicesCFG.map((item) => {
         if (item.ID.length > 1) {
@@ -348,7 +348,7 @@ class DeploysComponent extends Component {
       });
       console.log(`new finalData:${JSON.stringify(tableDataFin)}`);
 
-      if (mockData.response.state === "error") {
+      if (data.response.state === "error") {
         // if (data.response.state === "error") {
         console.log("state error, please retry.");
         this.setState({ tableData: [] });
@@ -691,16 +691,6 @@ class DeploysComponent extends Component {
                   重置
                 </Button>
               </div>
-            </div>
-            <div>
-              <Button
-                type="primary"
-                onClick={() => {
-                  this.addNewDeploy();
-                }}
-              >
-                新增
-              </Button>
             </div>
           </div>
           <Table

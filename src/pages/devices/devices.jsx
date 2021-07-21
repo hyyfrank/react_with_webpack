@@ -459,7 +459,16 @@ class DevicesComponent extends Component {
         }
       });
       console.log(`获取所有idMapAlgos:${JSON.stringify(algoFieldIdMapping)}`);
-      this.setState({ algoIdNameMapping: algoFieldIdMapping });
+      // 过滤出当前支持的算法，只有支持的算法可以用来选择创建相机
+      const allEnabledServices = details[1].WorkCFG.services;
+      const enableIds = allEnabledServices.map((item) => item.ID);
+      const allEnabledVideo = algoFieldIdMapping.filter((item) => {
+        return enableIds.includes(item.ID);
+      });
+      console.log(
+        `log every enabled video: ${JSON.stringify(allEnabledVideo)}`
+      );
+      this.setState({ algoIdNameMapping: allEnabledVideo });
     });
     // end of fetch
   }
@@ -703,6 +712,7 @@ class DevicesComponent extends Component {
             visible={isModalVisible}
             onOk={this.onCompleted}
             onCancel={this.onCancel}
+            width={550}
           >
             <div className={style.items}>
               <div className={style.item}>
@@ -712,6 +722,7 @@ class DevicesComponent extends Component {
                   placeholder="rtsp://user:pass@ip"
                   onChange={(event) => this.onChangeVideoUrl(event)}
                 />
+                <span className={style.testconnection}>测试连接</span>
               </div>
               <div className={style.item}>
                 <div className={style.labelName}>IoTCode:</div>

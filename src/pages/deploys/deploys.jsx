@@ -561,6 +561,7 @@ class DeploysComponent extends Component {
               </Link>
               <Divider type="vertical" />
               <Button
+                disabled
                 className={style.delBtn}
                 type="link"
                 onClick={() => {

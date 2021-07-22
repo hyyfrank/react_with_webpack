@@ -3,7 +3,11 @@ import { Table, Breadcrumb, Button, Modal, Input, Select, message } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
-import { fetchAllDevices, addNewCarema } from "../../services/devices";
+import {
+  fetchAllDevices,
+  addNewCarema,
+  deleteCarema
+} from "../../services/devices";
 import fetchDeloyedServices from "../../services/deploys";
 
 import * as style from "../../css/devices.less";
@@ -12,6 +16,7 @@ const { Option } = Select;
 class DevicesComponent extends Component {
   constructor() {
     super();
+    this.fetchData = this.fetchData.bind(this);
     this.addNewCarema = this.addNewCarema.bind(this);
     this.onCompleted = this.onCompleted.bind(this);
     this.onCancel = this.onCancel.bind(this);
@@ -20,6 +25,7 @@ class DevicesComponent extends Component {
     this.onChangeVideoUrl = this.onChangeVideoUrl.bind(this);
     this.onChangeIOTCode = this.onChangeIOTCode.bind(this);
     this.onAlgorithmChange = this.onAlgorithmChange.bind(this);
+    this.delCarema = this.delCarema.bind(this);
     this.state = {
       bottom: "bottomRight",
       isModalVisible: false,
@@ -38,6 +44,106 @@ class DevicesComponent extends Component {
   }
 
   componentDidMount() {
+    this.fetchData();
+  }
+
+  onCompleted() {
+    console.log("create new carema.");
+    const {
+      newFieldChouzhenTime,
+      newFieldDetectTime,
+      newFieldVideoUrl,
+      newFieldIotCode,
+      newFieldAlgorithm,
+      newFieldDeviceType
+    } = this.state;
+    const formData = new FormData();
+    const objparms = {
+      type: "SOURCE_ADD",
+      videoCFG: {
+        enable: true,
+        url: newFieldVideoUrl,
+        IoTCode: newFieldIotCode,
+        interval: Number(newFieldChouzhenTime),
+        times: Number(newFieldDetectTime),
+        serviceID: Number(newFieldAlgorithm),
+        DeviceType: newFieldDeviceType,
+        region: [
+          [10, 10],
+          [100, 10],
+          [100, 100],
+          [10, 100]
+        ]
+      },
+      ctrl_key:
+        sessionStorage.getItem("ctrl_key") == null
+          ? -1
+          : Number(sessionStorage.getItem("ctrl_key"))
+    };
+    formData.append("req", JSON.stringify(objparms));
+    console.log(`add carema request parameter:${JSON.stringify(objparms)}`);
+    addNewCarema(formData).then(({ data }) => {
+      console.log(`result from .. add carema.${JSON.stringify(data)}`);
+      if (data.response.state === "OK" && data.response.detail === "OK") {
+        if (
+          data.response.detail === "Service is not ready or NOT supported !!!"
+        ) {
+          message.error("暂时不支持该算法，请重新创建！");
+          return;
+        }
+        message.info("新增成功");
+        this.fetchData();
+      }
+    });
+    this.setState({
+      isModalVisible: false
+    });
+  }
+
+  onCancel() {
+    console.log("cancel...");
+    this.setState({
+      isModalVisible: false
+    });
+  }
+
+  onChouzhenTimeChange(val) {
+    console.log(`chouzhen time change${val}`);
+    this.setState({
+      newFieldChouzhenTime: val
+    });
+  }
+
+  onDetectTimeChange(val) {
+    console.log(`detect time change ${val}`);
+    this.setState({
+      newFieldDetectTime: val
+    });
+  }
+
+  onChangeVideoUrl(event) {
+    if (event && event.target && event.target.value) {
+      const { value } = event.target;
+      this.setState(() => ({ newFieldVideoUrl: value }));
+    }
+  }
+
+  onChangeIOTCode(event) {
+    if (event && event.target && event.target.value) {
+      const { value } = event.target;
+      this.setState(() => ({ newFieldIotCode: value }));
+    }
+  }
+
+  onAlgorithmChange(val) {
+    console.log(`algorithm change${val}`);
+    this.setState({
+      newFieldAlgorithm: val.split(":")[0],
+      newFieldDeviceType: val.split(":")[1]
+    });
+  }
+
+  fetchData() {
     const formData = new FormData();
     const objparms = {
       type: "SOURCE_LIST",
@@ -473,99 +579,31 @@ class DevicesComponent extends Component {
     // end of fetch
   }
 
-  onCompleted() {
-    console.log("create new carema.");
-    const {
-      newFieldChouzhenTime,
-      newFieldDetectTime,
-      newFieldVideoUrl,
-      newFieldIotCode,
-      newFieldAlgorithm,
-      newFieldDeviceType
-    } = this.state;
+  delCarema(record) {
+    console.log(`start to delete carema:${JSON.stringify(record)}`);
     const formData = new FormData();
-    const objparms = {
-      type: "SOURCE_ADD",
-      videoCFG: {
-        enable: true,
-        url: newFieldVideoUrl,
-        IoTCode: newFieldIotCode,
-        interval: newFieldChouzhenTime,
-        times: newFieldDetectTime,
-        serviceID: newFieldAlgorithm,
-        DeviceType: newFieldDeviceType,
-        region: [
-          [10, 10],
-          [100, 10],
-          [100, 100],
-          [10, 100]
-        ]
-      },
+    const obj = {
+      type: "SOURCE_DELETE",
+      videoCFG: record,
       ctrl_key:
         sessionStorage.getItem("ctrl_key") == null
           ? -1
-          : Number(sessionStorage.getItem("ctrl_key"))
+          : sessionStorage.getItem("ctrl_key")
     };
-    formData.append("req", JSON.stringify(objparms));
-    console.log(`add carema request parameter:${JSON.stringify(objparms)}`);
-    addNewCarema(formData).then(({ data }) => {
-      console.log(`result from .. add carema.${JSON.stringify(data)}`);
-      if (data.response.state === "OK") {
-        if (
-          data.response.detail === "Service is not ready or NOT supported !!!"
-        ) {
-          message.error("暂时不支持该算法，请重新创建！");
-          return;
+    formData.append("req", JSON.stringify(obj));
+    deleteCarema(formData)
+      .then(({ data }) => {
+        console.log(`del carema respons: ${JSON.stringify(data)}`);
+        if (data.response.state === "OK" && data.response.detail === "OK") {
+          this.fetchData();
+          message.info("删除成功！");
+        } else {
+          message.error(`删除失败:${JSON.stringify(data.response)}`);
         }
-        message.info("新增成功");
-      }
-    });
-    this.setState({
-      isModalVisible: false
-    });
-  }
-
-  onCancel() {
-    console.log("cancel...");
-    this.setState({
-      isModalVisible: false
-    });
-  }
-
-  onChouzhenTimeChange(val) {
-    console.log(`chouzhen time change${val}`);
-    this.setState({
-      newFieldChouzhenTime: val
-    });
-  }
-
-  onDetectTimeChange(val) {
-    console.log(`detect time change ${val}`);
-    this.setState({
-      newFieldDetectTime: val
-    });
-  }
-
-  onChangeVideoUrl(event) {
-    if (event && event.target && event.target.value) {
-      const { value } = event.target;
-      this.setState(() => ({ newFieldVideoUrl: value }));
-    }
-  }
-
-  onChangeIOTCode(event) {
-    if (event && event.target && event.target.value) {
-      const { value } = event.target;
-      this.setState(() => ({ newFieldIotCode: value }));
-    }
-  }
-
-  onAlgorithmChange(val) {
-    console.log(`algorithm change${val}`);
-    this.setState({
-      newFieldAlgorithm: val.split(":")[0],
-      newFieldDeviceType: val.split(":")[1]
-    });
+      })
+      .catch((e) => {
+        message.error(`删除失败：${JSON.stringify(e)}`);
+      });
   }
 
   addNewCarema() {
@@ -587,8 +625,11 @@ class DevicesComponent extends Component {
           if (name === "Platform") {
             return <span className={style.platform}>月台车辆分析</span>;
           }
-          if (name === "Road" || name === "Room") {
-            return <span className={style.road}>消防通道分析</span>;
+          if (name === "Room") {
+            return <span className={style.road}>消防通道/消控室</span>;
+          }
+          if (name === "Road") {
+            return <span className={style.road}>消防通道/消控室</span>;
           }
           if (name === "WareHouse") {
             return <span className={style.warehouse}>仓库占用分析</span>;
@@ -603,9 +644,17 @@ class DevicesComponent extends Component {
               <span className={style.helmetwork}>工地作业区安全帽分析</span>
             );
           }
-          if (name === "StatusLight") {
-            return <span className={style.helmetwork}>状态灯检测</span>;
+          if (name === "LEDSegmentDisplays") {
+            return <span className={style.led}>变压器LED分析</span>;
           }
+
+          if (name === "SpinSwitch") {
+            return <span className={style.led}>消防轩旋钮分析</span>;
+          }
+          if (name === "StatusLight") {
+            return <span className={style.led}>消防轩状态指示灯分析</span>;
+          }
+
           return <span>{name}</span>;
         }
       },
@@ -656,11 +705,22 @@ class DevicesComponent extends Component {
         dataIndex: "detail",
         key: "detail",
         width: "8%",
-        render: (text) => {
+        render: (text, record, index) => {
+          const url = `/deploys/detail/${record.IoTCode}`;
           return (
-            <Link to="#">
-              <span>查看详情</span>
-            </Link>
+            <div>
+              <Link to={url}>
+                <span>查看</span>
+              </Link>
+              <Button
+                type="link"
+                onClick={() => {
+                  this.delCarema(record);
+                }}
+              >
+                删除
+              </Button>
+            </div>
           );
         }
       }

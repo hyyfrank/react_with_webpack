@@ -22,4 +22,15 @@ const addNewCarema = (payload) => {
   };
   return axios.post(addNewCaremaUrl, payload, config);
 };
-export { fetchAllDevices, addNewCarema };
+
+const deleteCarema = (payload) => {
+  const { BASE_URL, DEL_CAREMA } = APICONST;
+  const DelCaremaUrl = BASE_URL + DEL_CAREMA;
+  const config = {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  };
+  return axios.post(DelCaremaUrl, payload, config);
+};
+export { fetchAllDevices, addNewCarema, deleteCarema };

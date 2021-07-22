@@ -62,25 +62,25 @@ class AlgorithmComponent extends Component {
         const algoTableDatas = AlgorithmList;
 
         const allSupportedService = data.response.detail[0].servicesCFG;
-        const supportedAlgoIds = allSupportedService.map((item) => item.ID);
+        const supportedAlgoIds = allSupportedService
+          .map((item) => item.ID)
+          .flat()
+          .filter((item) => {
+            return item !== 2;
+          });
         console.log(
           `before support algorithms ids: ${JSON.stringify(supportedAlgoIds)}`
         );
         console.log(`before filter: ${JSON.stringify(algoTableDatas)}`);
         const supportDatas = algoTableDatas.filter((item) => {
           for (let i = 0; i < supportedAlgoIds.length; i++) {
-            if (supportedAlgoIds[i].length === 1) {
-              return item.ID.includes(supportedAlgoIds[i][0]);
-            }
-            if (supportedAlgoIds[i].length === 2 && item.ID.length === 2) {
-              return (
-                supportedAlgoIds[i][0] === item.ID[0] &&
-                supportedAlgoIds[i][1] === item.ID[1]
-              );
+            if (item.ID[0] === supportedAlgoIds[i]) {
+              return item;
             }
           }
-          return false;
+          return null;
         });
+        console.log(`step1:${JSON.stringify(supportDatas)}`);
         // flatten the array
         const flatternArray = [];
         supportDatas.map((item) => {
@@ -162,7 +162,8 @@ class AlgorithmComponent extends Component {
               if (item.ID === cloudURLWithId[i].id) {
                 const it = {
                   ...item,
-                  cloudUrl: cloudURLWithId[i].url
+                  cloudUrl: cloudURLWithId[i].url,
+                  name: Array.isArray(item.name) ? item.name[0] : item.name
                 };
                 afterTuozhen.push(it);
               }
@@ -432,7 +433,6 @@ class AlgorithmComponent extends Component {
                   >
                     Deactive
                   </Button>
-                  <Link to="/deploys">Detail</Link>
                 </div>
               );
             }

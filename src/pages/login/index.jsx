@@ -46,9 +46,9 @@ export default class LoginComponent extends Component {
         const { BASE_URL } = APICONST;
         const port = Number(BASE_URL.split(":")[2]);
         console.log(`port is:${port}`);
-        // const mockPort = 20061;
+        const mockPort = 20043;
         const gardenInfo = data.response.detail.filter((item) => {
-          return item.HttpPort === port;
+          return item.HttpPort === mockPort;
         });
         console.log(`get garden info item:${JSON.stringify(gardenInfo)}`);
         if (gardenInfo.length > 0) {

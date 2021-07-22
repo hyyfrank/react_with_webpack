@@ -66,28 +66,25 @@ class AlgorithmComponent extends Component {
         console.log(
           `before support algorithms ids: ${JSON.stringify(supportedAlgoIds)}`
         );
-
+        console.log(`before filter: ${JSON.stringify(algoTableDatas)}`);
         const supportDatas = algoTableDatas.filter((item) => {
           for (let i = 0; i < supportedAlgoIds.length; i++) {
             if (supportedAlgoIds[i].length === 1) {
-              if (item.ID.includes(supportedAlgoIds[i][0])) {
-                return item;
-              }
+              return item.ID.includes(supportedAlgoIds[i][0]);
             }
             if (supportedAlgoIds[i].length === 2 && item.ID.length === 2) {
-              if (
+              return (
                 supportedAlgoIds[i][0] === item.ID[0] &&
                 supportedAlgoIds[i][1] === item.ID[1]
-              )
-                return item;
+              );
             }
           }
-          return null;
+          return false;
         });
         // flatten the array
         const flatternArray = [];
         supportDatas.map((item) => {
-          if (Array.isArray(item.ID)) {
+          if (Array.isArray(item.ID) && item.ID.length === 2) {
             flatternArray.push({
               ...item,
               ID: item.ID[0],
@@ -119,6 +116,7 @@ class AlgorithmComponent extends Component {
 
         // 根据当前是不是脱帧服务器，来处理是不是要显示cloudURL
         const isAlgoritmServer = sessionStorage.getItem("isAlgoritmServer");
+        console.log(`isAlgo:${isAlgoritmServer}`);
         // reframe the cloudURL structure
         let afterTuozhen = [];
         if (isAlgoritmServer === "false") {

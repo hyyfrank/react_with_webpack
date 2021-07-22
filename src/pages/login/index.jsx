@@ -44,12 +44,13 @@ export default class LoginComponent extends Component {
       .then(({ data }) => {
         console.log(`get machine infos: ${JSON.stringify(data)}`);
         const { BASE_URL } = APICONST;
-        const port = BASE_URL.split(":")[2];
+        const port = Number(BASE_URL.split(":")[2]);
         console.log(`port is:${port}`);
-        const mockPort = 20061;
+        // const mockPort = 20061;
         const gardenInfo = data.response.detail.filter((item) => {
-          return item.HttpPort === mockPort;
+          return item.HttpPort === port;
         });
+        console.log(`get garden info item:${JSON.stringify(gardenInfo)}`);
         if (gardenInfo.length > 0) {
           sessionStorage.setItem(
             "gardenName",

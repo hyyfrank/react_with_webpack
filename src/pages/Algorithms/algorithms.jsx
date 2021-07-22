@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Table, Breadcrumb, Tooltip, Button, message, Icon } from "antd";
+import { Table, Breadcrumb, Tooltip, Button, message, Modal } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
-
+import { Link } from "react-router-dom";
 import {
   fetchDeployedAlgorithm,
   addService,
@@ -13,18 +13,37 @@ import AlgorithmList from "./list";
 class AlgorithmComponent extends Component {
   constructor() {
     super();
-
+    this.fetchData = this.fetchData.bind(this);
     this.addService = this.addService.bind(this);
     this.delServiceByID = this.delServiceByID.bind(this);
+    this.onCancel = this.onCancel.bind(this);
+    this.onCompleted = this.onCompleted.bind(this);
     this.state = {
       bottom: "bottomRight",
       isModalVisible: false,
       isDeleteVisiable: false,
-      tableData: []
+      tableData: [],
+      addDataSource: []
     };
   }
 
   componentDidMount() {
+    this.fetchData();
+  }
+
+  onCancel() {
+    this.setState({
+      isModalVisible: false
+    });
+  }
+
+  onCompleted() {
+    this.setState({
+      isModalVisible: false
+    });
+  }
+
+  fetchData() {
     const formData = new FormData();
     const obj = {
       type: "SERVICE_SUPPORT",
@@ -36,194 +55,6 @@ class AlgorithmComponent extends Component {
     formData.append("req", JSON.stringify(obj));
 
     fetchDeployedAlgorithm(formData).then(({ data }) => {
-      const mockData = {
-        type: "SERVICE_SUPPORT",
-        ctrl_key: 1626768377,
-        response: {
-          state: "OK",
-          detail: [
-            {
-              servicesCFG: [
-                {
-                  ID: [1, 2],
-                  name: ["Road", "Room"],
-                  Type: "ObjectDetection",
-                  Description:
-                    "消防通道/消控室（图像）分析服务，输出通道堵塞和恢复畅通事件/人员离岗和复岗事件",
-                  GPUMemory: 4,
-                  MaxLoad: 30,
-                  Algorithm: { A1: "DNVehiclePersonV4" },
-                  CheckOBJS: [
-                    ["car", "truck", "minibus", "forklift"],
-                    ["person"]
-                  ]
-                },
-                {
-                  ID: [7],
-                  name: ["LEDSegmentDisplays"],
-                  Type: "ObjectDetection",
-                  Description:
-                    "变压器LED显示（图像）分析服务，输出监控区域内LED显示字符",
-                  GPUMemory: 1.1,
-                  MaxLoad: 100,
-                  Algorithm: { A1: "PT_LED_Detection" },
-                  Enable: true
-                }
-              ]
-            },
-            {
-              WorkCFG: {
-                services: [
-                  {
-                    ID: 1,
-                    Description:
-                      "消防通道/消控室（图像）分析服务，输出通道堵塞和恢复畅通事件/人员离岗和复岗事件[占用显存：4G]",
-                    CloudURL: "http://124.204.79.221:27018/inference"
-                  },
-                  {
-                    ID: 7,
-                    Description:
-                      "变压器LED显示（图像）分析服务，输出监控区域内LED显示字符[占用显存：1.1G]",
-                    CloudURL: "http://127.0.0.1:27017/upload"
-                  }
-                ],
-                History: 15,
-                VideoSource: [
-                  {
-                    enable: true,
-                    url: "rtsp://admin:a12345678@192.168.55.244",
-                    IoTCode: "c8150300047b",
-                    interval: 4,
-                    times: 15,
-                    serviceID: 7,
-                    DeviceType: "LEDSegmentDisplays",
-                    region: [
-                      [10, 10],
-                      [100, 10],
-                      [100, 100],
-                      [10, 100]
-                    ],
-                    index2: 0
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:a12345678@192.168.1.64",
-                    IoTCode: "22015000271",
-                    interval: 4,
-                    times: 180,
-                    serviceID: 7,
-                    DeviceType: "LEDSegmentDisplays",
-                    region: [
-                      [1858, 1046],
-                      [1862, 28],
-                      [396, 4],
-                      [478, 1062]
-                    ],
-                    index2: 1
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:a12345678@192.168.1.6",
-                    IoTCode: "22015000270",
-                    interval: 4,
-                    times: 600,
-                    serviceID: 7,
-                    DeviceType: "LEDSegmentDisplays",
-                    region: [
-                      [296, 582],
-                      [1308, 316],
-                      [1786, 574],
-                      [1146, 1056]
-                    ],
-                    index2: 2
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:a12345678@192.168.1.111",
-                    IoTCode: "22015000275",
-                    interval: 4,
-                    times: 600,
-                    serviceID: 7,
-                    DeviceType: "LEDSegmentDisplays",
-                    region: [
-                      [253, 210],
-                      [861, 193],
-                      [1206, 542],
-                      [30, 632]
-                    ],
-                    index2: 3
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:a12345678@192.168.1.115",
-                    IoTCode: "22015000279",
-                    interval: 4,
-                    times: 600,
-                    serviceID: 7,
-                    DeviceType: "LEDSegmentDisplays",
-                    region: [
-                      [64, 394],
-                      [1189, 389],
-                      [1232, 702],
-                      [45, 713]
-                    ],
-                    index2: 4
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:a12345678@192.168.1.117",
-                    IoTCode: "22015000274",
-                    interval: 4,
-                    times: 600,
-                    serviceID: 7,
-                    DeviceType: "LEDSegmentDisplays",
-                    region: [
-                      [952, 145],
-                      [1157, 258],
-                      [850, 669],
-                      [193, 346]
-                    ],
-                    index2: 5
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:a12345678@192.168.1.4",
-                    IoTCode: "22015000285",
-                    interval: 4,
-                    times: 600,
-                    serviceID: 7,
-                    DeviceType: "LEDSegmentDisplays",
-                    region: [
-                      [1408, 98],
-                      [1614, 110],
-                      [1882, 890],
-                      [400, 722]
-                    ],
-                    index2: 6
-                  }
-                ]
-              }
-            },
-            {
-              CloudURL: [
-                {
-                  name: ["Platform"],
-                  url: "http://124.204.79.221:27018/inference"
-                },
-                {
-                  name: ["Road/Room"],
-                  url: "http://124.204.79.221:27018/inference"
-                },
-                {
-                  name: ["Instruments"],
-                  url: "http://124.204.79.221:27017/upload"
-                }
-              ]
-            }
-          ]
-        }
-      };
-
       if (data.response.state === "error") {
         console.log("state error, please retry.");
         this.setState({ tableData: [] });
@@ -235,106 +66,154 @@ class AlgorithmComponent extends Component {
         console.log(
           `before support algorithms ids: ${JSON.stringify(supportedAlgoIds)}`
         );
-        for (let i = 0; i < algoTableDatas.length; i++) {
-          for (let j = 0; j < supportedAlgoIds.length; j++) {
-            if (
-              algoTableDatas[i].ID.length === 1 &&
-              supportedAlgoIds[j].length === 1 &&
-              algoTableDatas[i].ID[0] === supportedAlgoIds[j][0]
-            ) {
-              algoTableDatas[i].Enable = "disabled";
-              const id = algoTableDatas[i].ID[0];
-              algoTableDatas[i].ID = id;
+
+        const supportDatas = algoTableDatas.filter((item) => {
+          for (let i = 0; i < supportedAlgoIds.length; i++) {
+            if (supportedAlgoIds[i].length === 1) {
+              if (item.ID.includes(supportedAlgoIds[i][0])) {
+                return item;
+              }
             }
-            if (
-              algoTableDatas[i].ID.length === 2 &&
-              supportedAlgoIds[j].length === 2 &&
-              algoTableDatas[i].ID[0] === supportedAlgoIds[j][0] &&
-              algoTableDatas[i].ID[1] === supportedAlgoIds[j][1]
-            ) {
-              algoTableDatas[i].Enable = "disabled";
+            if (supportedAlgoIds[i].length === 2 && item.ID.length === 2) {
+              if (
+                supportedAlgoIds[i][0] === item.ID[0] &&
+                supportedAlgoIds[i][1] === item.ID[1]
+              )
+                return item;
             }
           }
-        }
+          return null;
+        });
+        // flatten the array
+        const flatternArray = [];
+        supportDatas.map((item) => {
+          if (Array.isArray(item.ID)) {
+            flatternArray.push({
+              ...item,
+              ID: item.ID[0],
+              name: item.name[0]
+            });
+            flatternArray.push({
+              ...item,
+              ID: item.ID[1],
+              name: item.name[1]
+            });
+          } else {
+            flatternArray.push({
+              ...item,
+              ID: item.ID[0]
+            });
+          }
+        });
+
+        const supportDataList = flatternArray.map((item) => {
+          return {
+            ...item,
+            Enable: "disabled",
+            cloudUrl: ""
+          };
+        });
         console.log(
-          `after support algorithms ids: ${JSON.stringify(algoTableDatas)}`
+          `after support algorithms ids: ${JSON.stringify(supportDataList)}`
         );
+
+        // 根据当前是不是脱帧服务器，来处理是不是要显示cloudURL
+        const isAlgoritmServer = sessionStorage.getItem("isAlgoritmServer");
+        // reframe the cloudURL structure
+        let afterTuozhen = [];
+        if (isAlgoritmServer === "false") {
+          const cloudURL = data.response.detail[2].CloudURL;
+          const cloudURLWithId = [];
+          cloudURL.map((item) => {
+            const cloudObj = { ...item, id: -1, itemName: "" };
+            if (item.name[0] === "Platform") {
+              cloudObj.id = 0;
+              cloudObj.itemName = "Platform";
+              cloudURLWithId.push(cloudObj);
+              return;
+            }
+            if (item.name[0] === "WareHouse") {
+              cloudObj.id = 3;
+              cloudObj.itemName = "WareHouse";
+              cloudURLWithId.push(cloudObj);
+              return;
+            }
+            // TODO: Need to add other condition
+            if (item.name[0] === "Instruments") {
+              cloudObj.id = 7;
+              cloudObj.itemName = "Instruments";
+              cloudURLWithId.push(cloudObj);
+              return;
+            }
+
+            if (item.name[0] === "Road/Room") {
+              cloudObj.id = 1;
+              cloudObj.itemName = "Road";
+              cloudURLWithId.push(cloudObj);
+              const cloudObjTmp = { ...item, id: -1, itemName: "" };
+              cloudObjTmp.id = 2;
+              cloudObjTmp.itemName = "Room";
+              cloudURLWithId.push(cloudObjTmp);
+            }
+          });
+
+          console.log(`cloudurl with id: ${JSON.stringify(cloudURLWithId)}`);
+          // add cloud url to the data
+          supportDataList.map((item) => {
+            for (let i = 0; i < cloudURLWithId.length; i++) {
+              if (item.ID === cloudURLWithId[i].id) {
+                const it = {
+                  ...item,
+                  cloudUrl: cloudURLWithId[i].url
+                };
+                afterTuozhen.push(it);
+              }
+            }
+          });
+        } else {
+          afterTuozhen = [...supportDataList];
+        }
+
+        console.log(`after tuozhen:${JSON.stringify(afterTuozhen)}`);
+
+        // enable id setting
 
         const allEnabledServices = data.response.detail[1].WorkCFG.services;
         const enableIds = allEnabledServices.map((item) => item.ID);
         console.log(`enabled ids: ${JSON.stringify(enableIds)}`);
 
-        for (let i = 0; i < algoTableDatas.length; i++) {
-          for (let j = 0; j < enableIds.length; j++) {
-            if (
-              Array.isArray(algoTableDatas[i].ID) &&
-              algoTableDatas[i].ID.includes(enableIds[j])
-            ) {
-              algoTableDatas[i].Enable = "enabled";
-              algoTableDatas[i].ID = enableIds[j];
+        const enabledDataList = afterTuozhen.map((item) => {
+          for (let i = 0; i < enableIds.length; i++) {
+            if (item.ID === enableIds[i]) {
+              return {
+                ...item,
+                Enable: "enabled"
+              };
             }
           }
-        }
-        console.log(`after enable filter: ${JSON.stringify(algoTableDatas)}`);
-        const isAlgoritmServer = sessionStorage.getItem("isAlgoritmServer");
-        // reframe the cloudURL structure
-        const finalResult = [];
-        if (isAlgoritmServer === "false") {
-          const cloudURL = data.response.detail[2].CloudURL;
-          const cloudURLWithId = [];
-          cloudURL.map((item) => {
-            const cloudObj = { ...item, id: -1 };
-            if (item.name[0] === "Platform") {
-              cloudObj.id = 0;
-            }
-            if (item.name[0] === "Road/Room") {
-              cloudObj.id = 1; // or set it to 2, becasue 1,2 will map to road/room
-            }
-            if (item.name[0] === "WareHouse") {
-              cloudObj.id = 3;
-            }
-            // TODO: Need to add other condition
-            if (item.name[0] === "Instruments") {
-              cloudObj.id = 7;
-            }
+          return item;
+        });
 
-            cloudURLWithId.push(cloudObj);
-          });
+        const enabledNewDataList = enabledDataList.filter((item) => {
+          if (item.ID === 2) {
+            return item.Enable !== "disabled";
+          }
+          return true;
+        });
+        console.log(`去掉重复：${JSON.stringify(enabledNewDataList)}`);
+        // end of enable id setting
 
-          // add cloud url to the data
-          for (let i = 0; i < algoTableDatas.length; i++) {
-            const tmpItem = { ...algoTableDatas[i], cloudUrl: "" };
-            for (let j = 0; j < cloudURLWithId.length; j++) {
-              if (algoTableDatas[i].ID.includes(cloudURLWithId[j].id)) {
-                tmpItem.cloudUrl = cloudURLWithId[j].url;
-              }
-            }
-            finalResult.push(tmpItem);
-          }
-        } else {
-          for (let i = 0; i < algoTableDatas.length; i++) {
-            finalResult.push(algoTableDatas[i]);
-          }
-        }
         console.log(
           `final data for algo: ${JSON.stringify(
-            finalResult
-              .filter((item) => {
-                return item.Enable !== "unsupported";
-              })
-              .sort((i1, i2) => {
-                return i1.Enable.length - i2.Enable.length;
-              })
+            enabledNewDataList.sort((i1, i2) => {
+              return i1.Enable.length - i2.Enable.length;
+            })
           )}`
         );
         this.setState({
-          tableData: finalResult
-            .filter((item) => {
-              return item.Enable !== "unsupported";
-            })
-            .sort((i1, i2) => {
-              return i1.Enable.length - i2.Enable.length;
-            })
+          tableData: enabledNewDataList.sort((i1, i2) => {
+            return i1.Enable.length - i2.Enable.length;
+          })
         });
       }
     });
@@ -367,14 +246,22 @@ class AlgorithmComponent extends Component {
           : sessionStorage.getItem("ctrl_key")
     };
     formData.append("req", JSON.stringify(obj));
-    addService(formData).then(({ data }) => {
-      console.log(`get data result after add source.${JSON.stringify(data)}`);
-      if (data.response.state === "OK") {
-        message.info("新增算法成功，激活成功！");
-      } else {
-        message.error(`激活算法失败，原因:[${data.response.state}]`);
-      }
-    });
+    addService(formData)
+      .then(({ data }) => {
+        console.log(`get data result after add source.${JSON.stringify(data)}`);
+        if (data.response.state === "OK" && data.response.detail === "OK") {
+          message.info("新增算法成功，激活成功！");
+          this.fetchData();
+        } else if (data.response.detail.indexOf("Exist") !== -1) {
+          message.error("服务已经存在！激活失败，请联系管理员！");
+        } else {
+          message.error(`激活算法失败，原因:[${data.response.state}]`);
+        }
+      })
+      .catch((e) => {
+        console.log(`add service catch error:${JSON.stringify(e)}`);
+        message.error(e.message);
+      });
   }
 
   delServiceByID(record) {
@@ -390,16 +277,26 @@ class AlgorithmComponent extends Component {
           : sessionStorage.getItem("ctrl_key")
     };
     formData.append("req", JSON.stringify(obj));
-    delService(formData).then(({ data }) => {
-      console.log(`get data result after DEL source.${JSON.stringify(data)}`);
-      if (data.response.state === "OK") {
-        message.info("删除算法成功，算法变为未激活状态，可重新激活！");
-      } else {
-        message.error(
-          `删除算法失败，原因:[${data.response.detail || "找不到detail字段"}]`
-        );
-      }
-    });
+    delService(formData)
+      .then(({ data }) => {
+        console.log(`get data result after DEL source.${JSON.stringify(data)}`);
+        if (data.response.state === "OK" && data.response.detail === "OK") {
+          message.info("删除算法成功，算法变为未激活状态，可重新激活！");
+          this.fetchData();
+        } else if (
+          data.response.detail === "Please Delete the Video Source First"
+        ) {
+          message.error(data.response.detail);
+        } else {
+          message.error(
+            `删除算法失败，原因:[${data.response.detail || "找不到detail字段"}]`
+          );
+        }
+      })
+      .catch((e) => {
+        console.log(`del service catch error:${JSON.stringify(e)}`);
+        message.error(e.message);
+      });
   }
 
   render() {
@@ -412,40 +309,45 @@ class AlgorithmComponent extends Component {
           title: "算法场景名称",
           dataIndex: "name",
           key: "name",
-          width: "16%",
+          width: "12%",
+          ellipsis: true,
           render: (name) => {
-            if (name[0] === "Platform") {
+            if (name === "Platform") {
               return <span className={style.platform}>月台车辆分析</span>;
             }
-            if (name[0] === "Road" && name[1] === "Room") {
-              return <span className={style.road}>消防通道分析</span>;
+            if (name === "Room") {
+              return <span className={style.road}>消防通道/消控室</span>;
             }
-            if (name[0] === "WareHouse") {
+            if (name === "Road") {
+              return <span className={style.road}>消防通道/消控室</span>;
+            }
+            if (name === "WareHouse") {
               return <span className={style.warehouse}>仓库占用分析</span>;
             }
-            if (name[0] === "HelmetEntrance") {
+            if (name === "HelmetEntrance") {
               return (
                 <span className={style.helmetentrance}>
                   工地进出口安全帽分析
                 </span>
               );
             }
-            if (name[0] === "HelmetWork") {
+            if (name === "HelmetWork") {
               return (
                 <span className={style.helmetwork}>工地作业区安全帽分析</span>
               );
             }
-            if (name[0] === "LEDSegmentDisplays") {
+            if (name === "LEDSegmentDisplays") {
               return <span className={style.led}>变压器LED分析</span>;
             }
-            if (name[0] === "SpinSwitch") {
+
+            if (name === "SpinSwitch") {
               return <span className={style.led}>消防轩旋钮分析</span>;
             }
-            if (name[0] === "StatusLight") {
+            if (name === "StatusLight") {
               return <span className={style.led}>消防轩状态指示灯分析</span>;
             }
 
-            return <span>{name[0]}</span>;
+            return <span>{name}</span>;
           }
         },
         {
@@ -510,42 +412,36 @@ class AlgorithmComponent extends Component {
                 </div>
               );
             }
-            if (text === "enabled") {
-              return (
-                <div className={style.runningBlock}>
-                  <div className={style.container}>
-                    <span className={style.circle} />
-                  </div>
-                  <span className={style.running}>running</span>
-                </div>
-              );
-            }
+            return null;
           }
         },
         {
           title: "操作",
           dataIndex: "Enable",
           key: "operation",
-          width: "9%",
+          width: "12%",
           sorter: (a, b) => b.Enable.length - a.Enable.length,
           sortDirections: ["descend"],
           render: (text, record) => {
             if (text === "enabled") {
               return (
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    this.delServiceByID(record);
-                  }}
-                >
-                  Deactive
-                </Button>
+                <div>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      this.delServiceByID(record);
+                    }}
+                  >
+                    Deactive
+                  </Button>
+                  <Link to="/deploys">Detail</Link>
+                </div>
               );
             }
             if (text === "disabled") {
               return (
                 <Button
-                  type="primary"
+                  type="link"
                   onClick={() => {
                     this.addService(record);
                   }}
@@ -561,12 +457,13 @@ class AlgorithmComponent extends Component {
                   title="请联系管理员启用该算法"
                   arrowPointAtCenter
                 >
-                  <Button type="primary" disabled>
+                  <Button type="link" disabled>
                     Unsupported
                   </Button>
                 </Tooltip>
               );
             }
+            return null;
           }
         }
       ];
@@ -579,39 +476,42 @@ class AlgorithmComponent extends Component {
           width: "12%",
           ellipsis: true,
           render: (name) => {
-            if (name[0] === "Platform") {
+            if (name === "Platform") {
               return <span className={style.platform}>月台车辆分析</span>;
             }
-            if (name[0] === "Road" && name[1] === "Room") {
-              return <span className={style.road}>消防通道分析</span>;
+            if (name === "Room") {
+              return <span className={style.road}>消防通道/消控室</span>;
             }
-            if (name[0] === "WareHouse") {
+            if (name === "Road") {
+              return <span className={style.road}>消防通道/消控室</span>;
+            }
+            if (name === "WareHouse") {
               return <span className={style.warehouse}>仓库占用分析</span>;
             }
-            if (name[0] === "HelmetEntrance") {
+            if (name === "HelmetEntrance") {
               return (
                 <span className={style.helmetentrance}>
                   工地进出口安全帽分析
                 </span>
               );
             }
-            if (name[0] === "HelmetWork") {
+            if (name === "HelmetWork") {
               return (
                 <span className={style.helmetwork}>工地作业区安全帽分析</span>
               );
             }
-            if (name[0] === "LEDSegmentDisplays") {
+            if (name === "LEDSegmentDisplays") {
               return <span className={style.led}>变压器LED分析</span>;
             }
 
-            if (name[0] === "SpinSwitch") {
+            if (name === "SpinSwitch") {
               return <span className={style.led}>消防轩旋钮分析</span>;
             }
-            if (name[0] === "StatusLight") {
+            if (name === "StatusLight") {
               return <span className={style.led}>消防轩状态指示灯分析</span>;
             }
 
-            return <span>{name[0]}</span>;
+            return <span>{name}</span>;
           }
         },
         {
@@ -683,32 +583,23 @@ class AlgorithmComponent extends Component {
                 </div>
               );
             }
-            if (text === "enabled") {
-              return (
-                <div className={style.runningBlock}>
-                  <div className={style.container}>
-                    <span className={style.circle} />
-                  </div>
-                  <span className={style.running}>running</span>
-                </div>
-              );
-            }
+            return null;
           }
         },
         {
           title: "操作",
           dataIndex: "Enable",
           key: "operation",
-          width: "9%",
+          width: "12%",
           sorter: (a, b) => b.Enable.length - a.Enable.length,
           sortDirections: ["descend"],
           render: (text, record) => {
             if (text === "enabled") {
               return (
                 <Button
-                  type="primary"
+                  type="link"
                   onClick={() => {
-                    this.delService(record);
+                    this.delServiceByID(record);
                   }}
                 >
                   Deactive
@@ -718,7 +609,7 @@ class AlgorithmComponent extends Component {
             if (text === "disabled") {
               return (
                 <Button
-                  type="primary"
+                  type="link"
                   onClick={() => {
                     this.addService(record);
                   }}
@@ -740,12 +631,13 @@ class AlgorithmComponent extends Component {
                 </Tooltip>
               );
             }
+            return null;
           }
         }
       ];
     }
 
-    const { tableData } = this.state;
+    const { tableData, isModalVisible } = this.state;
     return (
       <div className={style.mainContent}>
         <div className={style.BreadcrumbPart}>
@@ -760,12 +652,33 @@ class AlgorithmComponent extends Component {
           </Breadcrumb>
         </div>
         <div className={style.tableLayer}>
+          <div className={style.addBtnLayer}>
+            <Button
+              type="primary"
+              className={style.btnStyle}
+              onClick={() => {
+                this.setState({
+                  isModalVisible: true
+                });
+              }}
+            >
+              新增
+            </Button>
+          </div>
           <Table
             rowKey={(record) => record.name}
             columns={columns}
             pagination={{ position: [bottom] }}
             dataSource={tableData}
           />
+          <Modal
+            title="新增算法(激活)"
+            visible={isModalVisible}
+            onOk={this.onCompleted}
+            onCancel={this.onCancel}
+          >
+            激活算法
+          </Modal>
         </div>
       </div>
     );

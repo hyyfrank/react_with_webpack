@@ -8,7 +8,10 @@ import {
   addNewCarema,
   deleteCarema
 } from "../../services/devices";
-import fetchDeloyedServices from "../../services/deploys";
+import {
+  fetchServiceSupportList,
+  fetchServiceList
+} from "../../services/deploys";
 
 import * as style from "../../css/devices.less";
 
@@ -297,14 +300,259 @@ class DevicesComponent extends Component {
     };
     formDataAlgo.append("req", JSON.stringify(obj));
 
-    fetchDeloyedServices(formDataAlgo).then(({ data }) => {
-      const mockData = {
-        type: "SERVICE_SUPPORT",
-        ctrl_key: 1626329504,
-        response: {
-          state: "OK",
-          detail: [
-            {
+    fetchServiceSupportList()
+      .then(({ data }) => {
+        const mockDataZhenServer = {
+          type: "SERVICE_SUPPORT",
+          ctrl_key: 1626329504,
+          response: {
+            state: "OK",
+            detail: [
+              {
+                servicesCFG: [
+                  {
+                    ID: [0],
+                    name: ["Platform"],
+                    Type: "ObjectDetection",
+                    Description:
+                      "月台（图像）分析服务，输出车辆靠台和离开事件，包含车牌识别结果",
+                    GPUMemory: 5,
+                    MaxLoad: 10,
+                    Algorithm: { A1: "Vehicle", A2: "License", A3: "OCR" }
+                  },
+                  {
+                    ID: [1, 2],
+                    name: ["Road", "Room"],
+                    Type: "ObjectDetection",
+                    Description:
+                      "消防通道/消控室（图像）分析服务，输出通道堵塞和恢复畅通事件/人员离岗和复岗事件",
+                    GPUMemory: 4,
+                    MaxLoad: 30,
+                    Algorithm: { A1: "DNVehiclePersonV4" },
+                    CheckOBJS: [
+                      ["car", "truck", "minibus", "forklift"],
+                      ["person"]
+                    ]
+                  },
+                  {
+                    ID: [4],
+                    name: ["HelmetEntrance"],
+                    Type: "ObjectDetection",
+                    Description:
+                      "工地进出口未戴安全帽/人员聚集（图像）分析服务，输出监控区域没戴安全帽以及聚集情况",
+                    GPUMemory: 2,
+                    MaxLoad: 30,
+                    Algorithm: { A1: "PT_V5_Hat" },
+                    Enable: true
+                  },
+                  {
+                    ID: [3],
+                    name: ["WareHouse"],
+                    Type: "Classification",
+                    Description:
+                      "仓库内仓位占用（图像）分析服务，输出仓位占用和空闲事件",
+                    GPUMemory: 0.7,
+                    MaxLoad: 100,
+                    Algorithm: { A1: "TF_WareHouse" },
+                    Enable: true
+                  },
+                  {
+                    ID: [6],
+                    name: ["SpinSwitch"],
+                    Type: "Classification",
+                    Description:
+                      "消防轩旋钮开关（图像）分析服务，输出监控区域内旋钮开关的旋钮方向",
+                    GPUMemory: 0.7,
+                    MaxLoad: 100,
+                    Algorithm: { A1: "PT_3RS_Classify.API" },
+                    Enable: true
+                  },
+                  {
+                    ID: [7],
+                    name: ["LEDSegmentDisplays"],
+                    Type: "Detection",
+                    Description:
+                      "变压器LED显示（图像）分析服务，输出监控区域内LED显示字符",
+                    GPUMemory: 1.1,
+                    MaxLoad: 100,
+                    Algorithm: { A1: "PT_LED_Detection" },
+                    Enable: true
+                  },
+                  {
+                    ID: [8],
+                    name: ["StatusLight"],
+                    Type: "Classification",
+                    Description:
+                      "消防轩状态指示灯（图像）分析服务，输出监控区域内的状态指示灯的亮暗",
+                    GPUMemory: 0.7,
+                    MaxLoad: 100,
+                    Algorithm: { A1: "PT_Status_Light_Classify" },
+                    Enable: true
+                  }
+                ]
+              },
+              {
+                WorkCFG: {
+                  services: [
+                    {
+                      ID: 8,
+                      Description:
+                        "消防轩状态指示灯（图像）分析服务，输出监控区域内的状态指示灯的亮暗[占用显存：0.7G]",
+                      CloudURL: "http://124.204.79.221:27017/upload"
+                    },
+                    {
+                      ID: 1,
+                      Description:
+                        "消防通道/消控室（图像）分析服务，输出通道堵塞和恢复畅通事件/人员离岗和复岗事件[占用显存：4G]",
+                      CloudURL: "http://124.204.79.221:27018/inference"
+                    }
+                  ],
+                  History: 15,
+                  VideoSource: [
+                    {
+                      enable: true,
+                      url: "rtsp://admin:plsfd123@192.168.2.56",
+                      IoTCode: "21097000661",
+                      interval: 5,
+                      times: 600,
+                      serviceID: 2,
+                      DeviceType: "Room",
+                      region: [
+                        [38, 30],
+                        [24, 1050],
+                        [1692, 1050],
+                        [1590, 10]
+                      ],
+                      index2: 0
+                    },
+                    {
+                      enable: true,
+                      url: "rtsp://admin:plsfd123@192.168.2.50",
+                      IoTCode: "21097000648",
+                      interval: 5,
+                      times: 600,
+                      serviceID: 2,
+                      DeviceType: "Room",
+                      region: [
+                        [48, 72],
+                        [1890, 54],
+                        [1892, 1068],
+                        [20, 1068]
+                      ],
+                      index2: 1
+                    },
+                    {
+                      enable: true,
+                      url: "rtsp://admin:plsfd123@192.168.2.25:554/cam/realmonitor?channel=1&subtype=0",
+                      IoTCode: "21097000651",
+                      interval: 5,
+                      times: 600,
+                      serviceID: 1,
+                      DeviceType: "Road",
+                      region: [
+                        [89, 244],
+                        [180, 230],
+                        [801, 632],
+                        [132, 698]
+                      ],
+                      index2: 2
+                    },
+                    {
+                      enable: true,
+                      url: "rtsp://admin:plsfd123@192.168.2.52:554/cam/realmonitor?channel=1&subtype=0",
+                      IoTCode: "XXXXXXXXC041",
+                      interval: 5,
+                      times: 600,
+                      serviceID: 1,
+                      DeviceType: "Road",
+                      region: [
+                        [672, 1068],
+                        [1732, 1060],
+                        [1064, 504],
+                        [984, 508]
+                      ],
+                      index2: 3
+                    },
+                    {
+                      enable: true,
+                      url: "rtsp://admin:plsfd123@192.168.2.139",
+                      IoTCode: "21097000654",
+                      interval: 5,
+                      times: 600,
+                      serviceID: 1,
+                      DeviceType: "Road",
+                      region: [
+                        [1014, 488],
+                        [1458, 618],
+                        [1594, 234],
+                        [1434, 200]
+                      ],
+                      index2: 4
+                    },
+                    {
+                      enable: true,
+                      url: "rtsp://admin:plsfd123@192.168.2.198",
+                      IoTCode: "21097000662",
+                      interval: 5,
+                      times: 600,
+                      serviceID: 8,
+                      DeviceType: "StatusLight",
+                      region: [
+                        [10, 10],
+                        [100, 10],
+                        [100, 100],
+                        [10, 100]
+                      ],
+                      index2: 6
+                    },
+                    {
+                      enable: true,
+                      url: "rtsp://admin:plsfd123@192.168.2.199",
+                      IoTCode: "21097000663",
+                      interval: 5,
+                      times: 600,
+                      serviceID: 8,
+                      DeviceType: "StatusLight",
+                      region: [
+                        [10, 10],
+                        [100, 10],
+                        [100, 100],
+                        [10, 100]
+                      ],
+                      index2: 7
+                    }
+                  ]
+                }
+              },
+              {
+                CloudURL: [
+                  {
+                    name: ["Platform"],
+                    url: "http://124.204.79.221:27018/inference"
+                  },
+                  {
+                    name: ["Road/Room"],
+                    url: "http://124.204.79.221:27018/inference"
+                  },
+                  {
+                    name: ["WareHouse"],
+                    url: "http://124.204.79.221:27017/upload"
+                  },
+                  {
+                    name: ["Instruments"],
+                    url: "http://124.204.79.221:27017/upload"
+                  }
+                ]
+              }
+            ]
+          }
+        };
+        const mockDataForAlgoServer = {
+          type: "SERVICE_SUPPORT",
+          ctrl_key: 1626941320,
+          response: {
+            state: "OK",
+            detail: {
               servicesCFG: [
                 {
                   ID: [0],
@@ -314,7 +562,12 @@ class DevicesComponent extends Component {
                     "月台（图像）分析服务，输出车辆靠台和离开事件，包含车牌识别结果",
                   GPUMemory: 5,
                   MaxLoad: 10,
-                  Algorithm: { A1: "Vehicle", A2: "License", A3: "OCR" }
+                  Algorithm: {
+                    A1: ["Vehicle", "modules.TF_Vehicle.API"],
+                    A2: ["License", "modules.TF_V3_License.API"],
+                    A3: ["OCR", "modules.TF_V3_OCR.API"]
+                  },
+                  Enable: true
                 },
                 {
                   ID: [1, 2],
@@ -324,21 +577,13 @@ class DevicesComponent extends Component {
                     "消防通道/消控室（图像）分析服务，输出通道堵塞和恢复畅通事件/人员离岗和复岗事件",
                   GPUMemory: 4,
                   MaxLoad: 30,
-                  Algorithm: { A1: "DNVehiclePersonV4" },
+                  Algorithm: {
+                    A1: ["DNVehiclePersonV4", "modules.DN_V4_VehiclePerson.API"]
+                  },
                   CheckOBJS: [
                     ["car", "truck", "minibus", "forklift"],
                     ["person"]
-                  ]
-                },
-                {
-                  ID: [4],
-                  name: ["HelmetEntrance"],
-                  Type: "ObjectDetection",
-                  Description:
-                    "工地进出口未戴安全帽/人员聚集（图像）分析服务，输出监控区域没戴安全帽以及聚集情况",
-                  GPUMemory: 2,
-                  MaxLoad: 30,
-                  Algorithm: { A1: "PT_V5_Hat" },
+                  ],
                   Enable: true
                 },
                 {
@@ -349,233 +594,98 @@ class DevicesComponent extends Component {
                     "仓库内仓位占用（图像）分析服务，输出仓位占用和空闲事件",
                   GPUMemory: 0.7,
                   MaxLoad: 100,
-                  Algorithm: { A1: "TF_WareHouse" },
+                  Algorithm: { A1: ["WareHouse", "modules.TF_WareHouse.API"] },
                   Enable: true
                 },
                 {
-                  ID: [6],
-                  name: ["SpinSwitch"],
-                  Type: "Classification",
+                  ID: [4],
+                  name: ["HelmetEntrance"],
+                  Type: "ObjectDetection",
                   Description:
-                    "消防轩旋钮开关（图像）分析服务，输出监控区域内旋钮开关的旋钮方向",
-                  GPUMemory: 0.7,
-                  MaxLoad: 100,
-                  Algorithm: { A1: "PT_3RS_Classify.API" },
+                    "工地进出口未戴安全帽/人员聚集（图像）分析服务，输出监控区域没戴安全帽以及聚集情况",
+                  GPUMemory: 2,
+                  MaxLoad: 30,
+                  Algorithm: { A1: ["PT_V5_Hat", "modules.PT_V5_Helmet.API"] },
                   Enable: true
                 },
                 {
-                  ID: [7],
-                  name: ["LEDSegmentDisplays"],
-                  Type: "Detection",
+                  ID: [5],
+                  name: ["HelmetWork"],
+                  Type: "ObjectDetection",
                   Description:
-                    "变压器LED显示（图像）分析服务，输出监控区域内LED显示字符",
-                  GPUMemory: 1.1,
-                  MaxLoad: 100,
-                  Algorithm: { A1: "PT_LED_Detection" },
-                  Enable: true
-                },
-                {
-                  ID: [8],
-                  name: ["StatusLight"],
-                  Type: "Classification",
-                  Description:
-                    "消防轩状态指示灯（图像）分析服务，输出监控区域内的状态指示灯的亮暗",
-                  GPUMemory: 0.7,
-                  MaxLoad: 100,
-                  Algorithm: { A1: "PT_Status_Light_Classify" },
+                    "工地作业区未戴安全帽（图像）分析服务，输出监控区域没戴安全帽情况",
+                  GPUMemory: 2,
+                  MaxLoad: 30,
+                  Algorithm: { A1: ["PT_V5_Hat", "modules.PT_V5_Helmet1.API"] },
                   Enable: true
                 }
-              ]
-            },
-            {
-              WorkCFG: {
-                services: [
-                  {
-                    ID: 8,
-                    Description:
-                      "消防轩状态指示灯（图像）分析服务，输出监控区域内的状态指示灯的亮暗[占用显存：0.7G]",
-                    CloudURL: "http://124.204.79.221:27017/upload"
-                  },
-                  {
-                    ID: 1,
-                    Description:
-                      "消防通道/消控室（图像）分析服务，输出通道堵塞和恢复畅通事件/人员离岗和复岗事件[占用显存：4G]",
-                    CloudURL: "http://124.204.79.221:27018/inference"
-                  }
-                ],
-                History: 15,
-                VideoSource: [
-                  {
-                    enable: true,
-                    url: "rtsp://admin:plsfd123@192.168.2.56",
-                    IoTCode: "21097000661",
-                    interval: 5,
-                    times: 600,
-                    serviceID: 2,
-                    DeviceType: "Room",
-                    region: [
-                      [38, 30],
-                      [24, 1050],
-                      [1692, 1050],
-                      [1590, 10]
-                    ],
-                    index2: 0
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:plsfd123@192.168.2.50",
-                    IoTCode: "21097000648",
-                    interval: 5,
-                    times: 600,
-                    serviceID: 2,
-                    DeviceType: "Room",
-                    region: [
-                      [48, 72],
-                      [1890, 54],
-                      [1892, 1068],
-                      [20, 1068]
-                    ],
-                    index2: 1
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:plsfd123@192.168.2.25:554/cam/realmonitor?channel=1&subtype=0",
-                    IoTCode: "21097000651",
-                    interval: 5,
-                    times: 600,
-                    serviceID: 1,
-                    DeviceType: "Road",
-                    region: [
-                      [89, 244],
-                      [180, 230],
-                      [801, 632],
-                      [132, 698]
-                    ],
-                    index2: 2
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:plsfd123@192.168.2.52:554/cam/realmonitor?channel=1&subtype=0",
-                    IoTCode: "XXXXXXXXC041",
-                    interval: 5,
-                    times: 600,
-                    serviceID: 1,
-                    DeviceType: "Road",
-                    region: [
-                      [672, 1068],
-                      [1732, 1060],
-                      [1064, 504],
-                      [984, 508]
-                    ],
-                    index2: 3
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:plsfd123@192.168.2.139",
-                    IoTCode: "21097000654",
-                    interval: 5,
-                    times: 600,
-                    serviceID: 1,
-                    DeviceType: "Road",
-                    region: [
-                      [1014, 488],
-                      [1458, 618],
-                      [1594, 234],
-                      [1434, 200]
-                    ],
-                    index2: 4
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:plsfd123@192.168.2.198",
-                    IoTCode: "21097000662",
-                    interval: 5,
-                    times: 600,
-                    serviceID: 8,
-                    DeviceType: "StatusLight",
-                    region: [
-                      [10, 10],
-                      [100, 10],
-                      [100, 100],
-                      [10, 100]
-                    ],
-                    index2: 6
-                  },
-                  {
-                    enable: true,
-                    url: "rtsp://admin:plsfd123@192.168.2.199",
-                    IoTCode: "21097000663",
-                    interval: 5,
-                    times: 600,
-                    serviceID: 8,
-                    DeviceType: "StatusLight",
-                    region: [
-                      [10, 10],
-                      [100, 10],
-                      [100, 100],
-                      [10, 100]
-                    ],
-                    index2: 7
-                  }
-                ]
-              }
-            },
-            {
-              CloudURL: [
+              ],
+              GPUInfo: [
                 {
-                  name: ["Platform"],
-                  url: "http://124.204.79.221:27018/inference"
-                },
-                {
-                  name: ["Road/Room"],
-                  url: "http://124.204.79.221:27018/inference"
-                },
-                {
-                  name: ["WareHouse"],
-                  url: "http://124.204.79.221:27017/upload"
-                },
-                {
-                  name: ["Instruments"],
-                  url: "http://124.204.79.221:27017/upload"
+                  GPU: 0,
+                  Memory: { TOTAL: 10.9114990234375, USED: 1.82537841796875 }
                 }
               ]
             }
-          ]
+          }
+        };
+        const algoFieldIdMapping = [];
+        const details = data.response.detail;
+        const isAlgoritmServer = sessionStorage.getItem("isAlgoritmServer");
+        console.log(`isAlgo:${isAlgoritmServer}`);
+        let serviceCFGList;
+        if (isAlgoritmServer === "true") {
+          serviceCFGList = details.servicesCFG;
+        } else {
+          serviceCFGList = details[0].servicesCFG;
         }
-      };
-      const algoFieldIdMapping = [];
-      // const details = data.response.detail;
-      const details = data.response.detail;
-      // get id and gpu and platform from the all servicesCFG map.
-      details[0].servicesCFG.map((item) => {
-        if (item.ID.length > 1) {
-          for (let i = 0; i < item.ID.length; i++) {
+        serviceCFGList.map((item) => {
+          if (item.ID.length > 1) {
+            for (let i = 0; i < item.ID.length; i++) {
+              algoFieldIdMapping.push({
+                ID: item.ID[i],
+                algoName: item.name[i],
+                gpu: item.GPUMemory
+              });
+            }
+          } else {
             algoFieldIdMapping.push({
-              ID: item.ID[i],
-              algoName: item.name[i],
+              ID: item.ID[0],
+              algoName: item.name[0],
               gpu: item.GPUMemory
             });
           }
-        } else {
-          algoFieldIdMapping.push({
-            ID: item.ID[0],
-            algoName: item.name[0],
-            gpu: item.GPUMemory
-          });
-        }
+        });
+        this.setState({
+          allAlgoMapping: algoFieldIdMapping
+        });
+        console.log(`获取所有算法映射:${JSON.stringify(algoFieldIdMapping)}`);
+      })
+      .then(() => {
+        return fetchServiceList();
+      })
+      .then(({ data }) => {
+        console.log(
+          `获取service-list里支持的service：${JSON.stringify(
+            data.response.detail
+          )}`
+        );
+        // 过滤出当前支持的算法，只有支持的算法可以用来选择创建相机
+        const { allAlgoMapping } = this.state;
+
+        const enableIds = data.response.detail.map((item) => item.ID);
+        console.log(
+          `从service list里找出可用的算法IDs:${JSON.stringify(enableIds)}`
+        );
+        const allEnabledVideo = allAlgoMapping.filter((item) => {
+          return enableIds.includes(item.ID);
+        });
+        console.log(`过滤后可用的算法列表: ${JSON.stringify(allEnabledVideo)}`);
+        this.setState({ algoIdNameMapping: allEnabledVideo });
+      })
+      .catch((e) => {
+        console.error(`获取下拉框中的算法列表出错:${JSON.stringify(e)}`);
       });
-      console.log(`获取所有idMapAlgos:${JSON.stringify(algoFieldIdMapping)}`);
-      // 过滤出当前支持的算法，只有支持的算法可以用来选择创建相机
-      const allEnabledServices = details[1].WorkCFG.services;
-      const enableIds = allEnabledServices.map((item) => item.ID);
-      const allEnabledVideo = algoFieldIdMapping.filter((item) => {
-        return enableIds.includes(item.ID);
-      });
-      console.log(
-        `log every enabled video: ${JSON.stringify(allEnabledVideo)}`
-      );
-      this.setState({ algoIdNameMapping: allEnabledVideo });
-    });
     // end of fetch
   }
 
@@ -708,7 +818,7 @@ class DevicesComponent extends Component {
         render: (text, record, index) => {
           const url = `/deploys/detail/${record.IoTCode}`;
           return (
-            <div>
+            <div key={Math.random(100)}>
               <Link to={url}>
                 <span>查看</span>
               </Link>
@@ -730,7 +840,10 @@ class DevicesComponent extends Component {
     const algorithmsOptions = [];
     algoIdNameMapping.map((item) => {
       algorithmsOptions.push(
-        <Option key={item.ID} value={`${item.ID}:${item.algoName}`}>
+        <Option
+          key={item.ID + item.algoName}
+          value={`${item.ID}:${item.algoName}`}
+        >
           {item.algoName}
         </Option>
       );
@@ -817,19 +930,45 @@ class DevicesComponent extends Component {
                   style={{ width: 300 }}
                   onChange={this.onChouzhenTimeChange}
                 >
-                  <Option value="1">1s</Option>
-                  <Option value="2">2s</Option>
-                  <Option value="3">3s</Option>
-                  <Option value="4">4s</Option>
-                  <Option value="5">5s</Option>
-                  <Option value="6">6s</Option>
-                  <Option value="7">7s</Option>
-                  <Option value="8">8s</Option>
-                  <Option value="15">15s</Option>
-                  <Option value="30">30s</Option>
-                  <Option value="60">60s</Option>
-                  <Option value="300">300s</Option>
-                  <Option value="600">600s</Option>
+                  <Option key="interval1" value="1">
+                    1s
+                  </Option>
+                  <Option key="interval2" value="2">
+                    2s
+                  </Option>
+                  <Option key="interval3" value="3">
+                    3s
+                  </Option>
+                  <Option key="interval4" value="4">
+                    4s
+                  </Option>
+                  <Option key="interval5" value="5">
+                    5s
+                  </Option>
+                  <Option key="interval6" value="6">
+                    6s
+                  </Option>
+                  <Option key="interval7" value="7">
+                    7s
+                  </Option>
+                  <Option key="interval8" value="8">
+                    8s
+                  </Option>
+                  <Option key="interval9" value="15">
+                    15s
+                  </Option>
+                  <Option key="interval10" value="30">
+                    30s
+                  </Option>
+                  <Option key="interval11" value="60">
+                    60s
+                  </Option>
+                  <Option key="interval12" value="300">
+                    300s
+                  </Option>
+                  <Option key="interval13" value="600">
+                    600s
+                  </Option>
                 </Select>
               </div>
               <div className={style.item}>
@@ -839,21 +978,51 @@ class DevicesComponent extends Component {
                   style={{ width: 300 }}
                   onChange={this.onDetectTimeChange}
                 >
-                  <Option value="15">15s</Option>
-                  <Option value="30">30s</Option>
-                  <Option value="60">60s</Option>
-                  <Option value="120">120s</Option>
-                  <Option value="180">180s</Option>
-                  <Option value="240">240s</Option>
-                  <Option value="300">300s</Option>
-                  <Option value="360">360s</Option>
-                  <Option value="420">420s</Option>
-                  <Option value="480">480s</Option>
-                  <Option value="540">540s</Option>
-                  <Option value="600">600s</Option>
-                  <Option value="720">720s</Option>
-                  <Option value="900">900s</Option>
-                  <Option value="1800">1800s</Option>
+                  <Option key="detect15" value="15">
+                    15s
+                  </Option>
+                  <Option key="detect30" value="30">
+                    30s
+                  </Option>
+                  <Option key="detect60" value="60">
+                    60s
+                  </Option>
+                  <Option key="detect120" value="120">
+                    120s
+                  </Option>
+                  <Option key="detect180" value="180">
+                    180s
+                  </Option>
+                  <Option key="detect240" value="240">
+                    240s
+                  </Option>
+                  <Option key="detect300" value="300">
+                    300s
+                  </Option>
+                  <Option key="detect360" value="360">
+                    360s
+                  </Option>
+                  <Option key="detect420" value="420">
+                    420s
+                  </Option>
+                  <Option key="detect480" value="480">
+                    480s
+                  </Option>
+                  <Option key="detect540" value="540">
+                    540s
+                  </Option>
+                  <Option key="detect600" value="600">
+                    600s
+                  </Option>
+                  <Option key="detect720" value="720">
+                    720s
+                  </Option>
+                  <Option key="detect900" value="900">
+                    900s
+                  </Option>
+                  <Option key="detect1800" value="1800">
+                    1800s
+                  </Option>
                 </Select>
               </div>
             </div>

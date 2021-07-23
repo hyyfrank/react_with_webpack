@@ -25,10 +25,12 @@ class DeployDetailComponent extends Component {
   componentDidMount() {
     console.log("i am in detail didmount");
     const BASE_URL = "http://cvp.g2link.cn:20065"; // TODO: update to real base url.
-    const { iotCode, algoName, gpu } = this.props;
+    console.log(`this.props${JSON.stringify(this.props)}`);
+    const { iotCode } = this.props;
     console.log(`detail iotCode get: ${iotCode}`);
-    console.log(`detail algoName get: ${algoName}`);
-    console.log(`detail gpu get: ${gpu}`);
+
+    const algoName = "Road";
+    const gpu = 4;
     let algoDesc = "";
     if (algoName === "Platform") {
       algoDesc = "月台车辆分析";
@@ -195,7 +197,7 @@ class DeployDetailComponent extends Component {
           }
         };
 
-        const caremaDetailInfo = mockdata.response.detail.filter((item) => {
+        const caremaDetailInfo = data.response.detail.filter((item) => {
           return item.IoTCode === iotCode;
         });
 

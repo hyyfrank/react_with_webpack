@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { Table, Breadcrumb, Tooltip, Button, message, Modal } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+
 import {
-  fetchDeployedAlgorithm,
-  addService,
-  delService
-} from "../../services/algorithm";
+  fetchServiceList,
+  fetchServiceSupportList
+} from "../../services/deploys";
+import { addService, delService } from "../../services/algorithm";
 import * as style from "../../css/algorithm.less";
 import AlgorithmList from "./list";
 
@@ -44,140 +44,292 @@ class AlgorithmComponent extends Component {
   }
 
   fetchData() {
-    const formData = new FormData();
-    const obj = {
-      type: "SERVICE_SUPPORT",
-      ctrl_key:
-        sessionStorage.getItem("ctrl_key") == null
-          ? -1
-          : sessionStorage.getItem("ctrl_key")
-    };
-    formData.append("req", JSON.stringify(obj));
+    const fetchAlgorithmPromise = fetchServiceSupportList();
+    const fetchServicesPromise = fetchServiceList();
 
-    fetchDeployedAlgorithm(formData).then(({ data }) => {
-      if (data.response.state === "error") {
-        console.log("state error, please retry.");
-        this.setState({ tableData: [] });
-      } else {
-        const algoTableDatas = AlgorithmList;
-
-        const allSupportedService = data.response.detail[0].servicesCFG;
-        const supportedAlgoIds = allSupportedService
-          .map((item) => item.ID)
-          .flat()
-          .filter((item) => {
-            return item !== 2;
-          });
-        console.log(
-          `before support algorithms ids: ${JSON.stringify(supportedAlgoIds)}`
-        );
-        console.log(`before filter: ${JSON.stringify(algoTableDatas)}`);
-        const supportDatas = algoTableDatas.filter((item) => {
-          for (let i = 0; i < supportedAlgoIds.length; i++) {
-            if (item.ID[0] === supportedAlgoIds[i]) {
-              return item;
+    Promise.all([fetchAlgorithmPromise, fetchServicesPromise])
+      .then((values) => {
+        const mockServiceList = {
+          type: "SERVICE_LIST",
+          ctrl_key: 1626941320,
+          response: {
+            state: "OK",
+            detail: [
+              {
+                ID: 4,
+                GPU: 0,
+                Description:
+                  "未戴安全帽/人员聚集（图像）分析服务，输出监控区域没戴安全帽以及聚集情况[占用显存：2G]"
+              },
+              {
+                ID: 5,
+                GPU: 0,
+                Description:
+                  "工地作业区未戴安全帽（图像）分析服务，输出监控区域没戴安全帽情况[占用显存：2G]"
+              }
+            ]
+          }
+        };
+        const mockServiceSupport = {
+          type: "SERVICE_SUPPORT",
+          ctrl_key: 1626941320,
+          response: {
+            state: "OK",
+            detail: {
+              servicesCFG: [
+                {
+                  ID: [0],
+                  name: ["Platform"],
+                  Type: "ObjectDetection",
+                  Description:
+                    "月台（图像）分析服务，输出车辆靠台和离开事件，包含车牌识别结果",
+                  GPUMemory: 5,
+                  MaxLoad: 10,
+                  Algorithm: {
+                    A1: ["Vehicle", "modules.TF_Vehicle.API"],
+                    A2: ["License", "modules.TF_V3_License.API"],
+                    A3: ["OCR", "modules.TF_V3_OCR.API"]
+                  },
+                  Enable: true
+                },
+                {
+                  ID: [1, 2],
+                  name: ["Road", "Room"],
+                  Type: "ObjectDetection",
+                  Description:
+                    "消防通道/消控室（图像）分析服务，输出通道堵塞和恢复畅通事件/人员离岗和复岗事件",
+                  GPUMemory: 4,
+                  MaxLoad: 30,
+                  Algorithm: {
+                    A1: ["DNVehiclePersonV4", "modules.DN_V4_VehiclePerson.API"]
+                  },
+                  CheckOBJS: [
+                    ["car", "truck", "minibus", "forklift"],
+                    ["person"]
+                  ],
+                  Enable: true
+                },
+                {
+                  ID: [3],
+                  name: ["WareHouse"],
+                  Type: "Classification",
+                  Description:
+                    "仓库内仓位占用（图像）分析服务，输出仓位占用和空闲事件",
+                  GPUMemory: 0.7,
+                  MaxLoad: 100,
+                  Algorithm: { A1: ["WareHouse", "modules.TF_WareHouse.API"] },
+                  Enable: true
+                },
+                {
+                  ID: [4],
+                  name: ["HelmetEntrance"],
+                  Type: "ObjectDetection",
+                  Description:
+                    "工地进出口未戴安全帽/人员聚集（图像）分析服务，输出监控区域没戴安全帽以及聚集情况",
+                  GPUMemory: 2,
+                  MaxLoad: 30,
+                  Algorithm: { A1: ["PT_V5_Hat", "modules.PT_V5_Helmet.API"] },
+                  Enable: true
+                },
+                {
+                  ID: [5],
+                  name: ["HelmetWork"],
+                  Type: "ObjectDetection",
+                  Description:
+                    "工地作业区未戴安全帽（图像）分析服务，输出监控区域没戴安全帽情况",
+                  GPUMemory: 2,
+                  MaxLoad: 30,
+                  Algorithm: { A1: ["PT_V5_Hat", "modules.PT_V5_Helmet1.API"] },
+                  Enable: true
+                }
+              ],
+              GPUInfo: [
+                {
+                  GPU: 0,
+                  Memory: { TOTAL: 10.9114990234375, USED: 1.82537841796875 }
+                }
+              ]
             }
           }
-          return null;
-        });
-        console.log(`step1:${JSON.stringify(supportDatas)}`);
-        // flatten the array
-        const flatternArray = [];
-        supportDatas.map((item) => {
-          if (Array.isArray(item.ID) && item.ID.length === 2) {
-            flatternArray.push({
-              ...item,
-              ID: item.ID[0],
-              name: item.name[0]
-            });
-            flatternArray.push({
-              ...item,
-              ID: item.ID[1],
-              name: item.name[1]
-            });
-          } else {
-            flatternArray.push({
-              ...item,
-              ID: item.ID[0]
-            });
-          }
-        });
-
-        const supportDataList = flatternArray.map((item) => {
-          return {
-            ...item,
-            Enable: "disabled",
-            cloudUrl: ""
-          };
-        });
-        console.log(
-          `after support algorithms ids: ${JSON.stringify(supportDataList)}`
-        );
-
-        // 根据当前是不是脱帧服务器，来处理是不是要显示cloudURL
-        const isAlgoritmServer = sessionStorage.getItem("isAlgoritmServer");
-        console.log(`isAlgo:${isAlgoritmServer}`);
-        // reframe the cloudURL structure
+        };
+        // const algorithmResultData = mockServiceSupport;
+        // const serviceListResult = mockServiceList;
+        const algorithmResultData = values[0].data;
+        const serviceListResult = values[1].data;
+        // handle algorithms list result
         let afterTuozhen = [];
-        if (isAlgoritmServer === "false") {
-          const cloudURL = data.response.detail[2].CloudURL;
-          const cloudURLWithId = [];
-          cloudURL.map((item) => {
-            const cloudObj = { ...item, id: -1, itemName: "" };
-            if (item.name[0] === "Platform") {
-              cloudObj.id = 0;
-              cloudObj.itemName = "Platform";
-              cloudURLWithId.push(cloudObj);
-              return;
-            }
-            if (item.name[0] === "WareHouse") {
-              cloudObj.id = 3;
-              cloudObj.itemName = "WareHouse";
-              cloudURLWithId.push(cloudObj);
-              return;
-            }
-            // TODO: Need to add other condition
-            if (item.name[0] === "Instruments") {
-              cloudObj.id = 7;
-              cloudObj.itemName = "Instruments";
-              cloudURLWithId.push(cloudObj);
-              return;
-            }
+        if (algorithmResultData.response.state === "error") {
+          console.log("state error, please retry.");
+          this.setState({ tableData: [] });
+        } else {
+          const algoTableDatas = AlgorithmList;
 
-            if (item.name[0] === "Road/Room") {
-              cloudObj.id = 1;
-              cloudObj.itemName = "Road";
-              cloudURLWithId.push(cloudObj);
-              const cloudObjTmp = { ...item, id: -1, itemName: "" };
-              cloudObjTmp.id = 2;
-              cloudObjTmp.itemName = "Room";
-              cloudURLWithId.push(cloudObjTmp);
-            }
-          });
+          let allSupportedService;
+          const isAlgoritmServer = sessionStorage.getItem("isAlgoritmServer");
+          console.log(`isAlgo:${isAlgoritmServer}`);
+          if (isAlgoritmServer === "true") {
+            allSupportedService =
+              algorithmResultData.response.detail.servicesCFG;
+          } else {
+            allSupportedService =
+              algorithmResultData.response.detail[0].servicesCFG;
+          }
 
-          console.log(`cloudurl with id: ${JSON.stringify(cloudURLWithId)}`);
-          // add cloud url to the data
-          supportDataList.map((item) => {
-            for (let i = 0; i < cloudURLWithId.length; i++) {
-              if (item.ID === cloudURLWithId[i].id) {
-                const it = {
-                  ...item,
-                  cloudUrl: cloudURLWithId[i].url,
-                  name: Array.isArray(item.name) ? item.name[0] : item.name
-                };
-                afterTuozhen.push(it);
+          const supportedAlgoIds = allSupportedService
+            .map((item) => item.ID)
+            .flat()
+            .filter((item) => {
+              return item !== 2;
+            });
+          console.log(
+            `before support algorithms ids: ${JSON.stringify(supportedAlgoIds)}`
+          );
+          console.log(`before filter: ${JSON.stringify(algoTableDatas)}`);
+          const supportDatas = algoTableDatas.filter((item) => {
+            for (let i = 0; i < supportedAlgoIds.length; i++) {
+              if (item.ID[0] === supportedAlgoIds[i]) {
+                return item;
               }
             }
+            return null;
           });
-        } else {
-          afterTuozhen = [...supportDataList];
+          console.log(`step1:${JSON.stringify(supportDatas)}`);
+          // flatten the array
+          const flatternArray = [];
+          supportDatas.map((item) => {
+            if (Array.isArray(item.ID) && item.ID.length === 2) {
+              flatternArray.push({
+                ...item,
+                ID: item.ID[0],
+                name: item.name[0]
+              });
+              flatternArray.push({
+                ...item,
+                ID: item.ID[1],
+                name: item.name[1]
+              });
+            } else {
+              flatternArray.push({
+                ...item,
+                ID: item.ID[0]
+              });
+            }
+          });
+
+          const supportDataList = flatternArray.map((item) => {
+            return {
+              ...item,
+              Enable: "disabled",
+              cloudUrl: ""
+            };
+          });
+          console.log(
+            `after support algorithms ids: ${JSON.stringify(supportDataList)}`
+          );
+
+          // 根据当前是不是脱帧服务器，来处理是不是要显示cloudURL
+          // const isAlgoritmServer = sessionStorage.getItem("isAlgoritmServer");
+          // console.log(`isAlgo:${isAlgoritmServer}`);
+          // reframe the cloudURL structure
+
+          if (
+            isAlgoritmServer === "false" &&
+            algorithmResultData.response.detail.length > 2
+          ) {
+            console.log(
+              `check cloudURL is existed?${
+                algorithmResultData.response.detail.length > 2
+              }`
+            );
+            const cloudURL =
+              algorithmResultData.response.detail[2].CloudURL || [];
+            console.log(`cloudURL existed?${JSON.stringify(cloudURL)}`);
+            const cloudURLWithId = [];
+            cloudURL.map((item) => {
+              const cloudObj = { ...item, id: -1, itemName: "" };
+              if (item.name[0] === "Platform") {
+                cloudObj.id = 0;
+                cloudObj.itemName = "Platform";
+                cloudURLWithId.push(cloudObj);
+                return;
+              }
+              if (item.name[0] === "Road/Room") {
+                cloudObj.id = 1;
+                cloudObj.itemName = "Road";
+                cloudURLWithId.push(cloudObj);
+                const cloudObjTmp = { ...item, id: -1, itemName: "" };
+                cloudObjTmp.id = 2;
+                cloudObjTmp.itemName = "Room";
+                cloudURLWithId.push(cloudObjTmp);
+              }
+              if (item.name[0] === "WareHouse") {
+                cloudObj.id = 3;
+                cloudObj.itemName = "WareHouse";
+                cloudURLWithId.push(cloudObj);
+                return;
+              }
+
+              // if (item.name[0] === "HelmetEntrance") {
+              //   cloudObj.id = 4;
+              //   cloudObj.itemName = "HelmetEntrance";
+              //   cloudURLWithId.push(cloudObj);
+              //   return;
+              // }
+              if (item.name[0] === "HelmetWork") {
+                cloudObj.id = 5;
+                cloudObj.itemName = "HelmetWork";
+                cloudURLWithId.push(cloudObj);
+                return;
+              }
+
+              if (item.name[0] === "Instruments") {
+                cloudObj.id = 6;
+                cloudObj.itemName = "SpinSwitch";
+                cloudURLWithId.push(cloudObj);
+
+                const cloudObjLED = { ...item, id: -1, itemName: "" };
+                cloudObjLED.id = 7;
+                cloudObjLED.itemName = "LEDSegmentDisplays";
+                cloudURLWithId.push(cloudObjLED);
+                const cloudObjStatus = { ...item, id: -1, itemName: "" };
+                cloudObjStatus.id = 8;
+                cloudObjStatus.itemName = "StatusLight";
+                cloudURLWithId.push(cloudObjStatus);
+              }
+            });
+            // Below is the special case, because we current do not have the url for HelmetWork
+            const cloudObjHelmetEntrance = {
+              name: ["HelmetWork"],
+              url: "",
+              id: 4,
+              itemName: "HelmetWork"
+            };
+            cloudURLWithId.push(cloudObjHelmetEntrance);
+
+            console.log(`cloudurl with id: ${JSON.stringify(cloudURLWithId)}`);
+            // add cloud url to the data
+            supportDataList.map((item) => {
+              for (let i = 0; i < cloudURLWithId.length; i++) {
+                if (item.ID === cloudURLWithId[i].id) {
+                  const it = {
+                    ...item,
+                    cloudUrl: cloudURLWithId[i].url,
+                    name: Array.isArray(item.name) ? item.name[0] : item.name
+                  };
+                  afterTuozhen.push(it);
+                }
+              }
+            });
+          } else {
+            afterTuozhen = [...supportDataList];
+          }
+
+          console.log(`after tuozhen:${JSON.stringify(afterTuozhen)}`);
         }
+        // end of handle algorithms list
 
-        console.log(`after tuozhen:${JSON.stringify(afterTuozhen)}`);
-
-        // enable id setting
-
-        const allEnabledServices = data.response.detail[1].WorkCFG.services;
+        // handle enable id setting
+        const allEnabledServices = serviceListResult.response.detail;
         const enableIds = allEnabledServices.map((item) => item.ID);
         console.log(`enabled ids: ${JSON.stringify(enableIds)}`);
 
@@ -214,8 +366,11 @@ class AlgorithmComponent extends Component {
             return i1.Enable.length - i2.Enable.length;
           })
         });
-      }
-    });
+        // end of handle
+      })
+      .catch((e) => {
+        console.log(`promise all error:${e}`);
+      });
   }
 
   addService(record) {

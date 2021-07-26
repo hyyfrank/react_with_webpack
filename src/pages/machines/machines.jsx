@@ -89,11 +89,11 @@ class MachineComponent extends Component {
         key: "detail",
         width: "8%",
         // eslint-disable-next-line no-unused-vars
-        render: (text) => {
+        render: (text, record) => {
           return (
-            <Link to="/deploys">
+            <a href={`http://${record.ServerAddress}:${record.HttpPort}/UI`}>
               <span>查看详情</span>
-            </Link>
+            </a>
           );
         }
       }

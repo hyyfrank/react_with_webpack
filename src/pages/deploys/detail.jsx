@@ -357,19 +357,19 @@ class DeployDetailComponent extends Component {
                   value={selectedCaremaChouzhen}
                   onChange={this.onChouzhenTimeChange}
                 >
-                  <Option value="1">1s</Option>
-                  <Option value="2">2s</Option>
-                  <Option value="3">3s</Option>
-                  <Option value="4">4s</Option>
-                  <Option value="5">5s</Option>
-                  <Option value="6">6s</Option>
-                  <Option value="7">7s</Option>
-                  <Option value="8">8s</Option>
-                  <Option value="15">15s</Option>
-                  <Option value="30">30s</Option>
-                  <Option value="60">60s</Option>
-                  <Option value="300">300s</Option>
-                  <Option value="600">600s</Option>
+                  <Option value="1">1</Option>
+                  <Option value="2">2</Option>
+                  <Option value="3">3</Option>
+                  <Option value="4">4</Option>
+                  <Option value="5">5</Option>
+                  <Option value="6">6</Option>
+                  <Option value="7">7</Option>
+                  <Option value="8">8</Option>
+                  <Option value="15">15</Option>
+                  <Option value="30">30</Option>
+                  <Option value="60">60</Option>
+                  <Option value="300">300</Option>
+                  <Option value="600">600</Option>
                 </Select>
               </div>
               <div className={style.editItemLayout}>

@@ -297,7 +297,7 @@ class DeploysComponent extends Component {
         key: "interval",
         width: "8%",
         render: (text) => {
-          return <span>{text}s</span>;
+          return <span>{text}</span>;
         }
       },
       {

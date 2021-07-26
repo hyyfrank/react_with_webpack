@@ -674,6 +674,12 @@ class DevicesComponent extends Component {
         const { allAlgoMapping } = this.state;
 
         const enableIds = data.response.detail.map((item) => item.ID);
+        if (enableIds.includes(1) && !enableIds.includes(2)) {
+          enableIds.push(2);
+        }
+        if (enableIds.includes(2) && !enableIds.includes(1)) {
+          enableIds.push(1);
+        }
         console.log(
           `从service list里找出可用的算法IDs:${JSON.stringify(enableIds)}`
         );
@@ -780,7 +786,7 @@ class DevicesComponent extends Component {
         key: "interval",
         width: "8%",
         render: (text) => {
-          return <span>{text}s</span>;
+          return <span>{text}</span>;
         }
       },
       {

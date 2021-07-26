@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import { Divider, Button, message } from "antd";
-import * as style from "../../css/area.less";
-import saveSourceDetail from "../../services/area";
+import { Divider, Button } from "antd";
+import * as style from "../../css/rectangle.less";
 
-class CanavasComponet extends Component {
+class CanavasRectangleComponet extends Component {
   constructor() {
     super();
 
@@ -30,9 +29,7 @@ class CanavasComponet extends Component {
       myCtxSave: {},
       editMode: false,
       flag: false,
-      fillcolor: "rgba(165,246,247,0.5)",
-      ratioWidth: 1,
-      ratioHeight: 1
+      fillcolor: "rgba(165,246,247,0.5)"
     };
   }
 
@@ -58,8 +55,7 @@ class CanavasComponet extends Component {
   componentDidUpdate() {
     // init image and add init points
     const { myCtx, myCtxSave, flag } = this.state;
-    const { monitorImageUrl, region } = this.props;
-    const monitorArea = region;
+    const { monitorImageUrl, monitorArea } = this.props;
     console.log(
       `did update on area page,image url is:${monitorImageUrl},flag is: ${flag}`
     );
@@ -86,9 +82,9 @@ class CanavasComponet extends Component {
   mouseMoveInCanvas(e) {
     let { pointX, pointY } = this.state;
     const { pointArr, editMode } = this.state;
-    // console.log(
-    //   `mouse move canvas, offsetX is:${e.nativeEvent.offsetX},layX is:${e.nativeEvent.layerX},edit mode is:${editMode}`
-    // );
+    console.log(
+      `mouse move canvas, offsetX is:${e.nativeEvent.offsetX},layX is:${e.nativeEvent.layerX},edit mode is:${editMode}`
+    );
 
     const { myCtx, fillcolor } = this.state;
     if (editMode) {
@@ -241,10 +237,6 @@ class CanavasComponet extends Component {
     const { fillcolor } = this.state;
     const ratioWidth = w / 960;
     const ratioHeight = h / 540;
-    this.setState({
-      ratioWidth,
-      ratioHeight
-    });
     ctx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
     ctx.beginPath();
     ctx.strokeStyle = "red";
@@ -272,45 +264,6 @@ class CanavasComponet extends Component {
 
   saveDetail() {
     console.log("start to save detail informations.");
-    const {
-      enable,
-      url,
-      IoTCode,
-      interval,
-      times,
-      serviceID,
-      DeviceType,
-      index2
-    } = this.props;
-    const { pointArr, ratioHeight, ratioWidth } = this.state;
-
-    const regionNew = pointArr.map((item) => {
-      return [item.x * ratioWidth, item.y * ratioHeight];
-    });
-    regionNew.pop();
-    // console.log(`original point should be:${JSON.stringify(region)}`);
-    // console.log(`new point after edit should be:${JSON.stringify(regionNew)}`);
-    const payload = {
-      enable: enable === "true",
-      url,
-      IoTCode,
-      interval: Number(interval),
-      times: Number(times),
-      serviceID: Number(serviceID),
-      DeviceType,
-      region: regionNew,
-      index2
-    };
-    console.log(`pass payload to source edit:${JSON.stringify(payload)}`);
-
-    saveSourceDetail(payload).then(({ data }) => {
-      console.log(`update the detail result is:${JSON.stringify(data)}`);
-      if (data.response.state === "OK") {
-        message.info("详情页信息修改成功！");
-      } else {
-        message.error("详情页信息修改失败！");
-      }
-    });
   }
 
   makearc(ctx, x, y, r, s, e, color) {
@@ -361,11 +314,11 @@ class CanavasComponet extends Component {
       <div className={style.monitorArea}>
         <div className={style.btnLayer}>
           <Button type="primary" onClick={this.clearMonitorArea}>
-            重绘
+            重绘矩形
           </Button>
           <Divider type="vertical" />
           <Button type="primary" onClick={this.saveDetail}>
-            保存所有
+            保存多个矩形
           </Button>
         </div>
         <div className={style.monitorCanvas} id="canvasArea">
@@ -394,4 +347,4 @@ class CanavasComponet extends Component {
     );
   }
 }
-export default CanavasComponet;
+export default CanavasRectangleComponet;

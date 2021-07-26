@@ -4,7 +4,9 @@ import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 
 import { fetchAllDevices } from "../../services/devices";
 import CanavasComponet from "./area";
+import CanavasRectangleComponet from "./rectangle";
 import * as style from "../../css/detail.less";
+import { fetchServiceSupportList } from "../../services/deploys";
 
 const { Option } = Select;
 class DeployDetailComponent extends Component {
@@ -18,7 +20,10 @@ class DeployDetailComponent extends Component {
     this.state = {
       basicInfo: {},
       detailCarema: {},
-      monitorArea: []
+      monitorArea: [],
+      selectedCaremaChouzhen: "1",
+      selectedDetectTime: "15",
+      enableStatus: "false"
     };
   }
 
@@ -28,199 +33,251 @@ class DeployDetailComponent extends Component {
     console.log(`this.props${JSON.stringify(this.props)}`);
     const { iotCode } = this.props;
     console.log(`detail iotCode get: ${iotCode}`);
-
-    const algoName = "Road";
-    const gpu = 4;
-    let algoDesc = "";
-    if (algoName === "Platform") {
-      algoDesc = "月台车辆分析";
-    }
-    if (algoName === "Road" || algoName === "Room") {
-      algoDesc = "消防通道分析";
-    }
-    if (algoName === "WareHouse") {
-      algoDesc = "仓库占用分析";
-    }
-    if (algoName === "HelmetEntrance") {
-      algoDesc = "工地进出口安全帽分析";
-    }
-    if (algoName === "HelmetWork") {
-      algoDesc = "工地作业区安全帽分析";
-    }
-    if (algoName === "StatusLight") {
-      algoDesc = "状态灯检测";
-    }
-    this.setState({
-      basicInfo: {
-        IotCode: iotCode,
-        algorithmName: algoDesc,
-        GPU: gpu,
-        monitorImageUrl: `${BASE_URL}/?filename=picture/${iotCode}.jpg`
-      }
-    });
-    console.log(`${BASE_URL}/?filename=picture/${iotCode}.jpg`);
-    const formData = new FormData();
-    const obj = {
-      type: "SOURCE_LIST",
-      ctrl_key:
-        sessionStorage.getItem("ctrl_key") == null
-          ? -1
-          : Number(sessionStorage.getItem("ctrl_key"))
-    };
-    formData.append("req", JSON.stringify(obj));
-
-    fetchAllDevices(formData).then(({ data }) => {
-      console.log(`get data from devices: ${JSON.stringify(data)}`);
-      if (data.response.state === "error") {
-        console.log("state error, please retry.");
-        this.setState({ tableData: [] });
-      } else {
-        const mockdata = {
-          type: "SOURCE_LIST",
-          ctrl_key: 1626314900,
-          response: {
-            state: "OK",
-            detail: [
-              {
-                enable: true,
-                url: "rtsp://admin:plsfd123@192.168.2.56",
-                IoTCode: "21097000661",
-                interval: 5,
-                times: 600,
-                serviceID: 2,
-                DeviceType: "Room",
-                region: [
-                  [38, 30],
-                  [24, 1050],
-                  [1692, 1050],
-                  [1590, 10]
-                ],
-                index2: 0
-              },
-              {
-                enable: true,
-                url: "rtsp://admin:plsfd123@192.168.2.50",
-                IoTCode: "21097000648",
-                interval: 5,
-                times: 600,
-                serviceID: 2,
-                DeviceType: "Room",
-                region: [
-                  [48, 72],
-                  [1890, 54],
-                  [1892, 1068],
-                  [20, 1068]
-                ],
-                index2: 1
-              },
-              {
-                enable: true,
-                url: "rtsp://admin:plsfd123@192.168.2.25:554/cam/realmonitor?channel=1&subtype=0",
-                IoTCode: "21097000651",
-                interval: 5,
-                times: 600,
-                serviceID: 1,
-                DeviceType: "Road",
-                region: [
-                  [89, 244],
-                  [180, 230],
-                  [801, 632],
-                  [132, 698]
-                ],
-                index2: 2
-              },
-              {
-                enable: true,
-                url: "rtsp://admin:plsfd123@192.168.2.52:554/cam/realmonitor?channel=1&subtype=0",
-                IoTCode: "XXXXXXXXC041",
-                interval: 5,
-                times: 600,
-                serviceID: 1,
-                DeviceType: "Road",
-                region: [
-                  [672, 1068],
-                  [1732, 1060],
-                  [1064, 504],
-                  [984, 508]
-                ],
-                index2: 3
-              },
-              {
-                enable: true,
-                url: "rtsp://admin:plsfd123@192.168.2.139",
-                IoTCode: "21097000654",
-                interval: 5,
-                times: 600,
-                serviceID: 1,
-                DeviceType: "Road",
-                region: [
-                  [1014, 488],
-                  [1458, 618],
-                  [1594, 234],
-                  [1434, 200]
-                ],
-                index2: 4
-              },
-              {
-                enable: true,
-                url: "rtsp://admin:plsfd123@192.168.2.198",
-                IoTCode: "21097000662",
-                interval: 5,
-                times: 600,
-                serviceID: 8,
-                DeviceType: "StatusLight",
-                region: [
-                  [10, 10],
-                  [100, 10],
-                  [100, 100],
-                  [10, 100]
-                ],
-                index2: 6
-              },
-              {
-                enable: true,
-                url: "rtsp://admin:plsfd123@192.168.2.199",
-                IoTCode: "21097000663",
-                interval: 5,
-                times: 600,
-                serviceID: 8,
-                DeviceType: "StatusLight",
-                region: [
-                  [10, 10],
-                  [100, 10],
-                  [100, 100],
-                  [10, 100]
-                ],
-                index2: 7
-              }
-            ]
+    const algoFieldIdMapping = [];
+    fetchServiceSupportList()
+      .then(({ data }) => {
+        const details = data.response.detail;
+        const isAlgoritmServer = sessionStorage.getItem("isAlgoritmServer");
+        console.log(`isAlgo:${isAlgoritmServer}`);
+        let serviceCFGList;
+        if (isAlgoritmServer === "true") {
+          serviceCFGList = details.servicesCFG;
+        } else {
+          serviceCFGList = details[0].servicesCFG;
+        }
+        serviceCFGList.map((item) => {
+          if (item.ID.length > 1) {
+            for (let i = 0; i < item.ID.length; i++) {
+              algoFieldIdMapping.push({
+                ID: item.ID[i],
+                algoName: item.name[i],
+                gpu: item.GPUMemory
+              });
+            }
+          } else {
+            algoFieldIdMapping.push({
+              ID: item.ID[0],
+              algoName: item.name[0],
+              gpu: item.GPUMemory
+            });
           }
+        });
+        console.log(`algoFieldIdMapping:${JSON.stringify(algoFieldIdMapping)}`);
+      })
+      .then(() => {
+        const formData = new FormData();
+        const obj = {
+          type: "SOURCE_LIST",
+          ctrl_key:
+            sessionStorage.getItem("ctrl_key") == null
+              ? -1
+              : Number(sessionStorage.getItem("ctrl_key"))
         };
+        formData.append("req", JSON.stringify(obj));
+        return fetchAllDevices(formData);
+      })
+      .then(({ data }) => {
+        console.log(`get data from devices: ${JSON.stringify(data)}`);
+        if (data.response.state === "error") {
+          console.log("state error, please retry.");
+          this.setState({ tableData: [] });
+        } else {
+          const mockdata = {
+            type: "SOURCE_LIST",
+            ctrl_key: 1626314900,
+            response: {
+              state: "OK",
+              detail: [
+                {
+                  enable: true,
+                  url: "rtsp://admin:plsfd123@192.168.2.56",
+                  IoTCode: "21097000661",
+                  interval: 5,
+                  times: 600,
+                  serviceID: 2,
+                  DeviceType: "Room",
+                  region: [
+                    [38, 30],
+                    [24, 1050],
+                    [1692, 1050],
+                    [1590, 10]
+                  ],
+                  index2: 0
+                },
+                {
+                  enable: true,
+                  url: "rtsp://admin:plsfd123@192.168.2.50",
+                  IoTCode: "21097000648",
+                  interval: 5,
+                  times: 600,
+                  serviceID: 2,
+                  DeviceType: "Room",
+                  region: [
+                    [48, 72],
+                    [1890, 54],
+                    [1892, 1068],
+                    [20, 1068]
+                  ],
+                  index2: 1
+                },
+                {
+                  enable: true,
+                  url: "rtsp://admin:plsfd123@192.168.2.25:554/cam/realmonitor?channel=1&subtype=0",
+                  IoTCode: "21097000651",
+                  interval: 5,
+                  times: 600,
+                  serviceID: 1,
+                  DeviceType: "Road",
+                  region: [
+                    [89, 244],
+                    [180, 230],
+                    [801, 632],
+                    [132, 698]
+                  ],
+                  index2: 2
+                },
+                {
+                  enable: true,
+                  url: "rtsp://admin:plsfd123@192.168.2.52:554/cam/realmonitor?channel=1&subtype=0",
+                  IoTCode: "XXXXXXXXC041",
+                  interval: 5,
+                  times: 600,
+                  serviceID: 1,
+                  DeviceType: "Road",
+                  region: [
+                    [672, 1068],
+                    [1732, 1060],
+                    [1064, 504],
+                    [984, 508]
+                  ],
+                  index2: 3
+                },
+                {
+                  enable: true,
+                  url: "rtsp://admin:plsfd123@192.168.2.139",
+                  IoTCode: "21097000654",
+                  interval: 5,
+                  times: 600,
+                  serviceID: 1,
+                  DeviceType: "Road",
+                  region: [
+                    [1014, 488],
+                    [1458, 618],
+                    [1594, 234],
+                    [1434, 200]
+                  ],
+                  index2: 4
+                },
+                {
+                  enable: true,
+                  url: "rtsp://admin:plsfd123@192.168.2.198",
+                  IoTCode: "21097000662",
+                  interval: 5,
+                  times: 600,
+                  serviceID: 8,
+                  DeviceType: "StatusLight",
+                  region: [
+                    [10, 10],
+                    [100, 10],
+                    [100, 100],
+                    [10, 100]
+                  ],
+                  index2: 6
+                },
+                {
+                  enable: true,
+                  url: "rtsp://admin:plsfd123@192.168.2.199",
+                  IoTCode: "21097000663",
+                  interval: 5,
+                  times: 600,
+                  serviceID: 8,
+                  DeviceType: "StatusLight",
+                  region: [
+                    [10, 10],
+                    [100, 10],
+                    [100, 100],
+                    [10, 100]
+                  ],
+                  index2: 7
+                }
+              ]
+            }
+          };
 
-        const caremaDetailInfo = data.response.detail.filter((item) => {
-          return item.IoTCode === iotCode;
-        });
+          const caremaDetailInfo = data.response.detail.filter((item) => {
+            return item.IoTCode === iotCode;
+          });
 
-        this.setState({
-          detailCarema: caremaDetailInfo[0]
-        });
-        console.log(`filter carema:${JSON.stringify(caremaDetailInfo)}`);
-        this.setState({ monitorArea: [...caremaDetailInfo[0].region] });
-        // this.setState({ tableData: data.response.detail });
-      }
-    });
+          console.log(`filter carema:${JSON.stringify(caremaDetailInfo)}`);
+          let serviceID;
+          if (caremaDetailInfo.length > 0) {
+            serviceID = caremaDetailInfo[0].serviceID;
+            this.setState({
+              detailCarema: caremaDetailInfo[0]
+            });
+          }
+          console.log(`filter carema,and get serviceID:${serviceID}`);
+          console.log(
+            `filter carema,and get region:${JSON.stringify(
+              caremaDetailInfo[0].region
+            )}`
+          );
+
+          const algoItem = algoFieldIdMapping.filter((item) => {
+            return item.ID === serviceID;
+          });
+          console.log(`filter by id:${JSON.stringify(algoItem)}`);
+          if (algoItem.length > 0) {
+            const { algoName } = algoItem[0];
+            const { gpu } = algoItem[0];
+            let algoDesc = "";
+            if (algoName === "Platform") {
+              algoDesc = "月台车辆分析";
+            }
+            if (algoName === "Road" || algoName === "Room") {
+              algoDesc = "消防通道分析";
+            }
+            if (algoName === "WareHouse") {
+              algoDesc = "仓库占用分析";
+            }
+            if (algoName === "HelmetEntrance") {
+              algoDesc = "工地进出口安全帽分析";
+            }
+            if (algoName === "HelmetWork") {
+              algoDesc = "工地作业区安全帽分析";
+            }
+            if (algoName === "StatusLight") {
+              algoDesc = "状态灯检测";
+            }
+            this.setState({
+              basicInfo: {
+                algorithmName: algoDesc,
+                GPU: gpu,
+                monitorImageUrl: `${BASE_URL}/?filename=picture/${iotCode}.jpg`
+              },
+              selectedCaremaChouzhen: caremaDetailInfo[0].interval.toString(),
+              selectedDetectTime: caremaDetailInfo[0].times.toString(),
+              enableStatus: caremaDetailInfo[0].enable.toString()
+            });
+            console.log(`${BASE_URL}/?filename=picture/${iotCode}.jpg`);
+          }
+        }
+      });
   }
 
   onChouzhenTimeChange(val) {
     console.log(`chouzhen select${val}`);
+    this.setState({ selectedCaremaChouzhen: val });
   }
 
   onDetectTimeChange(val) {
     console.log(`detect time select${val}`);
+    this.setState({ selectedDetectTime: val });
   }
 
   onActiveStatusChange(val) {
     console.log(`detect time select${val}`);
+    this.setState({ enableStatus: val });
   }
 
   clearMonitorArea() {
@@ -228,11 +285,31 @@ class DeployDetailComponent extends Component {
   }
 
   render() {
-    const { basicInfo, monitorArea } = this.state;
+    const {
+      basicInfo,
+      selectedCaremaChouzhen,
+      selectedDetectTime,
+      enableStatus,
+      detailCarema
+    } = this.state;
     const imageInfos = {
-      imageUrl: basicInfo.monitorImageUrl,
-      monitorArea
+      ...basicInfo,
+      ...detailCarema,
+      interval: selectedCaremaChouzhen,
+      times: selectedDetectTime,
+      enable: enableStatus
     };
+    let instructmentFlag = false;
+    const { DeviceType } = detailCarema;
+    console.log(`current device type is :${DeviceType}`);
+    if (
+      DeviceType === "SpinSwitch" ||
+      DeviceType === "LEDSegmentDisplays" ||
+      DeviceType === "StatusLight"
+    ) {
+      instructmentFlag = true;
+    }
+    console.log(`current device flag is :${instructmentFlag}`);
     return (
       <div className={style.mainContent}>
         <div className={style.BreadcrumbPart}>
@@ -276,8 +353,8 @@ class DeployDetailComponent extends Component {
               <div className={style.editItemLayout}>
                 <span className={style.basicSubTitle}>抽帧间隔：</span>
                 <Select
-                  defaultValue="5"
                   style={{ width: 120 }}
+                  value={selectedCaremaChouzhen}
                   onChange={this.onChouzhenTimeChange}
                 >
                   <Option value="1">1s</Option>
@@ -300,8 +377,8 @@ class DeployDetailComponent extends Component {
                   检测时间：
                 </span>
                 <Select
-                  defaultValue="600"
                   style={{ width: 120 }}
+                  value={selectedDetectTime}
                   onChange={this.onDetectTimeChange}
                 >
                   <Option value="15">15s</Option>
@@ -326,7 +403,7 @@ class DeployDetailComponent extends Component {
                   激活状态：
                 </span>
                 <Select
-                  defaultValue="false"
+                  value={enableStatus}
                   style={{ width: 120 }}
                   onChange={this.onActiveStatusChange}
                 >
@@ -338,7 +415,11 @@ class DeployDetailComponent extends Component {
           </div>
           <Divider orientation="left">监控区域</Divider>
           <div className={style.monitorArea}>
-            <CanavasComponet {...imageInfos} />
+            {instructmentFlag ? (
+              <CanavasRectangleComponet {...imageInfos} />
+            ) : (
+              <CanavasComponet {...imageInfos} />
+            )}
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Divider, Button } from "antd";
+import { Divider, Button, Input } from "antd";
 import * as style from "../../css/rectangle.less";
 
 class CanavasRectangleComponet extends Component {
@@ -7,305 +7,207 @@ class CanavasRectangleComponet extends Component {
     super();
 
     this.canvas = React.createRef();
-    this.canvasSave = React.createRef();
 
     this.saveDetail = this.saveDetail.bind(this);
     this.clearMonitorArea = this.clearMonitorArea.bind(this);
-    this.initCanvasImage = this.initCanvasImage.bind(this);
-    this.initCanvasWithPloygon = this.initCanvasWithPloygon.bind(this);
 
-    this.clickCanvas = this.clickCanvas.bind(this);
-    this.mouseMoveInCanvas = this.mouseMoveInCanvas.bind(this);
-    this.makearc = this.makearc.bind(this);
-    this.getRandomNum = this.getRandomNum.bind(this);
-    this.saveCanvas = this.saveCanvas.bind(this);
-    this.syncCanvas = this.syncCanvas.bind(this);
+    this.initilization = this.initilization.bind(this); // set background, draw init rectangles
+    this.drawRectangles = this.drawRectangles.bind(this); // init canvas with data.
+
+    this.mouseDownHandler = this.mouseDownHandler.bind(this);
+    this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
+    this.mouseUpHandler = this.mouseUpHandler.bind(this);
 
     this.state = {
-      pointArr: [],
-      pointX: 0,
-      pointY: 0,
+      recArrays: [],
+      desc: "",
       myCtx: {},
-      myCtxSave: {},
       editMode: false,
       flag: false,
-      fillcolor: "rgba(165,246,247,0.5)"
+      fillcolor: "red",
+      startPoint: [0, 0],
+      endPoint: [0, 0],
+      curSelectId: "",
+      curSelectName: "",
+      ratioWidth: 1,
+      ratioHeight: 1,
+      mouseMoveFlag: false,
+      showup: false,
+      cssX: 0, // for the css style of showup block
+      cssY: 0 // for the css style of showup block
     };
   }
 
   componentDidMount() {
-    console.log("did mount on area page");
+    console.log("did mount on rectangle page");
     const { fillcolor } = this.state;
-    const can = this.canvas.current;
-    const canSave = this.canvasSave.current;
-    const canCtx = can.getContext("2d");
-    const canSaveCtx = canSave.getContext("2d");
+    const my = this.canvas.current;
+    const myCtx = my.getContext("2d");
     // 配置
-    canCtx.strokeStyle = fillcolor;
-    canCtx.lineWidth = 1;
-    canSaveCtx.strokeStyle = fillcolor;
-    canSaveCtx.lineWidth = 1;
+    myCtx.strokeStyle = fillcolor;
+    myCtx.lineWidth = 1;
 
     this.setState({
-      myCtx: canCtx,
-      myCtxSave: canSaveCtx
+      myCtx
     });
   }
 
   componentDidUpdate() {
     // init image and add init points
-    const { myCtx, myCtxSave, flag } = this.state;
-    const { monitorImageUrl, monitorArea } = this.props;
-    console.log(
-      `did update on area page,image url is:${monitorImageUrl},flag is: ${flag}`
-    );
+    const { flag } = this.state;
+    console.log("call the did update....");
     if (!flag) {
-      const initImage = new Image();
-      initImage.src = monitorImageUrl;
-      initImage.onload = () => {
-        const w = initImage.width;
-        const h = initImage.height;
-        this.initCanvasWithPloygon(w, h, initImage, monitorArea, myCtx);
-        this.initCanvasWithPloygon(w, h, initImage, monitorArea, myCtxSave);
+      this.initilization().then(() => {
         this.setState({ flag: !flag });
-      };
+      });
     }
   }
 
-  /* canvas生成圆点 */
-  getRandomNum(Min, Max) {
-    const range = Max - Min;
-    const rand = Math.random();
-    return Min + Math.round(rand * range);
+  // shouldComponentUpdate(prev, next) {
+  //   console.log(`SHOULD PREV:${JSON.stringify(prev)}`);
+  //   console.log(`SHOULD NEXT:${JSON.stringify(next)}`);
+  //   return true;
+  // }
+
+  getImage(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        resolve(img);
+      };
+      img.onerror = () => {
+        reject(img);
+      };
+      img.src = url;
+    });
   }
 
-  mouseMoveInCanvas(e) {
-    let { pointX, pointY } = this.state;
-    const { pointArr, editMode } = this.state;
-    console.log(
-      `mouse move canvas, offsetX is:${e.nativeEvent.offsetX},layX is:${e.nativeEvent.layerX},edit mode is:${editMode}`
-    );
+  initilization() {
+    const { myCtx } = this.state;
+    const { monitorImageUrl } = this.props;
+    return this.getImage(monitorImageUrl).then((initImage) => {
+      const w = initImage.width;
+      const h = initImage.height;
+      const ratioWidth = w / 960;
+      const ratioHeight = h / 540;
+      this.setState({
+        ratioWidth,
+        ratioHeight
+      });
+      // draw the image as background of canvas
+      myCtx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
+      // init all the rectangles that from parameter
+      this.drawRectangles();
+    });
+  }
 
-    const { myCtx, fillcolor } = this.state;
-    if (editMode) {
-      console.log(`pointArr is:${JSON.stringify(pointArr)}`);
+  mouseMoveHandler(e) {
+    const { startPoint, myCtx } = this.state;
+
+    if (startPoint[0] !== 0 || startPoint[1] !== 0) {
       if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
-        pointX =
+        const offsetX =
           e.nativeEvent.offsetX === undefined
             ? e.nativeEvent.layerX
             : e.nativeEvent.offsetX;
-        pointY =
+        const offsetY =
           e.nativeEvent.offsetY === undefined
             ? e.nativeEvent.layerY
             : e.nativeEvent.offsetY;
-        let piX;
-        let piY;
-        /* 清空画布 */
-        myCtx.clearRect(0, 0, 960, 540);
-        /* 鼠标下跟随的圆点 */
-        this.makearc(
-          myCtx,
-          pointX,
-          pointY,
-          this.getRandomNum(4, 4),
-          0,
-          180,
-          fillcolor
+        // TODO: check no overlapping.....\
+        console.log(
+          `start drawing:${startPoint[0]},${startPoint[1]},${offsetX},${offsetY}`
         );
-
-        if (pointArr.length > 0) {
-          if (
-            pointX > pointArr[0].x - 15 &&
-            pointX < pointArr[0].x + 15 &&
-            pointY > pointArr[0].y - 15 &&
-            pointY < pointArr[0].y + 15
-          ) {
-            if (pointArr.length > 1) {
-              piX = pointArr[0].x;
-              piY = pointArr[0].y;
-              myCtx.clearRect(0, 0, 960, 540);
-              this.makearc(
-                myCtx,
-                piX,
-                piY,
-                this.getRandomNum(4, 4),
-                0,
-                180,
-                fillcolor
-              );
-              this.setState({ editMode: false });
-            }
-          } else {
-            piX = pointX;
-            piY = pointY;
-            this.setState({ editMode: true });
-          }
-          /* 开始绘制 */
-          myCtx.beginPath();
-          myCtx.moveTo(pointArr[0].x, pointArr[0].y);
-          if (pointArr.length > 1) {
-            for (let i = 1; i < pointArr.length; i++) {
-              myCtx.lineTo(pointArr[i].x, pointArr[i].y);
-            }
-          }
-          myCtx.lineTo(piX, piY);
-          myCtx.fillStyle = fillcolor; // 填充颜色
-          myCtx.fill(); // 填充
-          myCtx.stroke(); // 绘制
-        }
+        this.clearMonitorArea();
+        myCtx.strokeRect(
+          startPoint[0],
+          startPoint[1],
+          Math.abs(offsetX - startPoint[0]),
+          Math.abs(offsetY - startPoint[1])
+        );
       }
     }
   }
 
-  clickCanvas(e) {
-    let { pointX, pointY } = this.state;
-    const { pointArr, editMode } = this.state;
-    console.log(
-      `click canvas, editMode: ${editMode}offsetX is:${e.nativeEvent.offsetX},layX is:${e.nativeEvent.layerX}`
-    );
-
-    const { myCtx, fillcolor } = this.state;
+  mouseDownHandler(e) {
     if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
-      pointX =
+      const pointX =
         e.nativeEvent.offsetX === undefined
           ? e.nativeEvent.layerX
           : e.nativeEvent.offsetX;
-      pointY =
+      const pointY =
         e.nativeEvent.offsetY === undefined
           ? e.nativeEvent.layerY
           : e.nativeEvent.offsetY;
-      let piX;
-      let piY;
-      if (!editMode && pointArr.length > 0) {
-        piX = pointArr[0].x;
-        piY = pointArr[0].y;
-        // 画点
-        this.makearc(
-          myCtx,
-          piX,
-          piY,
-          this.getRandomNum(2, 2),
-          0,
-          180,
-          fillcolor
+      console.log(`mouse down on dot:[${pointX},${pointY}]`);
+      this.setState({ startPoint: [pointX, pointY] });
+    }
+  }
+
+  mouseUpHandler(e) {
+    e.stopPropagation();
+    const { myCtx, startPoint } = this.state;
+    if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
+      const offsetX =
+        e.nativeEvent.offsetX === undefined
+          ? e.nativeEvent.layerX
+          : e.nativeEvent.offsetX;
+      const offsetY =
+        e.nativeEvent.offsetY === undefined
+          ? e.nativeEvent.layerY
+          : e.nativeEvent.offsetY;
+      if (startPoint[0] !== offsetX && startPoint[1] !== offsetY) {
+        myCtx.strokeRect(
+          startPoint[0],
+          startPoint[1],
+          offsetX - startPoint[0],
+          offsetY - startPoint[1]
         );
-        pointArr.push({ x: piX, y: piY });
-        this.syncCanvas(pointArr); // 保存点线同步到另一个canvas
-        this.saveCanvas(); // 生成画布
-      } else {
-        piX = pointX;
-        piY = pointY;
-        this.makearc(
-          myCtx,
-          piX,
-          piY,
-          this.getRandomNum(2, 2),
-          0,
-          180,
-          fillcolor
-        );
-        pointArr.push({ x: piX, y: piY });
-        this.syncCanvas(pointArr); // 保存点线同步到另一个canvas
+
+        this.setState({
+          startPoint: [0, 0],
+          cssX: offsetX,
+          cssY: offsetY,
+          showup: true
+        });
       }
-      this.setState({ pointArr: [...pointArr] });
     }
   }
 
   clearMonitorArea() {
-    const { myCtx, myCtxSave } = this.state;
-    const { monitorImageUrl } = this.props;
-
-    this.initCanvasImage(myCtx, myCtxSave, monitorImageUrl);
+    this.initilization();
     this.setState({
       editMode: true,
-      pointArr: []
+      recArrays: []
     });
   }
 
-  initCanvasImage(myCtx, myCtxSave, imageUrl) {
-    const initImage = new Image();
-    initImage.src = imageUrl;
-    initImage.onload = () => {
-      const w = initImage.width;
-      const h = initImage.height;
-      myCtx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
-      myCtxSave.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
-    };
-  }
-
-  initCanvasWithPloygon(w, h, initImage, monitorArea, ctx) {
-    const { fillcolor } = this.state;
-    const ratioWidth = w / 960;
-    const ratioHeight = h / 540;
-    ctx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
-    ctx.beginPath();
-    ctx.strokeStyle = "red";
-    ctx.fillStyle = fillcolor;
-    if (monitorArea.length > 0) {
-      console.log(`init area: ${JSON.stringify(monitorArea)}`);
-      ctx.moveTo(
-        monitorArea[0][0] / ratioWidth,
-        monitorArea[0][1] / ratioHeight
+  drawRectangles() {
+    console.log("start to draw multiple rectangle");
+    const { myCtx, ratioWidth, ratioHeight } = this.state;
+    const { data } = this.props;
+    const recArrays = data;
+    this.setState({ recArrays: [...data] }); // TODO: check the data from props.
+    console.log(`redraw with rec LENGTH:${recArrays.length}`);
+    for (let i = 0; i < recArrays.length; i++) {
+      console.log(`point:${recArrays[i].point}`);
+      const { region } = recArrays[i];
+      myCtx.strokeRect(
+        region[0][0] / ratioWidth,
+        region[0][1] / ratioHeight,
+        Math.abs(region[2][0] - region[0][0]) / ratioWidth,
+        Math.abs(region[2][1] - region[0][1]) / ratioHeight
       );
-      for (let i = 1; i < monitorArea.length; i++) {
-        ctx.lineTo(
-          monitorArea[i][0] / ratioWidth,
-          monitorArea[i][1] / ratioHeight
-        );
-      }
-      ctx.lineTo(
-        monitorArea[0][0] / ratioWidth,
-        monitorArea[0][1] / ratioHeight
-      );
-      ctx.fill();
-      ctx.stroke();
     }
+    console.log("end to init multiple rectangle");
   }
 
   saveDetail() {
     console.log("start to save detail informations.");
   }
 
-  makearc(ctx, x, y, r, s, e, color) {
-    ctx.clearRect(0, 0, 199, 202); // 清空画布
-    ctx.beginPath();
-    ctx.fillStyle = color;
-    ctx.arc(x, y, r, s, e);
-    ctx.fill();
-  }
-
-  saveCanvas() {
-    console.log("[Saving]unable to edit, saving........");
-    const { myCtx, myCtxSave, pointArr } = this.state;
-    console.log(`saving points is: ${JSON.stringify(pointArr)}`);
-    myCtx.clearRect(0, 0, 960, 540);
-    myCtxSave.closePath(); // 结束路径状态，结束当前路径，如果是一个未封闭的图形，会自动将首尾相连封闭起来
-    myCtxSave.fill(); // 填充
-    myCtxSave.stroke(); // 绘制
-    this.setState({
-      pointArr: []
-    });
-  }
-
-  // 存储已生成的点线
-  syncCanvas(pointArr) {
-    const { myCtxSave, fillcolor } = this.state;
-    myCtxSave.clearRect(0, 0, myCtxSave.width, myCtxSave.height);
-    myCtxSave.beginPath();
-    if (pointArr.length > 1) {
-      myCtxSave.moveTo(pointArr[0].x, pointArr[0].y);
-      for (let i = 1; i < pointArr.length; i++) {
-        myCtxSave.lineTo(pointArr[i].x, pointArr[i].y);
-        myCtxSave.fillStyle = fillcolor; // 填充颜色
-        // myCtxSave.fill();
-        myCtxSave.stroke(); // 绘制
-      }
-      myCtxSave.closePath();
-      // 是否存储pointArr
-    }
-  }
-
   render() {
+    const { curSelectId, curSelectName, cssX, cssY, showup } = this.state;
     console.log(
       `[area page]get props from detail page: ${JSON.stringify(this.props)}`
     );
@@ -314,34 +216,56 @@ class CanavasRectangleComponet extends Component {
       <div className={style.monitorArea}>
         <div className={style.btnLayer}>
           <Button type="primary" onClick={this.clearMonitorArea}>
-            重绘矩形
+            编辑矩形
           </Button>
           <Divider type="vertical" />
           <Button type="primary" onClick={this.saveDetail}>
-            保存多个矩形
+            保存
           </Button>
         </div>
+
         <div className={style.monitorCanvas} id="canvasArea">
           <canvas
             ref={this.canvas}
             className={style.originalCanvas}
             id="canvas"
-            onClick={this.clickCanvas}
-            onMouseMove={this.mouseMoveInCanvas}
+            onMouseDown={this.mouseDownHandler}
+            onMouseMove={this.mouseMoveHandler}
+            onMouseUp={this.mouseUpHandler}
             width={960}
             height={540}
           >
             Your browser does not support the canvas element.
           </canvas>
-          <canvas
-            ref={this.canvasSave}
-            className={style.newCanvas}
-            id="canvasSave"
-            width={960}
-            height={540}
-          >
-            Your browser does not support the canvas element.
-          </canvas>
+          {showup ? (
+            <div className={style.mask} style={{ top: cssY, left: cssX }}>
+              <div className={style.txtLayer}>
+                <div className={style.label}>ID:</div>
+                <Input placeholder="id" defaultValue={curSelectId} />
+              </div>
+              <div className={style.txtLayer}>
+                <div className={style.label}>Name:</div>
+                <Input placeholder="name" defaultValue={curSelectName} />
+              </div>
+              <div className={style.btnPart}>
+                <Button type="primary" className={style.confirmBtn}>
+                  确认
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.setState({ showup: false, startPoint: [0, 0] });
+                    // this.initilization();
+                  }}
+                  className={style.cancelBtn}
+                >
+                  取消
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div />
+          )}
         </div>
       </div>
     );

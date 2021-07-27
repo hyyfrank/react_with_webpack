@@ -302,6 +302,99 @@ class DeployDetailComponent extends Component {
     let instructmentFlag = false;
     const { DeviceType } = detailCarema;
     console.log(`current device type is :${DeviceType}`);
+    const imageRectParms = {
+      monitorImageUrl: basicInfo.monitorImageUrl,
+      state: true,
+      desc: "StatusLight",
+      data: [
+        {
+          ID: "a9049f5f776111ebbf91506b4b2aa321",
+          region: [
+            [1134, 721],
+            [1189, 726],
+            [1189, 775],
+            [1131, 772]
+          ],
+          result: { confidence: 1.0, value: 0 }
+        },
+        {
+          ID: "a9049f5f776111ebbf91506b4b2aa320",
+          region: [
+            [1066, 715],
+            [1125, 718],
+            [1119, 771],
+            [1063, 771]
+          ],
+          result: { confidence: 1.0, value: 0 }
+        },
+        {
+          ID: "a9049f5f776111ebbf91506b4b2aa319",
+          region: [
+            [1000, 714],
+            [1051, 715],
+            [1050, 771],
+            [996, 771]
+          ],
+          result: { confidence: 1.0, value: 0 }
+        },
+        {
+          ID: "a9049f5f776111ebbf91506b4b2aa318",
+          region: [
+            [928, 711],
+            [985, 714],
+            [984, 769],
+            [924, 769]
+          ],
+          result: { confidence: 1.0, value: 0 }
+        },
+        {
+          ID: "a9049f5f776111ebbf91506b4b2aa317",
+          region: [
+            [804, 703],
+            [853, 706],
+            [855, 766],
+            [801, 766]
+          ],
+          result: { confidence: 1.0, value: 0 }
+        },
+        {
+          ID: "a9049f5f776111ebbf91506b4b2aa316",
+          region: [
+            [736, 703],
+            [784, 705],
+            [783, 765],
+            [736, 762]
+          ],
+          result: { confidence: 1.0, value: 0 }
+        },
+        {
+          ID: "a9049f5f776111ebbf91506b4b2aa315",
+          region: [
+            [672, 703],
+            [723, 709],
+            [723, 756],
+            [669, 756]
+          ],
+          result: { confidence: 1.0, value: 0 }
+        },
+        {
+          ID: "a9049f5f776111ebbf91506b4b2aa314",
+          region: [
+            [607, 699],
+            [657, 703],
+            [657, 756],
+            [603, 750]
+          ],
+          result: { confidence: 1.0, value: 0 }
+        }
+      ],
+      serviceID: 2,
+      IoTCode: "21097000663",
+      jpg: "./picture/2021-07-26/21097000663_20210727000000.jpg",
+      cameraID: "21097000663",
+      time: "2021-07-27 00:00:00"
+    };
+
     if (
       DeviceType === "SpinSwitch" ||
       DeviceType === "LEDSegmentDisplays" ||
@@ -416,7 +509,7 @@ class DeployDetailComponent extends Component {
           <Divider orientation="left">监控区域</Divider>
           <div className={style.monitorArea}>
             {instructmentFlag ? (
-              <CanavasRectangleComponet {...imageInfos} />
+              <CanavasRectangleComponet {...imageRectParms} />
             ) : (
               <CanavasComponet {...imageInfos} />
             )}

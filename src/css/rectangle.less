@@ -16,6 +16,41 @@
     border: 1px solid green;
     position: relative;
 
+    .mask {
+      width: 200px;
+      height: 120px;
+      position: absolute;
+      z-index: 1;
+      border: 1px solid #e3e3e3;
+      background-color: white;
+      color: black;
+      border-radius: 5px;
+
+      .txtLayer {
+        display: flex;
+        margin: 5px;
+
+        .label {
+          width: 60px;
+          text-align: right;
+          margin-right: 5px;
+        }
+      }
+
+      .btnPart {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .confirmBtn {
+        margin-right: 10px;
+      }
+
+      .cancelBtn {
+        margin-right: 5px;
+      }
+    }
+
     .originalCanvas {
       position: absolute;
       left: 0;

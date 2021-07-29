@@ -22,7 +22,6 @@ class DeploysComponent extends Component {
     this.createCancelHandler = this.createCancelHandler.bind(this);
     this.onAlgorithmChange = this.onAlgorithmChange.bind(this);
     this.onCaremaChange = this.onCaremaChange.bind(this);
-    this.delRecord = this.delRecord.bind(this);
     this.resetTableData = this.resetTableData.bind(this);
 
     this.state = {
@@ -155,10 +154,6 @@ class DeploysComponent extends Component {
       .catch((e) => {
         console.error(`promise all throws:${e}`);
       });
-  }
-
-  delRecord(record) {
-    console.log(`will delete iotID:${JSON.stringify(record)}`);
   }
 
   resetTableData() {
@@ -333,23 +328,24 @@ class DeploysComponent extends Component {
         key: "detail",
         width: "12%",
         render: (text, record, index) => {
-          const iotID = record.IoTCode;
+          if (
+            record.algoName === "SpinSwitch" ||
+            record.algoName === "LEDSegmentDisplays" ||
+            record.algoName === "StatusLight"
+          ) {
+            return (
+              <div>
+                <Link to={`/deploys/instrument/${record.IoTCode}`}>
+                  <span>编辑 </span>
+                </Link>
+              </div>
+            );
+          }
           return (
             <div>
               <Link to={`/deploys/detail/${record.IoTCode}`}>
                 <span>编辑 </span>
               </Link>
-              <Divider type="vertical" />
-              <Button
-                disabled
-                className={style.delBtn}
-                type="link"
-                onClick={() => {
-                  this.delRecord(iotID);
-                }}
-              >
-                删除
-              </Button>
             </div>
           );
         }

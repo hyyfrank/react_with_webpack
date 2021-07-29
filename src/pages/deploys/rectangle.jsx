@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { Divider, Button, Input } from "antd";
-import { throttle } from "throttle-debounce";
 import * as style from "../../css/rectangle.less";
+import APICONST from "../../services/APIConst";
 
 class CanavasRectangleComponet extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.canvas = React.createRef();
 
@@ -20,13 +20,12 @@ class CanavasRectangleComponet extends Component {
 
     this.state = {
       recArrays: [],
-      monitorImageUrl:
-        "http://cvp.g2link.cn:20065/?filename=picture/21097000662.jpg",
+      monitorImageUrl: "",
       desc: "",
       myCtx: {},
       originLen: 0,
       editMode: false,
-      flag: false,
+      flag: true,
       fillcolor: "yellow",
       startPoint: [0, 0],
       endPoint: [0, 0],
@@ -43,20 +42,16 @@ class CanavasRectangleComponet extends Component {
 
   componentDidMount() {
     const { fillcolor } = this.state;
-    const { data } = this.props;
-    console.log(`component did mount url:${JSON.stringify(this.props)}`);
+
     const my = this.canvas.current;
     const myCtx = my.getContext("2d");
-
     // 配置
     myCtx.strokeStyle = fillcolor;
     myCtx.lineWidth = 1;
-
+    // select data via iotcode to get region data
     this.setState(
       {
-        myCtx,
-        originLen: data.length,
-        recArrays: [...data]
+        myCtx
       },
       () => {
         this.initilization();
@@ -64,9 +59,19 @@ class CanavasRectangleComponet extends Component {
     );
   }
 
+  static getDerivedStateFromProps(prev, next) {
+    return {
+      monitorImageUrl: prev.monitorImageUrl,
+      recArrays: prev.data,
+      originLen: prev.data.length
+    };
+  }
+
   componentDidUpdate() {
     // init image and add init points
     const { flag } = this.state;
+    console.log(`init update called! with flag ${flag}`);
+
     if (flag) {
       console.log(`init update called!`);
       this.initilization();
@@ -89,17 +94,10 @@ class CanavasRectangleComponet extends Component {
   initilization() {
     const { myCtx, monitorImageUrl } = this.state;
 
-    if (monitorImageUrl !== "") {
+    if (monitorImageUrl !== "" && monitorImageUrl !== undefined) {
       return this.getImage(monitorImageUrl).then((initImage) => {
         const w = initImage.width;
         const h = initImage.height;
-        // const ratioWidth = w / 960;
-        // const ratioHeight = h / 540;
-        // this.setState({
-        //   ratioWidth,
-        //   ratioHeight
-        // });
-        // draw the image as background of canvas
         myCtx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
         // init all the rectangles that from parameter
         this.drawRectangles();

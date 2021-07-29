@@ -54,6 +54,12 @@ const myroute = {
           label: "监控区域",
           exact: true,
           component: Deploys
+        },
+        {
+          path: "/deploys/instrument/:IoTCode",
+          label: "控制器监控区域",
+          exact: true,
+          component: Deploys
         }
       ]
     }

@@ -10,7 +10,6 @@ class CanavasRectangleComponet extends Component {
     this.canvas = React.createRef();
 
     this.saveDetail = this.saveDetail.bind(this);
-    this.clearMonitorArea = this.clearMonitorArea.bind(this);
 
     this.initilization = this.initilization.bind(this); // set background, draw init rectangles
     this.drawRectangles = this.drawRectangles.bind(this); // init canvas with data.
@@ -25,6 +24,7 @@ class CanavasRectangleComponet extends Component {
         "http://cvp.g2link.cn:20065/?filename=picture/21097000662.jpg",
       desc: "",
       myCtx: {},
+      originLen: 0,
       editMode: false,
       flag: false,
       fillcolor: "yellow",
@@ -55,6 +55,7 @@ class CanavasRectangleComponet extends Component {
     this.setState(
       {
         myCtx,
+        originLen: data.length,
         recArrays: [...data]
       },
       () => {
@@ -65,9 +66,9 @@ class CanavasRectangleComponet extends Component {
 
   componentDidUpdate() {
     // init image and add init points
-    const { flag, monitorImageUrl } = this.state;
+    const { flag } = this.state;
     if (flag) {
-      console.log(`init update monitorImageUrl:${monitorImageUrl}`);
+      console.log(`init update called!`);
       this.initilization();
     }
   }
@@ -107,8 +108,26 @@ class CanavasRectangleComponet extends Component {
     return "";
   }
 
+  mouseDownHandler(e) {
+    if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
+      const offsetX =
+        e.nativeEvent.offsetX === undefined
+          ? e.nativeEvent.layerX
+          : e.nativeEvent.offsetX;
+      const offsetY =
+        e.nativeEvent.offsetY === undefined
+          ? e.nativeEvent.layerY
+          : e.nativeEvent.offsetY;
+      this.setState({ flag: true, startPoint: [offsetX, offsetY] });
+    }
+  }
+
   mouseMoveHandler(e) {
-    const { startPoint, myCtx, recArrays } = this.state;
+    const { startPoint, recArrays, ratioWidth, ratioHeight, originLen } =
+      this.state;
+    if (originLen < recArrays.length) {
+      recArrays.pop();
+    }
 
     if (startPoint[0] !== 0 || startPoint[1] !== 0) {
       if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
@@ -122,40 +141,34 @@ class CanavasRectangleComponet extends Component {
             : e.nativeEvent.offsetY;
         // TODO: check no overlapping.....\
 
-        this.clearMonitorArea();
         console.log(`mouse move get items:${recArrays.length}`);
-        myCtx.strokeRect(
-          startPoint[0],
-          startPoint[1],
-          Math.abs(offsetX - startPoint[0]),
-          Math.abs(offsetY - startPoint[1])
+        const width = offsetX - startPoint[0];
+        const height = offsetY - startPoint[1];
+
+        const addRect = {
+          ID: "0000000000",
+          region: [
+            [startPoint[0] * ratioWidth, startPoint[1] * ratioHeight],
+            [
+              startPoint[0] * ratioWidth,
+              (startPoint[1] - height) * ratioHeight
+            ],
+            [
+              (startPoint[0] + width) * ratioWidth,
+              (startPoint[1] - height) * ratioHeight
+            ],
+            [(startPoint[0] + width) * ratioWidth, startPoint[1] * ratioHeight]
+          ],
+          result: { confidence: 1.0, value: 0 }
+        };
+        console.log(
+          `before: mouse up  array:${JSON.stringify(recArrays.length)}`
         );
+        console.log(`add： ${JSON.stringify(addRect)}`);
+        if (Array.isArray(recArrays)) {
+          this.setState({ recArrays: [...recArrays, addRect] });
+        }
       }
-    }
-  }
-
-  mouseDownHandler(e) {
-    const { startPoint, myCtx } = this.state;
-
-    if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
-      const offsetX =
-        e.nativeEvent.offsetX === undefined
-          ? e.nativeEvent.layerX
-          : e.nativeEvent.offsetX;
-      const offsetY =
-        e.nativeEvent.offsetY === undefined
-          ? e.nativeEvent.layerY
-          : e.nativeEvent.offsetY;
-      if (startPoint[0] !== 0 && startPoint[1] !== 0) {
-        myCtx.strokeRect(
-          startPoint[0],
-          startPoint[1],
-          Math.abs(offsetX - startPoint[0]),
-          Math.abs(offsetY - startPoint[1])
-        );
-      }
-
-      this.setState({ flag: true, startPoint: [offsetX, offsetY] });
     }
   }
 
@@ -201,6 +214,7 @@ class CanavasRectangleComponet extends Component {
         console.log(
           `before: mouse up  array:${JSON.stringify(recArrays.length)}`
         );
+        console.log(`add： ${JSON.stringify(addRect)}`);
         if (Array.isArray(recArrays)) {
           recArrays.push(addRect);
         }
@@ -208,32 +222,22 @@ class CanavasRectangleComponet extends Component {
           `after: mouse up get array:${JSON.stringify(recArrays.length)}`
         );
 
-        this.setState({
-          startPoint: [0, 0],
-          recArrays,
-          cssX: offsetX,
-          cssY: offsetY,
-          showup: true,
-          flag: false
-        });
+        this.setState(
+          {
+            startPoint: [0, 0],
+            recArrays,
+            originLen: recArrays.length,
+            cssX: offsetX,
+            cssY: offsetY,
+            showup: true,
+            flag: false
+          },
+          () => {
+            this.initilization();
+          }
+        );
       }
     }
-  }
-
-  clearMonitorArea() {
-    this.initilization();
-    // const { recArrays } = this.state;
-    // console.log(`before pop: ${recArrays.length}`);
-    // recArrays.pop();
-    // console.log(`after pop: ${recArrays.length}`);
-
-    // this.setState({
-    //   recArrays: [...recArrays]
-    // });
-    // this.setState({
-    //   editMode: true,
-    //   recArrays: []
-    // });
   }
 
   drawRectangles() {
@@ -258,7 +262,7 @@ class CanavasRectangleComponet extends Component {
     return (
       <div className={style.monitorArea}>
         <div className={style.btnLayer}>
-          <Button type="primary" onClick={this.clearMonitorArea}>
+          <Button type="primary" onClick={this.initilization}>
             编辑矩形
           </Button>
           <Divider type="vertical" />
@@ -273,7 +277,7 @@ class CanavasRectangleComponet extends Component {
             className={style.originalCanvas}
             id="canvas"
             onMouseDown={this.mouseDownHandler}
-            onMouseMove={throttle(500, this.mouseMoveHandler)}
+            onMouseMove={this.mouseMoveHandler}
             onMouseUp={this.mouseUpHandler}
             width={960}
             height={540}

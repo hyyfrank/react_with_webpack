@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Divider, Button, Input } from "antd";
+import { throttle } from "throttle-debounce";
 import * as style from "../../css/rectangle.less";
 
 class CanavasRectangleComponet extends Component {
@@ -20,17 +21,19 @@ class CanavasRectangleComponet extends Component {
 
     this.state = {
       recArrays: [],
+      monitorImageUrl:
+        "http://cvp.g2link.cn:20065/?filename=picture/21097000662.jpg",
       desc: "",
       myCtx: {},
       editMode: false,
       flag: false,
-      fillcolor: "red",
+      fillcolor: "yellow",
       startPoint: [0, 0],
       endPoint: [0, 0],
       curSelectId: "",
       curSelectName: "",
-      ratioWidth: 1,
-      ratioHeight: 1,
+      ratioWidth: 2,
+      ratioHeight: 2,
       mouseMoveFlag: false,
       showup: false,
       cssX: 0, // for the css style of showup block
@@ -39,35 +42,35 @@ class CanavasRectangleComponet extends Component {
   }
 
   componentDidMount() {
-    console.log("did mount on rectangle page");
     const { fillcolor } = this.state;
+    const { data } = this.props;
+    console.log(`component did mount url:${JSON.stringify(this.props)}`);
     const my = this.canvas.current;
     const myCtx = my.getContext("2d");
+
     // 配置
     myCtx.strokeStyle = fillcolor;
     myCtx.lineWidth = 1;
 
-    this.setState({
-      myCtx
-    });
+    this.setState(
+      {
+        myCtx,
+        recArrays: [...data]
+      },
+      () => {
+        this.initilization();
+      }
+    );
   }
 
   componentDidUpdate() {
     // init image and add init points
-    const { flag } = this.state;
-    console.log("call the did update....");
-    if (!flag) {
-      this.initilization().then(() => {
-        this.setState({ flag: !flag });
-      });
+    const { flag, monitorImageUrl } = this.state;
+    if (flag) {
+      console.log(`init update monitorImageUrl:${monitorImageUrl}`);
+      this.initilization();
     }
   }
-
-  // shouldComponentUpdate(prev, next) {
-  //   console.log(`SHOULD PREV:${JSON.stringify(prev)}`);
-  //   console.log(`SHOULD NEXT:${JSON.stringify(next)}`);
-  //   return true;
-  // }
 
   getImage(url) {
     return new Promise((resolve, reject) => {
@@ -83,26 +86,29 @@ class CanavasRectangleComponet extends Component {
   }
 
   initilization() {
-    const { myCtx } = this.state;
-    const { monitorImageUrl } = this.props;
-    return this.getImage(monitorImageUrl).then((initImage) => {
-      const w = initImage.width;
-      const h = initImage.height;
-      const ratioWidth = w / 960;
-      const ratioHeight = h / 540;
-      this.setState({
-        ratioWidth,
-        ratioHeight
+    const { myCtx, monitorImageUrl } = this.state;
+
+    if (monitorImageUrl !== "") {
+      return this.getImage(monitorImageUrl).then((initImage) => {
+        const w = initImage.width;
+        const h = initImage.height;
+        // const ratioWidth = w / 960;
+        // const ratioHeight = h / 540;
+        // this.setState({
+        //   ratioWidth,
+        //   ratioHeight
+        // });
+        // draw the image as background of canvas
+        myCtx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
+        // init all the rectangles that from parameter
+        this.drawRectangles();
       });
-      // draw the image as background of canvas
-      myCtx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
-      // init all the rectangles that from parameter
-      this.drawRectangles();
-    });
+    }
+    return "";
   }
 
   mouseMoveHandler(e) {
-    const { startPoint, myCtx } = this.state;
+    const { startPoint, myCtx, recArrays } = this.state;
 
     if (startPoint[0] !== 0 || startPoint[1] !== 0) {
       if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
@@ -115,10 +121,9 @@ class CanavasRectangleComponet extends Component {
             ? e.nativeEvent.layerY
             : e.nativeEvent.offsetY;
         // TODO: check no overlapping.....\
-        console.log(
-          `start drawing:${startPoint[0]},${startPoint[1]},${offsetX},${offsetY}`
-        );
+
         this.clearMonitorArea();
+        console.log(`mouse move get items:${recArrays.length}`);
         myCtx.strokeRect(
           startPoint[0],
           startPoint[1],
@@ -130,23 +135,34 @@ class CanavasRectangleComponet extends Component {
   }
 
   mouseDownHandler(e) {
+    const { startPoint, myCtx } = this.state;
+
     if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
-      const pointX =
+      const offsetX =
         e.nativeEvent.offsetX === undefined
           ? e.nativeEvent.layerX
           : e.nativeEvent.offsetX;
-      const pointY =
+      const offsetY =
         e.nativeEvent.offsetY === undefined
           ? e.nativeEvent.layerY
           : e.nativeEvent.offsetY;
-      console.log(`mouse down on dot:[${pointX},${pointY}]`);
-      this.setState({ startPoint: [pointX, pointY] });
+      if (startPoint[0] !== 0 && startPoint[1] !== 0) {
+        myCtx.strokeRect(
+          startPoint[0],
+          startPoint[1],
+          Math.abs(offsetX - startPoint[0]),
+          Math.abs(offsetY - startPoint[1])
+        );
+      }
+
+      this.setState({ flag: true, startPoint: [offsetX, offsetY] });
     }
   }
 
   mouseUpHandler(e) {
     e.stopPropagation();
-    const { myCtx, startPoint } = this.state;
+    const { myCtx, startPoint, recArrays, ratioHeight, ratioWidth } =
+      this.state;
     if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
       const offsetX =
         e.nativeEvent.offsetX === undefined
@@ -163,12 +179,42 @@ class CanavasRectangleComponet extends Component {
           offsetX - startPoint[0],
           offsetY - startPoint[1]
         );
+        const width = offsetX - startPoint[0];
+        const height = offsetY - startPoint[1];
+
+        const addRect = {
+          ID: "0000000000",
+          region: [
+            [startPoint[0] * ratioWidth, startPoint[1] * ratioHeight],
+            [
+              startPoint[0] * ratioWidth,
+              (startPoint[1] - height) * ratioHeight
+            ],
+            [
+              (startPoint[0] + width) * ratioWidth,
+              (startPoint[1] - height) * ratioHeight
+            ],
+            [(startPoint[0] + width) * ratioWidth, startPoint[1] * ratioHeight]
+          ],
+          result: { confidence: 1.0, value: 0 }
+        };
+        console.log(
+          `before: mouse up  array:${JSON.stringify(recArrays.length)}`
+        );
+        if (Array.isArray(recArrays)) {
+          recArrays.push(addRect);
+        }
+        console.log(
+          `after: mouse up get array:${JSON.stringify(recArrays.length)}`
+        );
 
         this.setState({
           startPoint: [0, 0],
+          recArrays,
           cssX: offsetX,
           cssY: offsetY,
-          showup: true
+          showup: true,
+          flag: false
         });
       }
     }
@@ -176,21 +222,24 @@ class CanavasRectangleComponet extends Component {
 
   clearMonitorArea() {
     this.initilization();
-    this.setState({
-      editMode: true,
-      recArrays: []
-    });
+    // const { recArrays } = this.state;
+    // console.log(`before pop: ${recArrays.length}`);
+    // recArrays.pop();
+    // console.log(`after pop: ${recArrays.length}`);
+
+    // this.setState({
+    //   recArrays: [...recArrays]
+    // });
+    // this.setState({
+    //   editMode: true,
+    //   recArrays: []
+    // });
   }
 
   drawRectangles() {
-    console.log("start to draw multiple rectangle");
-    const { myCtx, ratioWidth, ratioHeight } = this.state;
-    const { data } = this.props;
-    const recArrays = data;
-    this.setState({ recArrays: [...data] }); // TODO: check the data from props.
-    console.log(`redraw with rec LENGTH:${recArrays.length}`);
+    const { myCtx, ratioWidth, ratioHeight, recArrays } = this.state;
+
     for (let i = 0; i < recArrays.length; i++) {
-      console.log(`point:${recArrays[i].point}`);
       const { region } = recArrays[i];
       myCtx.strokeRect(
         region[0][0] / ratioWidth,
@@ -199,18 +248,12 @@ class CanavasRectangleComponet extends Component {
         Math.abs(region[2][1] - region[0][1]) / ratioHeight
       );
     }
-    console.log("end to init multiple rectangle");
   }
 
-  saveDetail() {
-    console.log("start to save detail informations.");
-  }
+  saveDetail() {}
 
   render() {
     const { curSelectId, curSelectName, cssX, cssY, showup } = this.state;
-    console.log(
-      `[area page]get props from detail page: ${JSON.stringify(this.props)}`
-    );
 
     return (
       <div className={style.monitorArea}>
@@ -230,7 +273,7 @@ class CanavasRectangleComponet extends Component {
             className={style.originalCanvas}
             id="canvas"
             onMouseDown={this.mouseDownHandler}
-            onMouseMove={this.mouseMoveHandler}
+            onMouseMove={throttle(500, this.mouseMoveHandler)}
             onMouseUp={this.mouseUpHandler}
             width={960}
             height={540}
@@ -248,14 +291,19 @@ class CanavasRectangleComponet extends Component {
                 <Input placeholder="name" defaultValue={curSelectName} />
               </div>
               <div className={style.btnPart}>
-                <Button type="primary" className={style.confirmBtn}>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    this.setState({ showup: false, startPoint: [0, 0] });
+                  }}
+                  className={style.confirmBtn}
+                >
                   确认
                 </Button>
                 <Button
                   type="primary"
                   onClick={() => {
                     this.setState({ showup: false, startPoint: [0, 0] });
-                    // this.initilization();
                   }}
                   className={style.cancelBtn}
                 >

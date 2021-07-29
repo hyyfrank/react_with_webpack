@@ -301,7 +301,7 @@ class DeployDetailComponent extends Component {
     };
     let instructmentFlag = false;
     const { DeviceType } = detailCarema;
-    console.log(`current device type is :${DeviceType}`);
+    console.log(`current detail image url is :${basicInfo.monitorImageUrl}`);
     const imageRectParms = {
       monitorImageUrl: basicInfo.monitorImageUrl,
       state: true,

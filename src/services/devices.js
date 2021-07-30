@@ -35,8 +35,8 @@ const deleteCarema = (payload) => {
 };
 
 const fetchAllInsturment = (payload) => {
-  const { BASE_URL, INSTURMENT_LIST } = APICONST;
-  const INSTURMENT_LIST_URL = BASE_URL + INSTURMENT_LIST;
+  const { INSTURMENT_URL, INSTURMENT_LIST } = APICONST;
+  const INSTURMENT_LIST_URL = INSTURMENT_URL + INSTURMENT_LIST;
   const config = {
     headers: {
       "Content-Type": "multipart/form-data"

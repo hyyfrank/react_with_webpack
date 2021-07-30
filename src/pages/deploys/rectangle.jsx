@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Divider, Button, Input, message } from "antd";
 import { throttle } from "throttle-debounce";
 import * as style from "../../css/rectangle.less";
+import APICONST from "../../services/APIConst";
 
 class CanavasRectangleComponet extends Component {
   constructor(props) {
@@ -33,7 +34,6 @@ class CanavasRectangleComponet extends Component {
       curSelectName: "",
       ratioWidth: 2,
       ratioHeight: 2,
-      mouseMoveFlag: false,
       showup: false,
       cssX: 0, // for the css style of showup block
       cssY: 0 // for the css style of showup block
@@ -72,9 +72,14 @@ class CanavasRectangleComponet extends Component {
   }
 
   static getDerivedStateFromProps(prev, next) {
-    console.log(`called getDerivedStateFromProps${prev.monitorImageUrl}`);
+    console.log(`called getDerivedStateFromProps : ${prev.IoTCode}`);
+    const { BASE_URL } = APICONST;
+    const { IoTCode } = prev;
+    const url = `${BASE_URL}/?filename=picture/${IoTCode}.jpg`;
+    console.log(`called getDerivedStateFromProps : ${url}`);
+
     return {
-      monitorImageUrl: prev.monitorImageUrl,
+      monitorImageUrl: url,
       recArrays: prev.data,
       originLen: prev.data.length
     };
@@ -82,12 +87,9 @@ class CanavasRectangleComponet extends Component {
 
   componentDidUpdate() {
     // init image and add init points
-    const { flag } = this.state;
 
-    if (flag) {
-      console.log(`init update called!`);
-      this.initilization();
-    }
+    console.log(`init update called!`);
+    this.initilization();
   }
 
   getImage(url) {
@@ -106,8 +108,9 @@ class CanavasRectangleComponet extends Component {
   initilization() {
     const { myCtx, monitorImageUrl } = this.state;
 
-    if (monitorImageUrl !== "" && monitorImageUrl !== undefined) {
+    if (monitorImageUrl !== "" && monitorImageUrl.indexOf("undefined") === -1) {
       console.log("******[start]redraw in update*****");
+      console.log(`******[url]${monitorImageUrl}`);
       return this.getImage(monitorImageUrl).then((initImage) => {
         const w = initImage.width;
         const h = initImage.height;

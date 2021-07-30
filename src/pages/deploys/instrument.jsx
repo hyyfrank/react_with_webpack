@@ -32,7 +32,7 @@ class InstrumentComponent extends Component {
     const { BASE_URL } = APICONST;
     // console.log(`this.props${JSON.stringify(this.props)}`);
     const { iotCode } = this.props;
-    // console.log(`detail iotCode get: ${iotCode}`);
+    console.log(`外面 iotCode get: ${iotCode}`);
     const algoFieldIdMapping = [];
     this.setState({
       basicInfo: {
@@ -287,7 +287,7 @@ class InstrumentComponent extends Component {
         }
       ],
       serviceID: 2,
-      IoTCode: "21097000663",
+      IoTCode: detailCarema.IoTCode,
       jpg: "./picture/2021-07-26/21097000663_20210727000000.jpg",
       cameraID: "21097000663",
       time: "2021-07-27 00:00:00"

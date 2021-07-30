@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Breadcrumb, Divider, Select } from "antd";
+import { Breadcrumb, Divider, message, Select } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 
-import { fetchAllDevices } from "../../services/devices";
+import { fetchAllDevices, fetchAllInsturment } from "../../services/devices";
 import CanavasRectangleComponet from "./rectangle";
 import * as style from "../../css/detail.less";
 import { fetchServiceSupportList } from "../../services/deploys";
@@ -34,8 +34,17 @@ class InstrumentComponent extends Component {
     const { iotCode } = this.props;
     // console.log(`detail iotCode get: ${iotCode}`);
     const algoFieldIdMapping = [];
+    this.setState({
+      basicInfo: {
+        monitorImageUrl: `${BASE_URL}/?filename=picture/${iotCode}.jpg`
+      }
+    });
     fetchServiceSupportList()
       .then(({ data }) => {
+        if (data.response.state === "error") {
+          message.error("fetch service support list error! ");
+          return;
+        }
         const details = data.response.detail;
         const isAlgoritmServer = sessionStorage.getItem("isAlgoritmServer");
         console.log(`isAlgo:${isAlgoritmServer}`);
@@ -80,6 +89,7 @@ class InstrumentComponent extends Component {
         // console.log(`get data from devices: ${JSON.stringify(data)}`);
         if (data.response.state === "error") {
           console.log("state error, please retry.");
+          message.error("fetch source list error! ");
           this.setState({ tableData: [] });
         } else {
           const caremaDetailInfo = data.response.detail.filter((item) => {
@@ -130,8 +140,7 @@ class InstrumentComponent extends Component {
             this.setState({
               basicInfo: {
                 algorithmName: algoDesc,
-                GPU: gpu,
-                monitorImageUrl: `${BASE_URL}/?filename=picture/${iotCode}.jpg`
+                GPU: gpu
               },
               selectedCaremaChouzhen: caremaDetailInfo[0].interval.toString(),
               selectedDetectTime: caremaDetailInfo[0].times.toString(),
@@ -143,6 +152,20 @@ class InstrumentComponent extends Component {
       })
       .then(() => {
         console.log("start to call the new region area");
+        const formData = new FormData();
+        const obj = {
+          type: "SOURCELIST",
+          ctrl_key:
+            sessionStorage.getItem("ctrl_key") == null
+              ? -1
+              : Number(sessionStorage.getItem("ctrl_key"))
+        };
+        formData.append("req", JSON.stringify(obj));
+        return fetchAllInsturment(formData);
+      })
+      .then(({ data }) => {
+        console.log("fetch the insturment list is :");
+        console.log(JSON.stringify(data));
       });
   }
 
@@ -270,7 +293,7 @@ class InstrumentComponent extends Component {
       time: "2021-07-27 00:00:00"
     };
 
-    console.log(`pass to rec: ${JSON.stringify(imageRectParms)}`);
+    // console.log(`pass to rec: ${JSON.stringify(imageRectParms)}`);
 
     return (
       <div className={style.mainContent}>

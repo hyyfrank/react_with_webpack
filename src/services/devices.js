@@ -33,4 +33,15 @@ const deleteCarema = (payload) => {
   };
   return axios.post(DelCaremaUrl, payload, config);
 };
-export { fetchAllDevices, addNewCarema, deleteCarema };
+
+const fetchAllInsturment = (payload) => {
+  const { BASE_URL, INSTURMENT_LIST } = APICONST;
+  const INSTURMENT_LIST_URL = BASE_URL + INSTURMENT_LIST;
+  const config = {
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  };
+  return axios.post(INSTURMENT_LIST_URL, payload, config);
+};
+export { fetchAllDevices, addNewCarema, deleteCarema, fetchAllInsturment };

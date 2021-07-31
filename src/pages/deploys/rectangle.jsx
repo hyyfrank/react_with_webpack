@@ -40,8 +40,8 @@ class CanavasRectangleComponet extends Component {
       editshowup: false,
       cssX: 0, // for the css style of showup block
       cssY: 0, // for the css style of showup block
-      inputID: '000000000',
-      inputDesc: 'xxxxxxxxx',
+      inputID: '',
+      inputDesc: '',
       inputEditID: "",
       inputEditDesc:"",
       addRec:{},
@@ -146,16 +146,6 @@ class CanavasRectangleComponet extends Component {
       if(ismouseDown){
         if (flag) {
           console.log("[mouse move] recArray:"+recArrays.length+"ORIGIN LEN:"+originLen)
-
-          // if (recArrays.length !== originLen) {
-          //   if(afterDelete){
-          //     this.setState({afterDelete:!afterDelete})
-          //   }else{
-          //     console.log("pop element from recArray")
-          //     recArrays.pop();
-          //   }
-           
-          // }
           if(mouseMoveArrays.length>0){
             mouseMoveArrays.pop();
           }
@@ -236,8 +226,8 @@ class CanavasRectangleComponet extends Component {
             cssX: offsetX,
             cssY: offsetY,
             showup: true,
-            inputID:"000000000",
-            inputDesc:"xxxxxxxxx",
+            inputID:"",
+            inputDesc:"",
             flag: false
           },
           () => {
@@ -290,9 +280,13 @@ class CanavasRectangleComponet extends Component {
   }
 
   drawRectangles() {
-    const { myCtx, ratioWidth, ratioHeight, recArrays,mouseMoveArrays } = this.state;
+    const { myCtx, ratioWidth, ratioHeight, recArrays,mouseMoveArrays ,curSelectedRect} = this.state;
     // const newArr = recArrays.filter(item=>{return item.ID!=="000000000"})
-    // console.log("DRAW update length:"+JSON.stringify(newArr));
+    console.log("DRAW recArrays:"+JSON.stringify(recArrays));
+    console.log("DRAW mouseArrays:"+JSON.stringify(mouseMoveArrays));
+    console.log("selected delete id:"+JSON.stringify(curSelectedRect))
+
+    
 
     for (let i = 0; i < recArrays.length; i++) {
       const { axis } = recArrays[i];
@@ -320,7 +314,9 @@ class CanavasRectangleComponet extends Component {
   saveDetail() {}
 
   render() {
-    const { cssX, cssY, showup,inputID,inputDesc,editshowup,inputEditDesc,inputEditID} = this.state;
+    const { cssX, cssY, showup,inputID,inputDesc,editshowup,inputEditDesc,inputEditID,recArrays,curSelectedRect,mouseMoveArrays, mode} = this.state;
+   
+
 
     return (
       <div className={style.monitorArea}>
@@ -378,45 +374,28 @@ class CanavasRectangleComponet extends Component {
                 <Button
                   type="primary"
                   onClick={() => {
-                    const {recArrays,inputID,inputDesc,mode,curSelectedRect,mouseMoveArrays} = this.state;
-                    if(mode==="add"){
+                    // const {recArrays,inputID,inputDesc,mode,curSelectedRect,mouseMoveArrays} = this.state;
+                    
                       const item = mouseMoveArrays[0];
                       item.ID = inputID;
                       item.Desc = inputDesc;
                       recArrays.push(item);
-                      console.log("after the click button is:"+JSON.stringify(recArrays))
+                      console.log("after the add button is:"+JSON.stringify(recArrays))
                       this.setState({ 
                         showup: false, 
                         startPoint: [0, 0],
                         recArrays:[...recArrays]
                       });
-                    }else if(mode === "update"){
-                      console.log("更新一个矩形 id:"+curSelectedRect.ID)
-
-                      const removeCurrent = recArrays.filter(item=>{
-                        return item.ID !== curSelectedRect.ID;
-                      })
-                      removeCurrent.push(curSelectedRect);
-                      const newArr = removeCurrent.filter(item=>{return item.ID!=="000000000"})
-                      console.log("[button: update]"+JSON.stringify(newArr))
-                    this.setState({ 
-                      showup: false, 
-                      startPoint: [0, 0],
-                      recArrays:[...newArr],
-                      mode:"add"
-                     });
-                    }
-                   
-                   
                   }}
                   className={style.confirmBtn}
                 >
-                  确认
+                  新增
                 </Button>
+                
                 <Button
                   type="primary"
                   onClick={() => {
-                    const {mode,mouseMoveArrays} = this.state;
+                    // const {mode,mouseMoveArrays} = this.state;
                     if(mode==="add"){
                       mouseMoveArrays.pop();
                     }
@@ -464,7 +443,7 @@ class CanavasRectangleComponet extends Component {
                 <Button
                   type="primary"
                   onClick={() => {
-                    const {recArrays,inputEditID,inputEditDesc,mode,curSelectedRect,mouseMoveArrays} = this.state;
+                    // const {recArrays,inputEditID,inputEditDesc,mode,curSelectedRect,mouseMoveArrays} = this.state;
                     
                       console.log("更新一个矩形 id:"+curSelectedRect.ID)
 
@@ -486,6 +465,30 @@ class CanavasRectangleComponet extends Component {
                   className={style.confirmBtn}
                 >
                   更新
+                </Button>
+                <Button
+                  type="primary"
+                  className={style.cancelBtn}
+                  onClick={() => {
+                    console.log("delete the id:"+typeof(curSelectedRect.ID));
+                    console.log("before del:"+JSON.stringify(recArrays))
+                    console.log("before: mouseArr"+JSON.stringify(mouseMoveArrays))
+                    const newArr = recArrays.filter(item=>{
+                      return item.ID !== curSelectedRect.ID;
+                    })
+                    const newMouseArr = mouseMoveArrays.filter(item=>{
+                      return item.ID !== curSelectedRect.ID;
+                    })
+                    console.log("AFTER del:"+JSON.stringify(newArr))
+                    console.log("AFTER del mousemove:"+JSON.stringify(newMouseArr))
+                   
+                    this.setState({ editshowup: false, recArrays:[...newArr], mouseMoveArrays:[...newMouseArr]},()=>{
+                      console.log("after delete is :"+JSON.stringify(recArrays))
+                    })
+                  }}
+                 
+                >
+                  删除
                 </Button>
                 <Button
                   type="primary"

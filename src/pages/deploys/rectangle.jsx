@@ -321,8 +321,10 @@ class CanavasRectangleComponet extends Component {
     return (
       <div className={style.monitorArea}>
         <div className={style.btnLayer}>
-          <Button type="primary" onClick={this.initilization}>
-            编辑矩形
+          <Button type="primary" onClick={()=>{
+            this.setState({recArrays: [],mouseMoveArrays:[]})
+          }}>
+            全部重画
           </Button>
           <Divider type="vertical" />
           <Button type="primary" onClick={this.saveDetail}>

@@ -10,8 +10,8 @@ import APICONST from "../../services/APIConst";
 
 const { Option } = Select;
 class InstrumentComponent extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.onChouzhenTimeChange = this.onChouzhenTimeChange.bind(this);
     this.onDetectTimeChange = this.onDetectTimeChange.bind(this);
     this.onActiveStatusChange = this.onActiveStatusChange.bind(this);
@@ -209,7 +209,11 @@ class InstrumentComponent extends Component {
       enableStatus,
       sourceListInstrument
     } = this.state;
-
+    const params= {
+      ...sourceListInstrument,
+      ...this.props
+    }
+    console.log("instrument params:"+JSON.stringify(params))
     return (
       <div className={style.mainContent}>
         <div className={style.BreadcrumbPart}>
@@ -318,7 +322,7 @@ class InstrumentComponent extends Component {
           </div>
           <Divider orientation="left">监控区域</Divider>
           <div className={style.monitorArea}>
-            <CanavasRectangleComponet {...sourceListInstrument} />
+            <CanavasRectangleComponet {...params} />
           </div>
         </div>
       </div>

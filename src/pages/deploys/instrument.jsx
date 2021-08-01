@@ -209,10 +209,10 @@ class InstrumentComponent extends Component {
       enableStatus,
       sourceListInstrument
     } = this.state;
-    const params= {
-      ...sourceListInstrument,
-      ...this.props
-    }
+    // const params= {
+    //   ...sourceListInstrument,
+    //   ...this.props
+    // }
     console.log("instrument params:"+JSON.stringify(params))
     return (
       <div className={style.mainContent}>

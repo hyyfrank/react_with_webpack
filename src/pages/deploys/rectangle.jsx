@@ -4,6 +4,8 @@ import { debounce, throttle } from "throttle-debounce";
 import * as style from "../../css/rectangle.less";
 import APICONST from "../../services/APIConst";
 import { SourceNode } from "source-map";
+import { fetchAllInsturment } from "../../services/devices";
+
 
 class CanavasRectangleComponet extends Component {
   constructor(props) {
@@ -20,11 +22,14 @@ class CanavasRectangleComponet extends Component {
     this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
     this.mouseUpHandler = this.mouseUpHandler.bind(this);
     this.dobuleClickHandler = this.dobuleClickHandler.bind(this);
+    this.onDelete = this.onDelete.bind(this);
+    this.draw = this.draw.bind(this);
 
     this.state = {
       recArrays: [],
       mouseMoveArrays:[],
-      monitorImageUrl: "",
+      monitorImageUrl: `${APICONST.BASE_URL}/?filename=picture/${this.props.iotCode}.jpg`,
+      delItemID: '',
       desc: "",
       myCtx: {},
       mode:"add",
@@ -34,8 +39,8 @@ class CanavasRectangleComponet extends Component {
       fillcolor: "red",
       startPoint: [0, 0],
       endPoint: [0, 0],
-      ratioWidth: 2,
-      ratioHeight: 2,
+      ratioWidth: 1,
+      ratioHeight: 1,
       showup: false,
       editshowup: false,
       cssX: 0, // for the css style of showup block
@@ -51,6 +56,39 @@ class CanavasRectangleComponet extends Component {
   }
 
   async componentDidMount() {
+    console.log(this.props)
+
+
+    console.log("start to call the new region area");
+    const formData = new FormData();
+    const obj = {
+      type: "SOURCELIST",
+      ctrl_key:
+        sessionStorage.getItem("ctrl_key") == null
+          ? -1
+          : Number(sessionStorage.getItem("ctrl_key"))
+    };
+    formData.append("req", JSON.stringify(obj));
+    const {data} = await fetchAllInsturment(formData)
+    if (data.state) {
+      // message.info("获取控制柜列表成功")
+      if (data.sources.length > 0) {
+        const sourceItem = data.sources.filter((item) => {
+          return item.cameraID === this.props.iotCode;
+        })[0];
+        sourceItem.originLength = sourceItem.regions.length;
+        this.setState({
+          recArrays: sourceItem.regions,
+          originLen: sourceItem.regions.length
+        });
+      }
+    } else {
+      message.error("获取控制柜失败");
+    }
+
+
+
+
     const { fillcolor } = this.state;
 
     const my = this.canvas.current;
@@ -71,56 +109,41 @@ class CanavasRectangleComponet extends Component {
         ratioHeight: new Number(h/540).toFixed(2),
         myCtx
       })
-      myCtx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
-      this.drawRectangles();
     });
   }
+ 
 
-  static getDerivedStateFromProps(prev, next) {
-    // console.log(`called getDerivedStateFromProps : ${prev.IoTCode}`);
-    const { BASE_URL } = APICONST;
-    const { cameraID } = prev;
-    const url = `${BASE_URL}/?filename=picture/${cameraID}.jpg`;
-    if (cameraID === undefined) {
-      return next;
-    }
-    return {
-      monitorImageUrl: url,
-      recArrays: prev.regions,
-      originLen: prev.originLength
-    };
-  }
-
-  componentDidUpdate() {
-    // init image and add init points
-
-    console.log(`init update called!`);
+  componentDidUpdate(prev,next) {
     this.initilization();
   }
 
   getImage(url) {
     return new Promise((resolve, reject) => {
       const img = new Image();
+      img.src = url;
       img.onload = () => {
         resolve(img);
       };
       img.onerror = () => {
         reject(img);
       };
-      img.src = url;
+     
     });
   }
 
   initilization() {
-    const { myCtx, monitorImageUrl } = this.state;
-
+    const { myCtx, monitorImageUrl} = this.state;
+    const ctx = myCtx || this.canvas.current.getContext("2d");
+    console.log("myCtx:"+myCtx.drawImage);
     if (monitorImageUrl !== "" && monitorImageUrl.indexOf("undefined") === -1) {
-      // console.log("did update!");
+      console.log("did update!"+monitorImageUrl);
       return this.getImage(monitorImageUrl).then((initImage) => {
         const w = initImage.width;
         const h = initImage.height;
-        myCtx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
-        this.drawRectangles();
+        if(myCtx.drawImage !== "undefined" && typeof(myCtx.drawImage) === "function"){
+          myCtx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
+          this.drawRectangles();
+        }
       });
     }
     return "";
@@ -278,40 +301,68 @@ class CanavasRectangleComponet extends Component {
       
     }
   }
+  async onDelete(){
+    const {curSelectedRect,recArrays,mouseMoveArrays} = this.state;
+    console.log("delete the id:"+typeof(curSelectedRect.ID));
+    console.log("before del:"+JSON.stringify(recArrays))
+    console.log("before: mouseArr"+JSON.stringify(mouseMoveArrays))
+    const newArr = recArrays.filter(item=>{
+      return item.ID !== curSelectedRect.ID;
+    })
+    const newMouseArr = mouseMoveArrays.filter(item=>{
+      return item.ID !== curSelectedRect.ID;
+    })
+    console.log("AFTER del:"+JSON.stringify(newArr))
+    console.log("AFTER del mousemove:"+JSON.stringify(newMouseArr))
+    
+    await this.setState({ 
+      delItemID: curSelectedRect.ID,
+      editshowup: false,
+      mode: "delete",
+      recArrays:[...newArr],
+      mouseMoveArrays:[...newMouseArr]
+    },()=>{
+      console.log("after delete is :"+JSON.stringify(this.state.recArrays))
+    })
+  }
+
+  draw(arr){
+    const { myCtx, ratioWidth, ratioHeight} = this.state;
+    if(arr.length>0){
+      for (let i = 0; i < arr.length; i++) {
+        const { axis } = arr[i];
+  
+        myCtx.strokeRect(
+          axis[0][0] / ratioWidth,
+          axis[0][1] / ratioHeight,
+          Math.abs(axis[2][0] - axis[0][0]) / ratioWidth,
+          Math.abs(axis[2][1] - axis[0][1]) / ratioHeight
+        );
+      }
+    }
+  }
 
   drawRectangles() {
-    const { myCtx, ratioWidth, ratioHeight, recArrays,mouseMoveArrays ,curSelectedRect} = this.state;
+    const { mode,recArrays,mouseMoveArrays ,curSelectedRect,delItemID} = this.state;
     // const newArr = recArrays.filter(item=>{return item.ID!=="000000000"})
     console.log("DRAW recArrays:"+JSON.stringify(recArrays));
     console.log("DRAW mouseArrays:"+JSON.stringify(mouseMoveArrays));
     console.log("selected delete id:"+JSON.stringify(curSelectedRect))
-
-    
-
-    for (let i = 0; i < recArrays.length; i++) {
-      const { axis } = recArrays[i];
-
-      myCtx.strokeRect(
-        axis[0][0] / ratioWidth,
-        axis[0][1] / ratioHeight,
-        Math.abs(axis[2][0] - axis[0][0]) / ratioWidth,
-        Math.abs(axis[2][1] - axis[0][1]) / ratioHeight
-      );
+    if(delItemID!==""&&mode==="delete"){
+      const newTest = recArrays.filter(item=>{return item.ID!==delItemID});
+      console.log("in delete mode:"+mode+",id is:"+delItemID+"recArray:"+JSON.stringify(newTest))
+      this.draw(recArrays.filter(item=>{return item.ID!==delItemID}))
+      this.draw(mouseMoveArrays.filter(item=>{return item.ID!==delItemID}))
+      this.setState({mode: "",delItemID:''})
+    }else{
+      this.draw(recArrays);
+      this.draw(mouseMoveArrays);
     }
-    for (let i = 0; i < mouseMoveArrays.length; i++) {
-      const { axis } = mouseMoveArrays[i];
-
-      myCtx.strokeRect(
-        axis[0][0] / ratioWidth,
-        axis[0][1] / ratioHeight,
-        Math.abs(axis[2][0] - axis[0][0]) / ratioWidth,
-        Math.abs(axis[2][1] - axis[0][1]) / ratioHeight
-      );
-    }
-    
   }
 
-  saveDetail() {}
+  saveDetail() {
+
+  }
 
   render() {
     const { cssX, cssY, showup,inputID,inputDesc,editshowup,inputEditDesc,inputEditID,recArrays,curSelectedRect,mouseMoveArrays, mode} = this.state;
@@ -471,23 +522,7 @@ class CanavasRectangleComponet extends Component {
                 <Button
                   type="primary"
                   className={style.cancelBtn}
-                  onClick={() => {
-                    console.log("delete the id:"+typeof(curSelectedRect.ID));
-                    console.log("before del:"+JSON.stringify(recArrays))
-                    console.log("before: mouseArr"+JSON.stringify(mouseMoveArrays))
-                    const newArr = recArrays.filter(item=>{
-                      return item.ID !== curSelectedRect.ID;
-                    })
-                    const newMouseArr = mouseMoveArrays.filter(item=>{
-                      return item.ID !== curSelectedRect.ID;
-                    })
-                    console.log("AFTER del:"+JSON.stringify(newArr))
-                    console.log("AFTER del mousemove:"+JSON.stringify(newMouseArr))
-                   
-                    this.setState({ editshowup: false, recArrays:[...newArr], mouseMoveArrays:[...newMouseArr]},()=>{
-                      console.log("after delete is :"+JSON.stringify(recArrays))
-                    })
-                  }}
+                  onClick={this.onDelete}
                  
                 >
                   删除

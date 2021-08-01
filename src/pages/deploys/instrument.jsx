@@ -322,7 +322,7 @@ class InstrumentComponent extends Component {
           </div>
           <Divider orientation="left">监控区域</Divider>
           <div className={style.monitorArea}>
-            <CanavasRectangleComponet {...params} />
+            <CanavasRectangleComponet {...this.props} />
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import * as style from "../../css/rectangle.less";
 import APICONST from "../../services/APIConst";
 import { SourceNode } from "source-map";
 import { fetchAllInsturment } from "../../services/devices";
+import saveSourceCanvasDetail from "../../services/rectangle";
 
 
 class CanavasRectangleComponet extends Component {
@@ -52,6 +53,7 @@ class CanavasRectangleComponet extends Component {
       addRec:{},
       afterDelete: false,
       ismouseDown: false,
+      canvasItem:{}
     };
   }
 
@@ -79,7 +81,8 @@ class CanavasRectangleComponet extends Component {
         sourceItem.originLength = sourceItem.regions.length;
         this.setState({
           recArrays: sourceItem.regions,
-          originLen: sourceItem.regions.length
+          originLen: sourceItem.regions.length,
+          canvasItem: sourceItem
         });
       }
     } else {
@@ -361,6 +364,24 @@ class CanavasRectangleComponet extends Component {
   }
 
   saveDetail() {
+    const {canvasItem,recArrays} = this.state;
+    console.log("current page before:"+JSON.stringify(canvasItem));
+    canvasItem.regions = [...recArrays]
+    console.log("after page before:"+JSON.stringify(canvasItem));
+    const payload={
+      ...canvasItem
+    }
+
+    saveSourceCanvasDetail(payload).then(({data})=>{
+      console.log("result save:"+JSON.stringify(data))
+      if(data.state){
+        message.info("保存成功！")
+      }else{
+        message.info("保存失败！")
+      }
+    });
+
+
 
   }
 

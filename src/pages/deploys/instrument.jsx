@@ -213,7 +213,7 @@ class InstrumentComponent extends Component {
     //   ...sourceListInstrument,
     //   ...this.props
     // }
-    console.log("instrument params:"+JSON.stringify(params))
+    // console.log("instrument params:"+JSON.stringify(params))
     return (
       <div className={style.mainContent}>
         <div className={style.BreadcrumbPart}>

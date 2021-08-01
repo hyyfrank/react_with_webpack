@@ -26,7 +26,8 @@ const APICONST = {
   DEL_CAREMA: "/manager",
 
   // INSTRUMENT LIST
-  INSTURMENT_LIST: "/manager"
+  INSTURMENT_LIST: "/manager",
+  SERVICELIST_SAVE_REQUEST: "/manager"
 };
 
 export default APICONST;

@@ -1,7 +1,7 @@
 const APICONST = {
   // BASE_URL: "http://10.33.4.2:27018",
-  BASE_URL: "http://cvp.g2link.cn:20095",
-  // BASE_URL: "http://cvp.g2link.cn:20065",
+  // BASE_URL: "http://cvp.g2link.cn:20095",
+  BASE_URL: "http://cvp.g2link.cn:20065",
   INSTURMENT_URL: "http://cvp.g2link.cn:20112",
 
   SERVER_MACHINE_BASE: "http://cvp.g2link.cn:20093",

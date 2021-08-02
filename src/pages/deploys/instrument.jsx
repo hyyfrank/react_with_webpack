@@ -206,8 +206,7 @@ class InstrumentComponent extends Component {
       basicInfo,
       selectedCaremaChouzhen,
       selectedDetectTime,
-      enableStatus,
-      sourceListInstrument
+      enableStatus
     } = this.state;
     // const params= {
     //   ...sourceListInstrument,

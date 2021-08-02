@@ -163,7 +163,7 @@ class CanavasComponet extends Component {
           myCtx.lineTo(piX, piY);
           myCtx.fillStyle = fillcolor; // 填充颜色
           myCtx.globalCompositeOperation = "xor";
-          // myCtx.fill(); // 填充
+          myCtx.fill(); // 填充
           myCtx.stroke(); // 绘制
         }
       }
@@ -356,7 +356,7 @@ class CanavasComponet extends Component {
     myCtx.clearRect(0, 0, 960, 540);
     myCtxSave.closePath(); // 结束路径状态，结束当前路径，如果是一个未封闭的图形，会自动将首尾相连封闭起来
 
-    // myCtxSave.fill(); // 填充
+    myCtxSave.fill(); // 填充
     myCtxSave.stroke(); // 绘制
     this.setState({
       pointArr: []

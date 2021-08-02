@@ -14,7 +14,7 @@ const saveSourceCanvasDetail = (payload) => {
   const serviceListForm = new FormData();
   const obj = {
     type: "SOURCEEDIT",
-    ...payload,
+    ...payload
   };
   serviceListForm.append("req", JSON.stringify(obj));
   // send request

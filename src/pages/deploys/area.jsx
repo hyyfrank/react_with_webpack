@@ -13,8 +13,7 @@ class CanavasComponet extends Component {
     this.saveDetail = this.saveDetail.bind(this);
     this.clearMonitorArea = this.clearMonitorArea.bind(this);
     this.initCanvasImage = this.initCanvasImage.bind(this);
-    // this.initCanvasWithPloygon = this.initCanvasWithPloygon.bind(this);
-    this.initMaskCanvasWithPloygon = this.initMaskCanvasWithPloygon.bind(this);
+    this.initCanvasWithPloygon = this.initCanvasWithPloygon.bind(this);
 
     this.clickCanvas = this.clickCanvas.bind(this);
     this.mouseMoveInCanvas = this.mouseMoveInCanvas.bind(this);
@@ -70,15 +69,8 @@ class CanavasComponet extends Component {
       initImage.onload = () => {
         const w = initImage.width;
         const h = initImage.height;
-        this.initMaskCanvasWithPloygon(
-          w,
-          h,
-          initImage,
-          monitorArea,
-          myCtx,
-          myCtxSave
-        ); // mask layer
-        // this.initCanvasWithPloygon(w, h, initImage, monitorArea, myCtxSave);
+        this.initCanvasWithPloygon(w, h, initImage, monitorArea, myCtx);
+        this.initCanvasWithPloygon(w, h, initImage, monitorArea, myCtxSave);
         this.setState({ flag: !flag });
       };
     }
@@ -162,7 +154,6 @@ class CanavasComponet extends Component {
           }
           myCtx.lineTo(piX, piY);
           myCtx.fillStyle = fillcolor; // 填充颜色
-          myCtx.globalCompositeOperation = "xor";
           myCtx.fill(); // 填充
           myCtx.stroke(); // 绘制
         }
@@ -246,34 +237,18 @@ class CanavasComponet extends Component {
     };
   }
 
-  initMaskCanvasWithPloygon(w, h, initImage, monitorArea, ctx, myCtxSave) {
+  initCanvasWithPloygon(w, h, initImage, monitorArea, ctx) {
     const { fillcolor } = this.state;
-    // myCtxSave.fillStyle = "skyblue";
-
-    // myCtxSave.fillRect(
-    //   0,
-    //   0,
-    //   this.canvasSave.current.width,
-    //   this.canvasSave.current.height
-    // );
-    // myCtxSave.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
-    // myCtxSave.strokeStyle = "red";
-
     const ratioWidth = w / 960;
     const ratioHeight = h / 540;
     this.setState({
       ratioWidth,
       ratioHeight
     });
-    // ctx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
-    myCtxSave.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
-    ctx.fillStyle = "green";
-    // ctx.fillRect(0, 0, 960, 540);
-
-    ctx.globalCompositeOperation = "xor";
-
+    ctx.drawImage(initImage, 0, 0, w, h, 0, 0, 960, 540);
     ctx.beginPath();
     ctx.strokeStyle = "red";
+    ctx.fillStyle = fillcolor;
     if (monitorArea.length > 0) {
       console.log(`init area: ${JSON.stringify(monitorArea)}`);
       ctx.moveTo(
@@ -291,11 +266,8 @@ class CanavasComponet extends Component {
         monitorArea[0][1] / ratioHeight
       );
       ctx.fill();
-      ctx.closePath();
-      //   // ctx.stroke();
-      //   // ctx.clip();
+      ctx.stroke();
     }
-    // myCtxSave.drawImage(this.canvas.current, 0, 0, w, h, 0, 0, 960, 540);
   }
 
   saveDetail() {
@@ -355,7 +327,6 @@ class CanavasComponet extends Component {
     console.log(`saving points is: ${JSON.stringify(pointArr)}`);
     myCtx.clearRect(0, 0, 960, 540);
     myCtxSave.closePath(); // 结束路径状态，结束当前路径，如果是一个未封闭的图形，会自动将首尾相连封闭起来
-
     myCtxSave.fill(); // 填充
     myCtxSave.stroke(); // 绘制
     this.setState({
@@ -373,7 +344,6 @@ class CanavasComponet extends Component {
       for (let i = 1; i < pointArr.length; i++) {
         myCtxSave.lineTo(pointArr[i].x, pointArr[i].y);
         myCtxSave.fillStyle = fillcolor; // 填充颜色
-        // myCtxSave.globalCompositeOperation = "xor";
         // myCtxSave.fill();
         myCtxSave.stroke(); // 绘制
       }

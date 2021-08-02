@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Breadcrumb, Divider, message, Select } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 
-import { fetchAllDevices, fetchAllInsturment } from "../../services/devices";
+import { fetchAllDevices } from "../../services/devices";
 import CanavasRectangleComponet from "./rectangle";
 import * as style from "../../css/detail.less";
 import { fetchServiceSupportList } from "../../services/deploys";
@@ -43,7 +43,7 @@ class InstrumentComponent extends Component {
     fetchServiceSupportList()
       .then(({ data }) => {
         if (data.response.state === "error") {
-          message.error("fetch service support list error! ");
+          console.log("fetch service support list error! ");
           return;
         }
         const details = data.response.detail;
@@ -90,7 +90,7 @@ class InstrumentComponent extends Component {
         // console.log(`get data from devices: ${JSON.stringify(data)}`);
         if (data.response.state === "error") {
           console.log("state error, please retry.");
-          message.error("fetch source list error! ");
+          // message.error("fetch source list error! ");
           this.setState({ tableData: [] });
         } else {
           const caremaDetailInfo = data.response.detail.filter((item) => {
@@ -149,35 +149,6 @@ class InstrumentComponent extends Component {
             });
             console.log(`${BASE_URL}/?filename=picture/${iotCode}.jpg`);
           }
-        }
-      })
-      .then(() => {
-        console.log("start to call the new region area");
-        const formData = new FormData();
-        const obj = {
-          type: "SOURCELIST",
-          ctrl_key:
-            sessionStorage.getItem("ctrl_key") == null
-              ? -1
-              : Number(sessionStorage.getItem("ctrl_key"))
-        };
-        formData.append("req", JSON.stringify(obj));
-        return fetchAllInsturment(formData);
-      })
-      .then(({ data }) => {
-        if (data.state) {
-          // message.info("获取控制柜列表成功")
-          if (data.sources.length > 0) {
-            const sourceItem = data.sources.filter((item) => {
-              return item.cameraID === iotCode;
-            })[0];
-            sourceItem.originLength = sourceItem.regions.length;
-            this.setState({
-              sourceListInstrument: sourceItem
-            });
-          }
-        } else {
-          message.error("获取控制柜失败");
         }
       });
   }

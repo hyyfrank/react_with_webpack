@@ -823,6 +823,27 @@ class DevicesComponent extends Component {
         width: "8%",
         render: (text, record, index) => {
           const url = `/deploys/detail/${record.IoTCode}`;
+          if (
+            record.DeviceType === "SpinSwitch" ||
+            record.DeviceType === "LEDSegmentDisplays" ||
+            record.DeviceType === "StatusLight"
+          ) {
+            return (
+              <div>
+                <Link to={`/deploys/instrument/${record.IoTCode}`}>
+                  <span>查看 </span>
+                </Link>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    this.delCarema(record);
+                  }}
+                >
+                  删除
+                </Button>
+              </div>
+            );
+          }
           return (
             <div key={Math.random(100)}>
               <Link to={url}>

@@ -314,14 +314,43 @@ class CanavasRectangleComponet extends Component {
       console.log(
         `dobule click in [${offsetX * ratioWidth},${offsetY * ratioHeight}]`
       );
+      console.log(
+        `rationWidth is ${ratioWidth} and rationHeight is ${ratioHeight}`
+      );
 
-      console.log(`dobule click ${JSON.stringify(recArrays)}`);
+      // console.log(`dobule click ${JSON.stringify(recArrays)}`);
       const filterItem = recArrays.filter((item) => {
+        const minX = Math.min(
+          item.axis[0][0],
+          item.axis[1][0],
+          item.axis[2][0],
+          item.axis[3][0]
+        );
+        const maxX = Math.max(
+          item.axis[0][0],
+          item.axis[1][0],
+          item.axis[2][0],
+          item.axis[3][0]
+        );
+
+        const minY = Math.min(
+          item.axis[0][1],
+          item.axis[1][1],
+          item.axis[2][1],
+          item.axis[3][1]
+        );
+        const maxY = Math.max(
+          item.axis[0][1],
+          item.axis[1][1],
+          item.axis[2][1],
+          item.axis[3][1]
+        );
+
         if (
-          offsetX * ratioWidth > item.axis[0][0] &&
-          offsetX * ratioWidth < item.axis[2][0] &&
-          offsetY * ratioHeight > item.axis[0][1] &&
-          offsetY * ratioHeight < item.axis[1][1] &&
+          offsetX * ratioWidth > minX &&
+          offsetX * ratioWidth < maxX &&
+          offsetY * ratioHeight > minY &&
+          offsetY * ratioHeight < maxY &&
           item.ID !== "000000000"
         ) {
           console.log(`x range: [${item.axis[0][0]},${item.axis[2][0]}]`);
@@ -341,6 +370,7 @@ class CanavasRectangleComponet extends Component {
           curSelectedRect: filterItem[0]
         });
       } else {
+        console.log("double clicked not matched.");
         this.setState({
           editshowup: false
         });

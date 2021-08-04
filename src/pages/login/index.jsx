@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { fetchLoginStaus, fetchGardenInfos } from "../../services/login";
 import * as style from "../../css/main.less";
 import APICONST from "../../services/APIConst";
+import logo from "../../images/glp_logo.png";
 
 export default class LoginComponent extends Component {
   constructor() {
@@ -76,7 +77,9 @@ export default class LoginComponent extends Component {
     return (
       <div className={style.loginContainer}>
         <div className={style.centerArea}>
-          <div className={style.plsLogo} />
+          <div className={style.plsLogo}>
+            <img alt="logo" src={logo} />
+          </div>
           <Form
             ref={this.formRef}
             name="basic"

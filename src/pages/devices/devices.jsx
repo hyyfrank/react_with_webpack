@@ -879,7 +879,7 @@ class DevicesComponent extends Component {
       <div className={style.mainContent}>
         <div className={style.BreadcrumbPart}>
           <Breadcrumb>
-            <Breadcrumb.Item href="/">
+            <Breadcrumb.Item href="/dashboard">
               <HomeOutlined />
             </Breadcrumb.Item>
             <Breadcrumb.Item href="/devices">

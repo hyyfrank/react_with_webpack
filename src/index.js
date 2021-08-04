@@ -2,10 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { renderRoutes } from "react-router-config";
 import { BrowserRouter as Router } from "react-router-dom";
+import { browserHistory } from "react-router";
 import myroute from "./route";
 
 ReactDOM.render(
-  <Router>{renderRoutes(myroute.routes)}</Router>,
+  <Router history={browserHistory}>{renderRoutes(myroute.routes)}</Router>,
   document.getElementById("app")
 );
 

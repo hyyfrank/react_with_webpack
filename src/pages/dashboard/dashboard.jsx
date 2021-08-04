@@ -416,7 +416,7 @@ class DashboardComponent extends PureComponent {
       <div className={style.dashboard}>
         <div className={style.BreadcrumbPart}>
           <Breadcrumb>
-            <Breadcrumb.Item href="/">
+            <Breadcrumb.Item href="/dashboard">
               <HomeOutlined />
             </Breadcrumb.Item>
             <Breadcrumb.Item href="/dashboard">

@@ -10,8 +10,8 @@ import { fetchServiceSupportList } from "../../services/deploys";
 
 const { Option } = Select;
 class DeployDetailComponent extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.onChouzhenTimeChange = this.onChouzhenTimeChange.bind(this);
     this.onDetectTimeChange = this.onDetectTimeChange.bind(this);
     this.onActiveStatusChange = this.onActiveStatusChange.bind(this);
@@ -29,6 +29,7 @@ class DeployDetailComponent extends Component {
 
   componentDidMount() {
     console.log("i am in detail didmount");
+    console.log(`add route as props:${JSON.stringify(this.props)}`);
     const BASE_URL = "http://cvp.g2link.cn:20065"; // TODO: update to real base url.
     console.log(`this.props${JSON.stringify(this.props)}`);
     const { iotCode } = this.props;
@@ -407,7 +408,7 @@ class DeployDetailComponent extends Component {
       <div className={style.mainContent}>
         <div className={style.BreadcrumbPart}>
           <Breadcrumb>
-            <Breadcrumb.Item href="/">
+            <Breadcrumb.Item href="/dashboard">
               <HomeOutlined />
             </Breadcrumb.Item>
             <Breadcrumb.Item href="/deploys">

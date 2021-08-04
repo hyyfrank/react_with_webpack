@@ -8,6 +8,7 @@ class Deploys extends PureComponent {
   render() {
     const { location } = this.props;
     const obj = {
+      ...this.props,
       iotCode: location.pathname.split("/").pop()
     };
     console.log(`location obj:${JSON.stringify(obj)}`);

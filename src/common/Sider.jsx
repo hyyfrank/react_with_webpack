@@ -8,6 +8,7 @@ import {
   PieChartOutlined,
   DesktopOutlined,
   ContainerOutlined,
+  InstagramOutlined
 } from "@ant-design/icons";
 import * as style from "../css/layout.less";
 
@@ -17,7 +18,7 @@ class SiderComponent extends Component {
   constructor() {
     super();
     this.state = {
-      collapsed: false,
+      collapsed: false
     };
     this.toggle = this.toggle.bind(this);
   }
@@ -25,7 +26,7 @@ class SiderComponent extends Component {
   toggle() {
     const { collapsed } = this.state;
     this.setState({
-      collapsed: !collapsed,
+      collapsed: !collapsed
     });
   }
 
@@ -54,7 +55,7 @@ class SiderComponent extends Component {
           <Menu.Item key="algorithms" icon={<DesktopOutlined />}>
             <NavLink to="/algorithms">算法列表</NavLink>
           </Menu.Item>
-          <Menu.Item key="devices" icon={<ContainerOutlined />}>
+          <Menu.Item key="devices" icon={<InstagramOutlined />}>
             <NavLink to="/devices">相机列表</NavLink>
           </Menu.Item>
           <Menu.Item key="machines" icon={<ContainerOutlined />}>
@@ -66,7 +67,7 @@ class SiderComponent extends Component {
             collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
             {
               className: "trigger",
-              onClick: this.toggle,
+              onClick: this.toggle
             }
           )}
         </div>

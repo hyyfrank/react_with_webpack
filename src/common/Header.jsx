@@ -16,12 +16,13 @@ export default class HeaderComponent extends Component {
   }
 
   render() {
+    const { collapsed } = this.state;
     const menu = (
-      <Menu mode="inline" theme="light" inlineCollapsed={this.state.collapsed}>
-        <Menu.Item key="1" icon={<PieChartOutlined />}>
+      <Menu theme="light">
+        <Menu.Item key="1" icon={<PieChartOutlined />} disabled>
           <a href="#">个人中心</a>
         </Menu.Item>
-        <Menu.Item key="2" icon={<DesktopOutlined />}>
+        <Menu.Item key="2" icon={<DesktopOutlined />} disabled>
           <a href="#">个人设置</a>
         </Menu.Item>
         <Menu.Item key="3" icon={<DesktopOutlined />}>
@@ -43,7 +44,7 @@ export default class HeaderComponent extends Component {
             onClick={(e) => e.preventDefault()}
           >
             <div className={style.userLogo} />
-            <div className={style.userName}>Serati Ma</div>
+            <div className={style.userName}>g2link</div>
           </a>
         </Dropdown>
       </Header>

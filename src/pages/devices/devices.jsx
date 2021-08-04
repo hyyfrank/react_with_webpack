@@ -820,7 +820,7 @@ class DevicesComponent extends Component {
         title: "部署详情",
         dataIndex: "detail",
         key: "detail",
-        width: "8%",
+        width: "12%",
         render: (text, record, index) => {
           const url = `/deploys/detail/${record.IoTCode}`;
           if (
@@ -902,7 +902,7 @@ class DevicesComponent extends Component {
             </div>
           </div>
           <Table
-            rowKey={(record) => record.name}
+            rowKey={(record) => record.IoTCode}
             columns={columns}
             pagination={{ position: [bottom] }}
             dataSource={tableData}
@@ -958,43 +958,43 @@ class DevicesComponent extends Component {
                   onChange={this.onChouzhenTimeChange}
                 >
                   <Option key="interval1" value="1">
-                    1s
+                    1
                   </Option>
                   <Option key="interval2" value="2">
-                    2s
+                    2
                   </Option>
                   <Option key="interval3" value="3">
-                    3s
+                    3
                   </Option>
                   <Option key="interval4" value="4">
-                    4s
+                    4
                   </Option>
                   <Option key="interval5" value="5">
-                    5s
+                    5
                   </Option>
                   <Option key="interval6" value="6">
-                    6s
+                    6
                   </Option>
                   <Option key="interval7" value="7">
-                    7s
+                    7
                   </Option>
                   <Option key="interval8" value="8">
-                    8s
+                    8
                   </Option>
                   <Option key="interval9" value="15">
-                    15s
+                    15
                   </Option>
                   <Option key="interval10" value="30">
-                    30s
+                    30
                   </Option>
                   <Option key="interval11" value="60">
-                    60s
+                    60
                   </Option>
                   <Option key="interval12" value="300">
-                    300s
+                    300
                   </Option>
                   <Option key="interval13" value="600">
-                    600s
+                    600
                   </Option>
                 </Select>
               </div>

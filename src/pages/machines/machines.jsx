@@ -115,7 +115,7 @@ class MachineComponent extends Component {
         </div>
         <div className={style.tableLayer}>
           <Table
-            rowKey={(record) => record.name}
+            rowKey={(record) => record.SiteCode}
             columns={columns}
             pagination={{ position: [bottom] }}
             dataSource={tableData}

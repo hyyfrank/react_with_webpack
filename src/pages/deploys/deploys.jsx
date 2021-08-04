@@ -462,7 +462,7 @@ class DeploysComponent extends Component {
             </div>
           </div>
           <Table
-            rowKey={(record) => record.uid}
+            rowKey={(record) => record.IoTCode}
             columns={columns}
             pagination={{ position: [bottom] }}
             dataSource={filterData}

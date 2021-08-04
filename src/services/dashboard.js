@@ -6,7 +6,7 @@ const fetchDashboardList = (day) => {
   const dashboardFetchBaseUrl = BASE_URL + DASHBOARD_REQUEST;
   const currentTime = new Date();
   let dashboardFetchUrl = "";
-  if (day === 0) {
+  if (parseInt(day, 10) === 0) {
     dashboardFetchUrl = `${dashboardFetchBaseUrl}work_record.txt?t=${currentTime.getTime()}`;
   } else {
     dashboardFetchUrl = `${dashboardFetchBaseUrl}./${day}/work_record.txt?t=${currentTime.getTime()}`;

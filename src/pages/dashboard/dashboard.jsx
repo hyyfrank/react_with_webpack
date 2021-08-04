@@ -95,7 +95,7 @@ class DashboardComponent extends PureComponent {
     if (type === "video") {
       mkey = "mp4";
     }
-    if (day === 0) {
+    if (parseInt(day, 10) === 0) {
       return `${BASE_URL}/?filename=${item[mkey]}`;
     }
     return `${BASE_URL}/?filename=./${day}/${item[mkey]}`;
@@ -104,7 +104,7 @@ class DashboardComponent extends PureComponent {
   // eslint-disable-next-line no-unused-vars
   getFreeImageFullAddress(day, imageSrc, type) {
     // console.log(`type could be ${type}`);
-    if (day === 0) {
+    if (parseInt(day, 10) === 0) {
       return `${BASE_URL}/?filename=${imageSrc}`;
     }
     return `${BASE_URL}/?filename=./${day}/${imageSrc}`;

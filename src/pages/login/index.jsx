@@ -29,7 +29,7 @@ export default class LoginComponent extends Component {
         return fetchLoginStaus(formData);
       })
       .then(({ data }) => {
-        if (data.response.detail === "OK") {
+        if (data.response.state === "OK") {
           sessionStorage.setItem("ctrl_key", data.ctrl_key);
         } else {
           console.log("login checked failed.");

@@ -130,7 +130,7 @@ class DashboardComponent extends PureComponent {
     const jpgs = [];
     const { day } = this.state;
     datas.filter((item) => {
-      if (item.eventserial === serialId && item.event === "FREE") {
+      if (item.eventserial === serialId) {
         if (item.hasOwnProperty("jpgs") && item.jpgs.length > 0) {
           const imgs = [].concat(item.jpgs);
           for (let i = 0; i < imgs.length; i++) {
@@ -138,7 +138,9 @@ class DashboardComponent extends PureComponent {
             new Image().src = imageSrc;
             jpgs.push({
               img: imageSrc,
-              info: this.getImageInfos(item)
+              info: this.getImageInfos(item),
+              color:
+                this.getImageInfos(item).indexOf("FREE") === -1 ? "red" : "blue"
             });
           }
         } else {
@@ -146,7 +148,9 @@ class DashboardComponent extends PureComponent {
           new Image().src = imgSrc;
           jpgs.push({
             img: imgSrc,
-            info: this.getImageInfos(item)
+            info: this.getImageInfos(item),
+            color:
+              this.getImageInfos(item).indexOf("FREE") === -1 ? "red" : "blue"
           });
         }
       }
@@ -157,8 +161,31 @@ class DashboardComponent extends PureComponent {
   updateIotTableData(iotTableData, type) {
     const { day, PAGE_SIZE } = this.state;
     const newTableData = [];
+
     iotTableData.map((item) => {
-      if (item.event === "TAKEUP") {
+      console.log(`device:${item.config.DeviceType}`);
+      if (
+        item.hasOwnProperty("config") &&
+        (item.config.DeviceType === "Road" || item.config.DeviceType === "Room")
+      ) {
+        if (item.event === "FREE") {
+          const tmpImage = new Image();
+          tmpImage.src = this.getImageFullAddress(day, item, type);
+          newTableData.push({
+            eventserial: item.eventserial,
+            src: this.getImageFullAddress(day, item, type),
+            infos: this.getImageInfos(item),
+            color: "blue",
+            resultType: item.config.DeviceType,
+            imgElement: tmpImage,
+            related: this.getFreeImageByEventSerial(
+              iotTableData,
+              item.eventserial,
+              type
+            )
+          });
+        }
+      } else if (item.event === "TAKEUP") {
         const tmpImage = new Image();
         tmpImage.src = this.getImageFullAddress(day, item, type);
         newTableData.push({
@@ -166,6 +193,7 @@ class DashboardComponent extends PureComponent {
           src: this.getImageFullAddress(day, item, type),
           infos: this.getImageInfos(item),
           color: "red",
+          resultType: item.config.DeviceType,
           imgElement: tmpImage,
           related: this.getFreeImageByEventSerial(
             iotTableData,
@@ -305,6 +333,7 @@ class DashboardComponent extends PureComponent {
       paginationData,
       caremaStatus
     } = this.state;
+    console.log(`pagination:${JSON.stringify(paginationData)}`);
     const images = [];
     const videos = [];
     if (channels.length > 0) {
@@ -316,48 +345,137 @@ class DashboardComponent extends PureComponent {
         );
       }
     }
-    if (type === "img") {
-      for (let i = 0; i < paginationData.length; i++) {
-        images.push(
-          <Row key={`rowkey${i}`}>
-            <Col key={`col1${i}`} span={6}>
-              <div className={style.takeColor}>
-                <AntdImage src={`${paginationData[i].src}`} />
-                <span>{paginationData[i].infos}</span>
-              </div>
-            </Col>
-            <Col key={`col2${i}`} span={6}>
-              {paginationData[i].related.length > 0 ? (
+    if (type === "img" && paginationData.length > 0) {
+      const resType = paginationData[0].resultType;
+      if (resType === "Road") {
+        for (let i = 0; i < paginationData.length; i++) {
+          images.push(
+            <Row key={`rowkey${i}`}>
+              <Col key={`col2${i}`} span={6}>
+                {paginationData[i].related.length > 0 ? (
+                  <div className={style.takeColor}>
+                    <AntdImage src={`${paginationData[i].related[0].img}`} />
+                    <span>{paginationData[i].related[0].info}</span>
+                  </div>
+                ) : (
+                  <span />
+                )}
+              </Col>
+              <Col key={`col3${i}`} span={6}>
+                {paginationData[i].related.length > 1 ? (
+                  <div className={style.takeColor}>
+                    <AntdImage src={`${paginationData[i].related[1].img}`} />
+                    <span>{paginationData[i].related[1].info}</span>
+                  </div>
+                ) : (
+                  <span />
+                )}
+              </Col>
+              <Col key={`col4${i}`} span={6}>
+                {paginationData[i].related.length > 2 ? (
+                  <div className={style.takeColor}>
+                    <AntdImage src={`${paginationData[i].related[2].img}`} />
+                    <span>{paginationData[i].related[1].info}</span>
+                  </div>
+                ) : (
+                  <span />
+                )}
+              </Col>
+              <Col key={`col1${i}`} span={6}>
                 <div className={style.freeColor}>
-                  <AntdImage src={`${paginationData[i].related[0].img}`} />
-                  <span>{paginationData[i].related[0].info}</span>
+                  <AntdImage src={`${paginationData[i].src}`} />
+                  <span>{paginationData[i].infos}</span>
                 </div>
-              ) : (
-                <span />
-              )}
-            </Col>
-            <Col key={`col3${i}`} span={6}>
-              {paginationData[i].related.length > 1 ? (
+              </Col>
+            </Row>
+          );
+        }
+      } else if (resType === "Room") {
+        for (let i = 0; i < paginationData.length; i++) {
+          images.push(
+            <Row key={`rowkey${i}`}>
+              <Col key={`col2${i}`} span={6}>
+                {paginationData[i].related.length > 0 ? (
+                  <div className={style.takeColor}>
+                    <AntdImage src={`${paginationData[i].related[0].img}`} />
+                    <span>{paginationData[i].related[0].info}</span>
+                  </div>
+                ) : (
+                  <span />
+                )}
+              </Col>
+              <Col key={`col3${i}`} span={6}>
+                {paginationData[i].related.length > 1 ? (
+                  <div className={style.freeColor}>
+                    <AntdImage src={`${paginationData[i].related[1].img}`} />
+                    <span>{paginationData[i].related[1].info}</span>
+                  </div>
+                ) : (
+                  <span />
+                )}
+              </Col>
+              <Col key={`col4${i}`} span={6}>
+                {paginationData[i].related.length > 2 ? (
+                  <div className={style.freeColor}>
+                    <AntdImage src={`${paginationData[i].related[2].img}`} />
+                    <span>{paginationData[i].related[1].info}</span>
+                  </div>
+                ) : (
+                  <span />
+                )}
+              </Col>
+              <Col key={`col1${i}`} span={6}>
                 <div className={style.freeColor}>
-                  <AntdImage src={`${paginationData[i].related[1].img}`} />
-                  <span>{paginationData[i].related[1].info}</span>
+                  <AntdImage src={`${paginationData[i].src}`} />
+                  <span>{paginationData[i].infos}</span>
                 </div>
-              ) : (
-                <span />
-              )}
-            </Col>
-            <Col key={`col4${i}`} span={6}>
-              {paginationData[i].related.length > 2 ? (
-                <div className={style.freeColor}>
-                  <AntdImage src={`${paginationData[i].related[2].img}`} />
-                  <span>{paginationData[i].related[1].info}</span>
+              </Col>
+            </Row>
+          );
+        }
+      } else {
+        for (let i = 0; i < paginationData.length; i++) {
+          images.push(
+            <Row key={`rowkey${i}`}>
+              <Col key={`col1${i}`} span={6}>
+                <div className={style.takeColor}>
+                  <AntdImage src={`${paginationData[i].src}`} />
+                  <span>{paginationData[i].infos}</span>
                 </div>
-              ) : (
-                <span />
-              )}
-            </Col>
-          </Row>
-        );
+              </Col>
+              <Col key={`col2${i}`} span={6}>
+                {paginationData[i].related.length > 0 ? (
+                  <div className={style.freeColor}>
+                    <AntdImage src={`${paginationData[i].related[0].img}`} />
+                    <span>{paginationData[i].related[0].info}</span>
+                  </div>
+                ) : (
+                  <span />
+                )}
+              </Col>
+              <Col key={`col3${i}`} span={6}>
+                {paginationData[i].related.length > 1 ? (
+                  <div className={style.freeColor}>
+                    <AntdImage src={`${paginationData[i].related[1].img}`} />
+                    <span>{paginationData[i].related[1].info}</span>
+                  </div>
+                ) : (
+                  <span />
+                )}
+              </Col>
+              <Col key={`col4${i}`} span={6}>
+                {paginationData[i].related.length > 2 ? (
+                  <div className={style.freeColor}>
+                    <AntdImage src={`${paginationData[i].related[2].img}`} />
+                    <span>{paginationData[i].related[1].info}</span>
+                  </div>
+                ) : (
+                  <span />
+                )}
+              </Col>
+            </Row>
+          );
+        }
       }
     } else {
       for (let i = 0; i < paginationData.length; i++) {

@@ -40,71 +40,83 @@ module.exports = {
           loader: "babel-loader"
         }
       },
+
       {
-        test: /\.(css|less)$/,
+        test: /\.css$/,
         use: [
+          require.resolve("style-loader"),
           {
-            loader: "style-loader"
-          },
-          {
-            loader: "css-loader",
+            loader: require.resolve("css-loader"),
             options: {
-              modules: true, // 支持css module的配置
-              localIdentName: "[name]__[local]--[hash:base64:5]"
-              // url:(url, resourcePath) => {
-              //     if (url.includes("img.png")) {
-              //       return false;
-              //     }
-              //     return true;
-              //   },
+              importLoaders: 1
             }
           },
           {
-            loader: "postcss-loader",
-            options: {
-              sourceMap: true,
-              config: {
-                path: `${__dirname}/postcss.config.js`
-              },
-              plugins: [
-                // require("postcss-sprites")({
-                //     spritePath: "./dist/images"
-                // })
-              ]
-            }
-          },
-          {
-            loader: "less-loader",
-            options: {
-              sourceMap: true
-            }
+            loader: require.resolve("postcss-loader")
           }
-        ],
-        exclude: /node_modules/
+        ]
       },
       {
-        test: /\.(jpe?g|png|gif|svg)$/i,
+        test: /\.less$/,
+        exclude: [/src/],
         use: [
+          require.resolve("style-loader"),
           {
-            loader: "url-loader",
+            loader: require.resolve("css-loader"),
             options: {
-              name: "[name]-[hash:5].min.[ext]",
-              limit: 10000, // size <= 20KB
-              publicPath: "images/",
-              outputPath: "images/"
+              importLoaders: 1
             }
           },
           {
-            loader: "img-loader",
+            loader: require.resolve("postcss-loader")
+          },
+          {
+            loader: require.resolve("less-loader"),
             options: {
-              plugins: [
-                require("imagemin-gifsicle")({}),
-                require("imagemin-mozjpeg")({}),
-                require("imagemin-pngquant")({}),
-                require("imagemin-svgo")({
-                  plugins: [{ removeTitle: true }, { convertPathData: false }]
-                })
-              ]
+              lessOptions: {
+                javascriptEnabled: true
+              }
+            }
+            // options: { modifyVars: { "@primary-color": "#1DA57A" } }
+          }
+        ]
+      },
+      {
+        test: /\.less$/,
+        exclude: [/node_modules/],
+        use: [
+          require.resolve("style-loader"),
+          {
+            loader: require.resolve("css-loader"),
+            options: {
+              modules: true,
+              localIdentName: "[local]_[hash:base64:8]"
+            }
+          },
+          {
+            loader: require.resolve("postcss-loader")
+          },
+          {
+            loader: require.resolve("less-loader"),
+            options: {
+              lessOptions: {
+                javascriptEnabled: true
+              }
+            }
+            // options: { modifyVars: { "@primary-color": "#1DA57A" } }
+          }
+        ]
+      },
+
+      {
+        test: /\.(gif|png|jpe?g|svg)$/i,
+        use: [
+          "file-loader",
+          {
+            loader: "image-webpack-loader",
+            options: {
+              bypassOnDebug: true, // webpack@1.x
+              disable: true // webpack@2.x and newer
             }
           }
         ]

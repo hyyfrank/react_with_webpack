@@ -57,54 +57,80 @@ module.exports = {
         }
       },
       {
-        test: /\.(css|less)$/,
+        test: /\.css$/,
         use: [
+          require.resolve("style-loader"),
           {
-            loader: MiniCssExtractPlugin.loader
-          },
-          {
-            loader: "css-loader",
+            loader: require.resolve("css-loader"),
             options: {
-              modules: true,
-              localIdentName: "purify_[hash:base64:5]"
+              importLoaders: 1
             }
           },
           {
-            loader: "postcss-loader",
-            options: {
-              sourceMap: true,
-              config: {
-                path: `${__dirname}/postcss.config.js`
-              }
-              // plugins: [require("postcss-sprites")({
-              //     spritePath: "./dist/images"
-              // })]
-            }
-          },
-          {
-            loader: "less-loader",
-            options: {
-              sourceMap: true
-            }
+            loader: require.resolve("postcss-loader")
           }
-        ],
-        exclude: /node_modules/
+        ]
       },
       {
-        test: /\.(jpe?g|png|gif|svg)$/i,
+        test: /\.less$/,
+        exclude: [/src/],
         use: [
-          "url-loader?limit=10000&name=images/[name].[ext]",
+          require.resolve("style-loader"),
           {
-            loader: "img-loader",
+            loader: require.resolve("css-loader"),
             options: {
-              plugins: [
-                require("imagemin-gifsicle")({}),
-                require("imagemin-mozjpeg")({}),
-                require("imagemin-pngquant")({}),
-                require("imagemin-svgo")({
-                  plugins: [{ removeTitle: true }, { convertPathData: false }]
-                })
-              ]
+              importLoaders: 1
+            }
+          },
+          {
+            loader: require.resolve("postcss-loader")
+          },
+          {
+            loader: require.resolve("less-loader"),
+            options: {
+              lessOptions: {
+                javascriptEnabled: true
+              }
+            }
+            // options: { modifyVars: { "@primary-color": "#1DA57A" } }
+          }
+        ]
+      },
+      {
+        test: /\.less$/,
+        exclude: [/node_modules/],
+        use: [
+          require.resolve("style-loader"),
+          {
+            loader: require.resolve("css-loader"),
+            options: {
+              modules: true,
+              localIdentName: "[local]_[hash:base64:8]"
+            }
+          },
+          {
+            loader: require.resolve("postcss-loader")
+          },
+          {
+            loader: require.resolve("less-loader"),
+            options: {
+              lessOptions: {
+                javascriptEnabled: true
+              }
+            }
+            // options: { modifyVars: { "@primary-color": "#1DA57A" } }
+          }
+        ]
+      },
+      {
+        test: /\.(gif|png|jpe?g|svg)$/i,
+        use: [
+          "file-loader",
+          {
+            loader: "image-webpack-loader",
+            options: {
+              bypassOnDebug: true, // webpack@1.x
+              disable: true // webpack@2.x and newer
             }
           }
         ]
@@ -170,12 +196,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "src", "index.html"),
       filename: "index.html",
-      hash: true,
-      excludeChunks: [
-        "algorithms/algorithms",
-        "dashboard/dashboard",
-        "videos/videos"
-      ]
+      hash: true
     }),
     MiniCssPlugin,
     // PurifyCssPlugin,

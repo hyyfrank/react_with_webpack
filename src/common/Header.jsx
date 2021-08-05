@@ -4,6 +4,7 @@ import { Layout, Menu, Dropdown } from "antd";
 import React, { Component } from "react";
 import { PieChartOutlined, DesktopOutlined } from "@ant-design/icons";
 import * as style from "../css/layout.less";
+import avatar from "../images/avata.png";
 
 const { Header } = Layout;
 
@@ -16,7 +17,6 @@ export default class HeaderComponent extends Component {
   }
 
   render() {
-    const { collapsed } = this.state;
     const menu = (
       <Menu theme="light">
         <Menu.Item key="1" icon={<PieChartOutlined />} disabled>
@@ -43,7 +43,9 @@ export default class HeaderComponent extends Component {
             className="ant-dropdown-link headermenuright"
             onClick={(e) => e.preventDefault()}
           >
-            <div className={style.userLogo} />
+            <div>
+              <img src={avatar} className={style.avatar} alt="avatar logo" />
+            </div>
             <div className={style.userName}>g2link</div>
           </a>
         </Dropdown>

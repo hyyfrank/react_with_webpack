@@ -31,14 +31,20 @@ class DashboardComponent extends PureComponent {
     this.updateIotTableData = this.updateIotTableData.bind(this);
     this.loadMore = this.loadMore.bind(this);
     this.fetchDataAndFilter = this.fetchDataAndFilter.bind(this);
+    this.getFlowLayoutData = this.getFlowLayoutData.bind(this);
+
     this.state = {
       rawData: [], // 过滤前的数据，单纯从day请求来的数据
       caremaStatus: false, // 默认相机下拉框可选
       tableData: [], // 过滤后数据，某一天的carema的图片的数据信息，用于加载和分页
+      paginationData: [], // 当前分页的数据
+
+      tableDataRoom: [], // 过滤后数据，某一天的carema的图片的数据信息，用于加载和分页
+      paginationDataRoom: [], // 当前分页的数据
+
       channels: [], // 下拉框的iot 相机列表
       current: "", // 当前相机
       day: 0, // 哪一天
-      paginationData: [], // 当前分页的数据
       PAGE_SIZE: 3, // 每一页几个，一行表示一个
       page: 1, // 默认页
       loadmorePage: 1, // 加载更多的默认页
@@ -56,7 +62,7 @@ class DashboardComponent extends PureComponent {
 
   onPageChange(pageNumber) {
     this.setState({ page: pageNumber });
-    const { tableData, PAGE_SIZE } = this.state;
+    const { tableData, PAGE_SIZE, tableDataRoom } = this.state;
     const lastIndex =
       PAGE_SIZE * pageNumber > tableData.length
         ? tableData.length
@@ -67,8 +73,15 @@ class DashboardComponent extends PureComponent {
       this.setState({ shouldLoadMore: true });
     }
     const tmp = tableData.slice(PAGE_SIZE * (pageNumber - 1), lastIndex);
-    this.setState({ paginationData: [...tmp] });
-    this.setState({ loadmorePage: pageNumber });
+    const tmpRoom = tableDataRoom.slice(
+      PAGE_SIZE * (pageNumber - 1),
+      lastIndex
+    );
+    this.setState({
+      paginationData: [...tmp],
+      paginationDataRoom: [...tmpRoom],
+      loadmorePage: pageNumber
+    });
   }
 
   onTimeChange(newDay) {
@@ -158,16 +171,30 @@ class DashboardComponent extends PureComponent {
     return jpgs;
   }
 
+  getFlowLayoutData(tableData) {
+    const newData = [];
+    const len = tableData.length;
+    console.log(`length is: ${len}`);
+
+    for (let i = len - 1; i > 0; i--) {
+      const item = {
+        ...tableData[i],
+        related: [...tableData[i].related]
+      };
+      item.related[0].img = tableData[i - 1].related[0].img;
+      item.related[0].info = tableData[i - 1].related[0].info;
+      newData.push(item);
+    }
+    return newData.reverse();
+  }
+
   updateIotTableData(iotTableData, type) {
     const { day, PAGE_SIZE } = this.state;
     const newTableData = [];
 
     iotTableData.map((item) => {
       console.log(`device:${item.config.DeviceType}`);
-      if (
-        item.hasOwnProperty("config") &&
-        (item.config.DeviceType === "Road" || item.config.DeviceType === "Room")
-      ) {
+      if (item.hasOwnProperty("config") && item.config.DeviceType === "Road") {
         if (item.event === "FREE") {
           const tmpImage = new Image();
           tmpImage.src = this.getImageFullAddress(day, item, type);
@@ -204,10 +231,12 @@ class DashboardComponent extends PureComponent {
       }
     });
     newTableData.reverse();
-
+    const roomData = this.getFlowLayoutData(newTableData);
     this.setState({
       tableData: newTableData,
-      paginationData: newTableData.slice(0, PAGE_SIZE)
+      paginationData: newTableData.slice(0, PAGE_SIZE),
+      tableDataRoom: roomData,
+      paginationDataRoom: roomData.slice(0, PAGE_SIZE)
     });
   }
 
@@ -230,8 +259,10 @@ class DashboardComponent extends PureComponent {
   loadMore() {
     const {
       paginationData,
+      paginationDataRoom,
       PAGE_SIZE,
       tableData,
+      tableDataRoom,
       shouldLoadMore,
       loadmorePage
     } = this.state;
@@ -241,14 +272,23 @@ class DashboardComponent extends PureComponent {
       PAGE_SIZE * nextPageNum > tableData.length
         ? tableData.length
         : PAGE_SIZE * nextPageNum;
+
     if (shouldLoadMore) {
       const nextPageData = tableData.slice(
         PAGE_SIZE * (nextPageNum - 1),
         lastIndex
       );
+      const nextPageDataRoom = tableDataRoom.slice(
+        PAGE_SIZE * (nextPageNum - 1),
+        lastIndex
+      );
       const tmp = paginationData.concat(nextPageData);
+      const tmpRoom = paginationDataRoom.concat(nextPageDataRoom);
 
-      this.setState({ paginationData: [...tmp] });
+      this.setState({
+        paginationData: [...tmp],
+        paginationDataRoom: [...tmpRoom]
+      });
     }
 
     if (lastIndex === tableData.length) {
@@ -331,9 +371,21 @@ class DashboardComponent extends PureComponent {
       current,
       PAGE_SIZE,
       paginationData,
+      paginationDataRoom,
       caremaStatus
     } = this.state;
-    console.log(`pagination:${JSON.stringify(paginationData)}`);
+    let resType = "";
+    if (paginationData.length > 0) {
+      resType = paginationData[0].resultType;
+    }
+    let dataToShow = [...paginationData];
+    if (resType === "Room") {
+      console.log("*********************Room Detected!******************");
+      // dataToShow = this.getFlowLayoutData(tableData);
+      dataToShow = [...paginationDataRoom];
+    }
+
+    console.log(`dataToShow:${JSON.stringify(dataToShow)}`);
     const images = [];
     const videos = [];
     if (channels.length > 0) {
@@ -345,37 +397,36 @@ class DashboardComponent extends PureComponent {
         );
       }
     }
-    if (type === "img" && paginationData.length > 0) {
-      const resType = paginationData[0].resultType;
+    if (type === "img" && dataToShow.length > 0) {
       if (resType === "Road") {
-        for (let i = 0; i < paginationData.length; i++) {
+        for (let i = 0; i < dataToShow.length; i++) {
           images.push(
             <Row key={`rowkey${i}`}>
               <Col key={`col2${i}`} span={6}>
-                {paginationData[i].related.length > 0 ? (
+                {dataToShow[i].related.length > 0 ? (
                   <div className={style.takeColor}>
-                    <AntdImage src={`${paginationData[i].related[0].img}`} />
-                    <span>{paginationData[i].related[0].info}</span>
+                    <AntdImage src={`${dataToShow[i].related[0].img}`} />
+                    <span>{dataToShow[i].related[0].info}</span>
                   </div>
                 ) : (
                   <span />
                 )}
               </Col>
               <Col key={`col3${i}`} span={6}>
-                {paginationData[i].related.length > 1 ? (
+                {dataToShow[i].related.length > 1 ? (
                   <div className={style.takeColor}>
-                    <AntdImage src={`${paginationData[i].related[1].img}`} />
-                    <span>{paginationData[i].related[1].info}</span>
+                    <AntdImage src={`${dataToShow[i].related[1].img}`} />
+                    <span>{dataToShow[i].related[1].info}</span>
                   </div>
                 ) : (
                   <span />
                 )}
               </Col>
               <Col key={`col4${i}`} span={6}>
-                {paginationData[i].related.length > 2 ? (
+                {dataToShow[i].related.length > 2 ? (
                   <div className={style.takeColor}>
-                    <AntdImage src={`${paginationData[i].related[2].img}`} />
-                    <span>{paginationData[i].related[1].info}</span>
+                    <AntdImage src={`${dataToShow[i].related[2].img}`} />
+                    <span>{dataToShow[i].related[1].info}</span>
                   </div>
                 ) : (
                   <span />
@@ -383,91 +434,96 @@ class DashboardComponent extends PureComponent {
               </Col>
               <Col key={`col1${i}`} span={6}>
                 <div className={style.freeColor}>
-                  <AntdImage src={`${paginationData[i].src}`} />
-                  <span>{paginationData[i].infos}</span>
+                  <AntdImage src={`${dataToShow[i].src}`} />
+                  <span>{dataToShow[i].infos}</span>
                 </div>
               </Col>
             </Row>
           );
         }
       } else if (resType === "Room") {
-        for (let i = 0; i < paginationData.length; i++) {
+        for (let i = 0; i < dataToShow.length; i++) {
           images.push(
             <Row key={`rowkey${i}`}>
               <Col key={`col2${i}`} span={6}>
-                {paginationData[i].related.length > 0 ? (
-                  <div className={style.takeColor}>
-                    <AntdImage src={`${paginationData[i].related[0].img}`} />
-                    <span>{paginationData[i].related[0].info}</span>
+                {dataToShow[i].related.length > 1 ? (
+                  <div key={`col2${i}div2`} className={style.takeColor}>
+                    <AntdImage src={`${dataToShow[i].related[1].img}`} />
+                    <span>{dataToShow[i].related[1].info}</span>
                   </div>
                 ) : (
                   <span />
                 )}
               </Col>
+
               <Col key={`col3${i}`} span={6}>
-                {paginationData[i].related.length > 1 ? (
-                  <div className={style.freeColor}>
-                    <AntdImage src={`${paginationData[i].related[1].img}`} />
-                    <span>{paginationData[i].related[1].info}</span>
+                {dataToShow[i].related.length > 2 ? (
+                  <div key={`col3${i}div3`} className={style.takeColor}>
+                    <AntdImage src={`${dataToShow[i].related[2].img}`} />
+                    <span>{dataToShow[i].related[2].info}</span>
                   </div>
                 ) : (
                   <span />
                 )}
               </Col>
               <Col key={`col4${i}`} span={6}>
-                {paginationData[i].related.length > 2 ? (
-                  <div className={style.freeColor}>
-                    <AntdImage src={`${paginationData[i].related[2].img}`} />
-                    <span>{paginationData[i].related[1].info}</span>
+                {dataToShow[i].related.length > 3 ? (
+                  <div key={`col4${i}div4`} className={style.takeColor}>
+                    <AntdImage src={`${dataToShow[i].related[3].img}`} />
+                    <span>{dataToShow[i].related[3].info}</span>
                   </div>
                 ) : (
                   <span />
                 )}
               </Col>
               <Col key={`col1${i}`} span={6}>
-                <div className={style.freeColor}>
-                  <AntdImage src={`${paginationData[i].src}`} />
-                  <span>{paginationData[i].infos}</span>
-                </div>
+                {dataToShow[i].related.length > 0 ? (
+                  <div key={`col1${i}div1`} className={style.freeColor}>
+                    <AntdImage src={`${dataToShow[i].related[0].img}`} />
+                    <span>{dataToShow[i].related[0].info}</span>
+                  </div>
+                ) : (
+                  <span />
+                )}
               </Col>
             </Row>
           );
         }
       } else {
-        for (let i = 0; i < paginationData.length; i++) {
+        for (let i = 0; i < dataToShow.length; i++) {
           images.push(
             <Row key={`rowkey${i}`}>
               <Col key={`col1${i}`} span={6}>
                 <div className={style.takeColor}>
-                  <AntdImage src={`${paginationData[i].src}`} />
-                  <span>{paginationData[i].infos}</span>
+                  <AntdImage src={`${dataToShow[i].src}`} />
+                  <span>{dataToShow[i].infos}</span>
                 </div>
               </Col>
               <Col key={`col2${i}`} span={6}>
-                {paginationData[i].related.length > 0 ? (
+                {dataToShow[i].related.length > 0 ? (
                   <div className={style.freeColor}>
-                    <AntdImage src={`${paginationData[i].related[0].img}`} />
-                    <span>{paginationData[i].related[0].info}</span>
+                    <AntdImage src={`${dataToShow[i].related[0].img}`} />
+                    <span>{dataToShow[i].related[0].info}</span>
                   </div>
                 ) : (
                   <span />
                 )}
               </Col>
               <Col key={`col3${i}`} span={6}>
-                {paginationData[i].related.length > 1 ? (
+                {dataToShow[i].related.length > 1 ? (
                   <div className={style.freeColor}>
-                    <AntdImage src={`${paginationData[i].related[1].img}`} />
-                    <span>{paginationData[i].related[1].info}</span>
+                    <AntdImage src={`${dataToShow[i].related[1].img}`} />
+                    <span>{dataToShow[i].related[1].info}</span>
                   </div>
                 ) : (
                   <span />
                 )}
               </Col>
               <Col key={`col4${i}`} span={6}>
-                {paginationData[i].related.length > 2 ? (
+                {dataToShow[i].related.length > 2 ? (
                   <div className={style.freeColor}>
-                    <AntdImage src={`${paginationData[i].related[2].img}`} />
-                    <span>{paginationData[i].related[1].info}</span>
+                    <AntdImage src={`${dataToShow[i].related[2].img}`} />
+                    <span>{dataToShow[i].related[1].info}</span>
                   </div>
                 ) : (
                   <span />
@@ -478,48 +534,48 @@ class DashboardComponent extends PureComponent {
         }
       }
     } else {
-      for (let i = 0; i < paginationData.length; i++) {
+      for (let i = 0; i < dataToShow.length; i++) {
         videos.push(
           <Row key={`rowkey${i}`}>
             <Col key={`col${i}`} span={6}>
               <div className={style.takeColor}>
-                <video src={`${paginationData[i].src}`}>
+                <video src={`${dataToShow[i].src}`}>
                   <track kind="captions" />
                 </video>
-                <span>{paginationData[i].infos}</span>
+                <span>{dataToShow[i].infos}</span>
               </div>
             </Col>
             <Col key={`col${i}`} span={6}>
-              {paginationData[i].related.length > 0 ? (
+              {dataToShow[i].related.length > 0 ? (
                 <div className={style.freeColor}>
-                  <video src={`${paginationData[i].related[0].img}`}>
+                  <video src={`${dataToShow[i].related[0].img}`}>
                     <track kind="captions" />
                   </video>
-                  <span>{paginationData[i].related[0].info}</span>
+                  <span>{dataToShow[i].related[0].info}</span>
                 </div>
               ) : (
                 <span />
               )}
             </Col>
             <Col key={`col${i}`} span={6}>
-              {paginationData[i].related.length > 1 ? (
+              {dataToShow[i].related.length > 1 ? (
                 <div className={style.freeColor}>
-                  <video src={`${paginationData[i].related[1].img}`}>
+                  <video src={`${dataToShow[i].related[1].img}`}>
                     <track kind="captions" />
                   </video>
-                  <span>{paginationData[i].related[1].info}</span>
+                  <span>{dataToShow[i].related[1].info}</span>
                 </div>
               ) : (
                 <span />
               )}
             </Col>
             <Col key={`col${i}`} span={6}>
-              {paginationData[i].related.length > 2 ? (
+              {dataToShow[i].related.length > 2 ? (
                 <div className={style.freeColor}>
-                  <video src={`${paginationData[i].related[2].img}`}>
+                  <video src={`${dataToShow[i].related[2].img}`}>
                     <track kind="captions" />
                   </video>
-                  <span>{paginationData[i].related[1].info}</span>
+                  <span>{dataToShow[i].related[1].info}</span>
                 </div>
               ) : (
                 <span />

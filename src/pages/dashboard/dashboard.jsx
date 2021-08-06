@@ -10,6 +10,7 @@ import {
   message
 } from "antd";
 import { DownOutlined, HomeOutlined, UserOutlined } from "@ant-design/icons";
+import Image404Component from "./404";
 import * as style from "../../css/dashboard.less";
 import fetchDashboardList from "../../services/dashboard";
 import APICONST from "../../services/APIConst";
@@ -409,7 +410,7 @@ class DashboardComponent extends PureComponent {
                     <span>{dataToShow[i].related[0].info}</span>
                   </div>
                 ) : (
-                  <span />
+                  <Image404Component />
                 )}
               </Col>
               <Col key={`col3${i}`} span={6}>
@@ -419,7 +420,7 @@ class DashboardComponent extends PureComponent {
                     <span>{dataToShow[i].related[1].info}</span>
                   </div>
                 ) : (
-                  <span />
+                  <Image404Component />
                 )}
               </Col>
               <Col key={`col4${i}`} span={6}>
@@ -429,7 +430,7 @@ class DashboardComponent extends PureComponent {
                     <span>{dataToShow[i].related[1].info}</span>
                   </div>
                 ) : (
-                  <span />
+                  <Image404Component />
                 )}
               </Col>
               <Col key={`col1${i}`} span={6}>
@@ -452,7 +453,7 @@ class DashboardComponent extends PureComponent {
                     <span>{dataToShow[i].related[1].info}</span>
                   </div>
                 ) : (
-                  <span />
+                  <Image404Component />
                 )}
               </Col>
 
@@ -463,7 +464,7 @@ class DashboardComponent extends PureComponent {
                     <span>{dataToShow[i].related[2].info}</span>
                   </div>
                 ) : (
-                  <span />
+                  <Image404Component />
                 )}
               </Col>
               <Col key={`col4${i}`} span={6}>
@@ -473,7 +474,7 @@ class DashboardComponent extends PureComponent {
                     <span>{dataToShow[i].related[3].info}</span>
                   </div>
                 ) : (
-                  <span />
+                  <Image404Component />
                 )}
               </Col>
               <Col key={`col1${i}`} span={6}>
@@ -483,7 +484,7 @@ class DashboardComponent extends PureComponent {
                     <span>{dataToShow[i].related[0].info}</span>
                   </div>
                 ) : (
-                  <span />
+                  <Image404Component />
                 )}
               </Col>
             </Row>
@@ -506,7 +507,7 @@ class DashboardComponent extends PureComponent {
                     <span>{dataToShow[i].related[0].info}</span>
                   </div>
                 ) : (
-                  <span />
+                  <Image404Component />
                 )}
               </Col>
               <Col key={`col3${i}`} span={6}>
@@ -516,7 +517,7 @@ class DashboardComponent extends PureComponent {
                     <span>{dataToShow[i].related[1].info}</span>
                   </div>
                 ) : (
-                  <span />
+                  <Image404Component />
                 )}
               </Col>
               <Col key={`col4${i}`} span={6}>
@@ -526,7 +527,7 @@ class DashboardComponent extends PureComponent {
                     <span>{dataToShow[i].related[1].info}</span>
                   </div>
                 ) : (
-                  <span />
+                  <Image404Component />
                 )}
               </Col>
             </Row>
@@ -554,7 +555,7 @@ class DashboardComponent extends PureComponent {
                   <span>{dataToShow[i].related[0].info}</span>
                 </div>
               ) : (
-                <span />
+                <Image404Component />
               )}
             </Col>
             <Col key={`col${i}`} span={6}>
@@ -566,7 +567,7 @@ class DashboardComponent extends PureComponent {
                   <span>{dataToShow[i].related[1].info}</span>
                 </div>
               ) : (
-                <span />
+                <Image404Component />
               )}
             </Col>
             <Col key={`col${i}`} span={6}>
@@ -578,7 +579,7 @@ class DashboardComponent extends PureComponent {
                   <span>{dataToShow[i].related[1].info}</span>
                 </div>
               ) : (
-                <span />
+                <Image404Component />
               )}
             </Col>
           </Row>

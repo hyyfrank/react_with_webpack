@@ -14,6 +14,8 @@ import Image404Component from "./404";
 import * as style from "../../css/dashboard.less";
 import fetchDashboardList from "../../services/dashboard";
 import APICONST from "../../services/APIConst";
+import LoadingComponent from "../../common/Loading";
+
 
 const { Option } = Select;
 const { BASE_URL } = APICONST;
@@ -50,7 +52,8 @@ class DashboardComponent extends PureComponent {
       page: 1, // 默认页
       loadmorePage: 1, // 加载更多的默认页
       shouldLoadMore: true, // 是否到了最后一页，不能加载更多
-      type: "img" // 加载类型，图片或者视频
+      type: "img", // 加载类型，图片或者视频
+      isLoading: true
     };
   }
 
@@ -58,7 +61,9 @@ class DashboardComponent extends PureComponent {
     this.loadCertainDayData(0).then(() => {
       const { current } = this.state;
       this.fetchDataAndFilter(current, "img");
-    });
+    }).then(()=>{
+      this.setState({isLoading: false});
+    })
   }
 
   onPageChange(pageNumber) {
@@ -237,7 +242,8 @@ class DashboardComponent extends PureComponent {
       tableData: newTableData,
       paginationData: newTableData.slice(0, PAGE_SIZE),
       tableDataRoom: roomData,
-      paginationDataRoom: roomData.slice(0, PAGE_SIZE)
+      paginationDataRoom: roomData.slice(0, PAGE_SIZE),
+      
     });
   }
 
@@ -353,12 +359,20 @@ class DashboardComponent extends PureComponent {
 
   confirmFilter() {
     const { current, type } = this.state;
-    this.setState({
-      page: 1,
-      loadmorePage: 1,
-      shouldLoadMore: true
-    });
-    this.fetchDataAndFilter(current, type);
+    new Promise((resolve,reject)=>{
+      this.setState({
+        page: 1,
+        loadmorePage: 1,
+        shouldLoadMore: true,
+        isLoading: true
+      });
+    }).then(()=>{
+      this.fetchDataAndFilter(current, type);
+    }).then(()=>{
+      console.log("***confirm filter set loading to false.")
+      this.setState({isLoading: false});
+    })
+    
   }
 
   render() {
@@ -373,7 +387,8 @@ class DashboardComponent extends PureComponent {
       PAGE_SIZE,
       paginationData,
       paginationDataRoom,
-      caremaStatus
+      caremaStatus,
+      isLoading
     } = this.state;
     let resType = "";
     if (paginationData.length > 0) {
@@ -587,8 +602,7 @@ class DashboardComponent extends PureComponent {
       }
     }
 
-    return (
-      <div className={style.dashboard}>
+    return <div className={style.dashboard}>
         <div className={style.BreadcrumbPart}>
           <Breadcrumb>
             <Breadcrumb.Item href="/dashboard">
@@ -711,9 +725,11 @@ class DashboardComponent extends PureComponent {
             </Button>
           </div>
         </div>
-        <div className={style.imagesPart}>
+        {isLoading ? <LoadingComponent /> : 
+        (<div className={style.imagesPart}>
           <Row gutter={[8, 8]}>{type === "img" ? images : videos}</Row>
         </div>
+        )}
         <div className={style.rightPosition}>
           <span className={style.downoutline}>
             <a href="#" onClick={this.loadMore}>
@@ -728,7 +744,6 @@ class DashboardComponent extends PureComponent {
           />
         </div>
       </div>
-    );
   }
 }
 

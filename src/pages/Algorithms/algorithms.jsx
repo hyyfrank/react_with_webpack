@@ -9,6 +9,7 @@ import {
 import { addService, delService } from "../../services/algorithm";
 import * as style from "../../css/algorithm.less";
 import AlgorithmList from "./list";
+import LoadingComponent from "../../common/Loading";
 
 class AlgorithmComponent extends Component {
   constructor() {
@@ -23,7 +24,8 @@ class AlgorithmComponent extends Component {
       isModalVisible: false,
       isDeleteVisiable: false,
       tableData: [],
-      addDataSource: []
+      addDataSource: [],
+      isLoading: true,
     };
   }
 
@@ -362,6 +364,7 @@ class AlgorithmComponent extends Component {
           )}`
         );
         this.setState({
+          isLoading: false,
           tableData: enabledNewDataList.sort((i1, i2) => {
             return i1.Enable.length - i2.Enable.length;
           })
@@ -454,7 +457,7 @@ class AlgorithmComponent extends Component {
   }
 
   render() {
-    const { bottom } = this.state;
+    const { bottom, isLoading} = this.state;
     const isAlgoritmServer = sessionStorage.getItem("isAlgoritmServer");
     let columns;
     if (isAlgoritmServer === "true") {
@@ -818,12 +821,16 @@ class AlgorithmComponent extends Component {
               新增
             </Button>
           </div>
+          {isLoading?
+          <LoadingComponent /> :
           <Table
             rowKey={(record) => record.name}
             columns={columns}
             pagination={{ position: [bottom] }}
             dataSource={tableData}
           />
+          }
+          
           <Modal
             title="新增算法(激活)"
             visible={isModalVisible}

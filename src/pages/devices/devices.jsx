@@ -14,6 +14,7 @@ import {
 } from "../../services/deploys";
 
 import * as style from "../../css/devices.less";
+import LoadingComponent from "../../common/Loading";
 
 const { Option } = Select;
 class DevicesComponent extends Component {
@@ -42,11 +43,13 @@ class DevicesComponent extends Component {
       newFieldVideoUrl: "",
       newFieldIotCode: "",
       newFieldAlgorithm: "",
-      newFieldDeviceType: ""
+      newFieldDeviceType: "",
+      isLoading: true,
     };
   }
 
   componentDidMount() {
+
     this.fetchData();
   }
 
@@ -687,7 +690,7 @@ class DevicesComponent extends Component {
           return enableIds.includes(item.ID);
         });
         console.log(`过滤后可用的算法列表: ${JSON.stringify(allEnabledVideo)}`);
-        this.setState({ algoIdNameMapping: allEnabledVideo });
+        this.setState({ algoIdNameMapping: allEnabledVideo,isLoading: false });
       })
       .catch((e) => {
         console.error(`获取下拉框中的算法列表出错:${JSON.stringify(e)}`);
@@ -730,7 +733,7 @@ class DevicesComponent extends Component {
   }
 
   render() {
-    const { bottom, isModalVisible, algoIdNameMapping } = this.state;
+    const { bottom, isModalVisible, algoIdNameMapping,isLoading } = this.state;
     const columns = [
       {
         title: "设备场景类型",
@@ -901,12 +904,16 @@ class DevicesComponent extends Component {
               </Button>
             </div>
           </div>
+          {isLoading ?
+          <LoadingComponent /> :
           <Table
             rowKey={(record) => record.IoTCode}
             columns={columns}
             pagination={{ position: [bottom] }}
             dataSource={tableData}
           />
+          }
+          
           <Modal
             title="创建新的相机"
             visible={isModalVisible}

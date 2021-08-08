@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Table, Breadcrumb } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import LoadingComponent from "../../common/Loading";
 import { fetchGardenInfos } from "../../services/login";
 
 import * as style from "../../css/machines.less";
@@ -13,19 +13,23 @@ class MachineComponent extends Component {
       bottom: "bottomRight",
       isModalVisible: false,
       isDeleteVisiable: false,
-      tableData: []
+      tableData: [],
+      isLoading: false
     };
   }
 
   componentDidMount() {
     const obj = { type: "SERVER_CONFIG" };
+    this.setState({
+      isLoading: true
+    });
     fetchGardenInfos(obj).then(({ data }) => {
-      this.setState({ tableData: data.response.detail });
+      this.setState({ tableData: data.response.detail ,isLoading: false});
     });
   }
 
   render() {
-    const { bottom } = this.state;
+    const { bottom, isLoading} = this.state;
     //     DeviceCode: "20:04:0f:ed:7a:a8"
     // DeviceName: "上海南汇算法服务器1"
     // DeviceType: "月台检测"
@@ -100,20 +104,21 @@ class MachineComponent extends Component {
     ];
 
     const { tableData } = this.state;
-    return (
-      <div className={style.mainContent}>
-        <div className={style.BreadcrumbPart}>
-          <Breadcrumb>
-            <Breadcrumb.Item href="/dashboard">
-              <HomeOutlined />
-            </Breadcrumb.Item>
-            <Breadcrumb.Item href="/machines">
-              <PictureOutlined />
-              <span>Machines</span>
-            </Breadcrumb.Item>
-          </Breadcrumb>
-        </div>
-        <div className={style.tableLayer}>
+
+  return <div className={style.mainContent}>
+      <div className={style.BreadcrumbPart}>
+        <Breadcrumb>
+          <Breadcrumb.Item href="/dashboard">
+            <HomeOutlined />
+          </Breadcrumb.Item>
+          <Breadcrumb.Item href="/machines">
+            <PictureOutlined />
+            <span>Machines</span>
+          </Breadcrumb.Item>
+        </Breadcrumb>
+      </div>
+      {isLoading ? 
+      <LoadingComponent /> : <div className={style.tableLayer}>
           <Table
             rowKey={(record) => record.SiteCode}
             columns={columns}
@@ -121,8 +126,8 @@ class MachineComponent extends Component {
             dataSource={tableData}
           />
         </div>
-      </div>
-    );
+      }
+    </div>
   }
 }
 

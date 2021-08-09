@@ -25,7 +25,7 @@ class AlgorithmComponent extends Component {
       isDeleteVisiable: false,
       tableData: [],
       addDataSource: [],
-      isLoading: true,
+      isLoading: true
     };
   }
 
@@ -457,7 +457,8 @@ class AlgorithmComponent extends Component {
   }
 
   render() {
-    const { bottom, isLoading} = this.state;
+    const { bottom, isLoading } = this.state;
+    // console.log(`render..........isLoading:${isLoading}`);
     const isAlgoritmServer = sessionStorage.getItem("isAlgoritmServer");
     let columns;
     if (isAlgoritmServer === "true") {
@@ -821,16 +822,17 @@ class AlgorithmComponent extends Component {
               新增
             </Button>
           </div>
-          {isLoading?
-          <LoadingComponent /> :
-          <Table
-            rowKey={(record) => record.name}
-            columns={columns}
-            pagination={{ position: [bottom] }}
-            dataSource={tableData}
-          />
-          }
-          
+          {isLoading ? (
+            <LoadingComponent />
+          ) : (
+            <Table
+              rowKey={(record) => record.name}
+              columns={columns}
+              pagination={{ position: [bottom] }}
+              dataSource={tableData}
+            />
+          )}
+
           <Modal
             title="新增算法(激活)"
             visible={isModalVisible}

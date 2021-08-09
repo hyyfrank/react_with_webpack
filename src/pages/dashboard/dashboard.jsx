@@ -16,7 +16,6 @@ import fetchDashboardList from "../../services/dashboard";
 import APICONST from "../../services/APIConst";
 import LoadingComponent from "../../common/Loading";
 
-
 const { Option } = Select;
 const { BASE_URL } = APICONST;
 
@@ -58,12 +57,14 @@ class DashboardComponent extends PureComponent {
   }
 
   componentDidMount() {
-    this.loadCertainDayData(0).then(() => {
-      const { current } = this.state;
-      this.fetchDataAndFilter(current, "img");
-    }).then(()=>{
-      this.setState({isLoading: false});
-    })
+    this.loadCertainDayData(0)
+      .then(() => {
+        const { current } = this.state;
+        this.fetchDataAndFilter(current, "img");
+      })
+      .then(() => {
+        this.setState({ isLoading: false });
+      });
   }
 
   onPageChange(pageNumber) {
@@ -242,8 +243,7 @@ class DashboardComponent extends PureComponent {
       tableData: newTableData,
       paginationData: newTableData.slice(0, PAGE_SIZE),
       tableDataRoom: roomData,
-      paginationDataRoom: roomData.slice(0, PAGE_SIZE),
-      
+      paginationDataRoom: roomData.slice(0, PAGE_SIZE)
     });
   }
 
@@ -359,20 +359,12 @@ class DashboardComponent extends PureComponent {
 
   confirmFilter() {
     const { current, type } = this.state;
-    new Promise((resolve,reject)=>{
-      this.setState({
-        page: 1,
-        loadmorePage: 1,
-        shouldLoadMore: true,
-        isLoading: true
-      });
-    }).then(()=>{
-      this.fetchDataAndFilter(current, type);
-    }).then(()=>{
-      console.log("***confirm filter set loading to false.")
-      this.setState({isLoading: false});
-    })
-    
+    this.setState({
+      page: 1,
+      loadmorePage: 1,
+      shouldLoadMore: true
+    });
+    this.fetchDataAndFilter(current, type);
   }
 
   render() {
@@ -602,7 +594,8 @@ class DashboardComponent extends PureComponent {
       }
     }
 
-    return <div className={style.dashboard}>
+    return (
+      <div className={style.dashboard}>
         <div className={style.BreadcrumbPart}>
           <Breadcrumb>
             <Breadcrumb.Item href="/dashboard">
@@ -725,10 +718,12 @@ class DashboardComponent extends PureComponent {
             </Button>
           </div>
         </div>
-        {isLoading ? <LoadingComponent /> : 
-        (<div className={style.imagesPart}>
-          <Row gutter={[8, 8]}>{type === "img" ? images : videos}</Row>
-        </div>
+        {isLoading ? (
+          <LoadingComponent />
+        ) : (
+          <div className={style.imagesPart}>
+            <Row gutter={[8, 8]}>{type === "img" ? images : videos}</Row>
+          </div>
         )}
         <div className={style.rightPosition}>
           <span className={style.downoutline}>
@@ -744,6 +739,7 @@ class DashboardComponent extends PureComponent {
           />
         </div>
       </div>
+    );
   }
 }
 

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Table, Breadcrumb, Button, Select, Divider } from "antd";
+import { Table, Breadcrumb, Button, Select } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import StepsComponent from "./steps";
+import LoadingComponent from "../../common/Loading";
 import {
   fetchServiceList,
   fetchSourceList,
@@ -34,7 +34,8 @@ class DeploysComponent extends Component {
       caremaList: [],
       bottom: "bottomRight",
       caremaSelected: "",
-      algoSelected: ""
+      algoSelected: "",
+      isLoading: true
     };
   }
 
@@ -148,10 +149,12 @@ class DeploysComponent extends Component {
         this.setState({
           tableData,
           filterData: tableData,
-          caremaList: tableData.map((item) => item.IoTCode)
+          caremaList: tableData.map((item) => item.IoTCode),
+          isLoading: false
         });
       })
       .catch((e) => {
+        this.setState({ isLoading: false });
         console.error(`promise all throws:${e}`);
       });
   }
@@ -228,7 +231,8 @@ class DeploysComponent extends Component {
       showStepPage,
       algoSelected,
       caremaSelected,
-      filterData
+      filterData,
+      isLoading
     } = this.state;
     const columns = [
       {
@@ -461,15 +465,16 @@ class DeploysComponent extends Component {
               </div>
             </div>
           </div>
-          <Table
-            rowKey={(record) => record.IoTCode}
-            columns={columns}
-            pagination={{ position: [bottom] }}
-            dataSource={filterData}
-          />
-          <div>
-            {showStepPage ? <StepsComponent {...stepParams} /> : <div />}
-          </div>
+          {isLoading ? (
+            <LoadingComponent />
+          ) : (
+            <Table
+              rowKey={(record) => record.IoTCode}
+              columns={columns}
+              pagination={{ position: [bottom] }}
+              dataSource={filterData}
+            />
+          )}
         </div>
       </div>
     );

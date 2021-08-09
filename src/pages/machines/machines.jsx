@@ -24,12 +24,12 @@ class MachineComponent extends Component {
       isLoading: true
     });
     fetchGardenInfos(obj).then(({ data }) => {
-      this.setState({ tableData: data.response.detail ,isLoading: false});
+      this.setState({ tableData: data.response.detail, isLoading: false });
     });
   }
 
   render() {
-    const { bottom, isLoading} = this.state;
+    const { bottom, isLoading } = this.state;
     //     DeviceCode: "20:04:0f:ed:7a:a8"
     // DeviceName: "上海南汇算法服务器1"
     // DeviceType: "月台检测"
@@ -105,29 +105,33 @@ class MachineComponent extends Component {
 
     const { tableData } = this.state;
 
-  return <div className={style.mainContent}>
-      <div className={style.BreadcrumbPart}>
-        <Breadcrumb>
-          <Breadcrumb.Item href="/dashboard">
-            <HomeOutlined />
-          </Breadcrumb.Item>
-          <Breadcrumb.Item href="/machines">
-            <PictureOutlined />
-            <span>Machines</span>
-          </Breadcrumb.Item>
-        </Breadcrumb>
-      </div>
-      {isLoading ? 
-      <LoadingComponent /> : <div className={style.tableLayer}>
-          <Table
-            rowKey={(record) => record.SiteCode}
-            columns={columns}
-            pagination={{ position: [bottom] }}
-            dataSource={tableData}
-          />
+    return (
+      <div className={style.mainContent}>
+        <div className={style.BreadcrumbPart}>
+          <Breadcrumb>
+            <Breadcrumb.Item href="/dashboard">
+              <HomeOutlined />
+            </Breadcrumb.Item>
+            <Breadcrumb.Item href="/machines">
+              <PictureOutlined />
+              <span>Machines</span>
+            </Breadcrumb.Item>
+          </Breadcrumb>
         </div>
-      }
-    </div>
+        {isLoading ? (
+          <LoadingComponent />
+        ) : (
+          <div className={style.tableLayer}>
+            <Table
+              rowKey={(record) => record.SiteCode}
+              columns={columns}
+              pagination={{ position: [bottom] }}
+              dataSource={tableData}
+            />
+          </div>
+        )}
+      </div>
+    );
   }
 }
 

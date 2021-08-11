@@ -3,7 +3,7 @@ import { Breadcrumb, Divider, message, Select } from "antd";
 import { HomeOutlined, PictureOutlined } from "@ant-design/icons";
 
 import { fetchAllDevices } from "../../services/devices";
-import CanavasRectangleComponet from "./rectangle";
+import CanavasRectangleComponet from "./konva";
 import * as style from "../../css/detail.less";
 import { fetchServiceSupportList } from "../../services/deploys";
 import APICONST from "../../services/APIConst";

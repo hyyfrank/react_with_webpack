@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Divider, Button, Input, message } from "antd";
+import { Button, Input, message } from "antd";
 import { throttle } from "throttle-debounce";
 import * as style from "../../css/rectangle.less";
 import APICONST from "../../services/APIConst";
@@ -27,14 +27,13 @@ class CanavasRectangleComponet extends Component {
     this.state = {
       recArrays: [],
       mouseMoveArrays: [],
+      mouseMoveAllArrays: [],
       monitorImageUrl: `${APICONST.BASE_URL}/?filename=picture/${iotCode}.jpg`,
       delItemID: "",
       desc: "",
       myCtx: {},
       mode: "add",
       originLen: 0,
-      editMode: false,
-      flag: false,
       fillcolor: "red",
       startPoint: [0, 0],
       endPoint: [0, 0],
@@ -51,7 +50,8 @@ class CanavasRectangleComponet extends Component {
       addRec: {},
       afterDelete: false,
       ismouseDown: false,
-      canvasItem: {}
+      canvasItem: {},
+      isMoveAll: false
     };
   }
 
@@ -79,6 +79,7 @@ class CanavasRectangleComponet extends Component {
         sourceItem.originLength = sourceItem.regions.length;
         this.setState({
           recArrays: sourceItem.regions,
+          mouseMoveAllArrays: sourceItem.regions,
           originLen: sourceItem.regions.length,
           canvasItem: sourceItem
         });
@@ -117,19 +118,14 @@ class CanavasRectangleComponet extends Component {
 
   async onDelete() {
     const { curSelectedRect, recArrays, mouseMoveArrays } = this.state;
-    console.log(`delete the id:${typeof curSelectedRect.ID}`);
-    console.log(`before del:${JSON.stringify(recArrays)}`);
-    console.log(`before: mouseArr${JSON.stringify(mouseMoveArrays)}`);
     const newArr = recArrays.filter((item) => {
       return item.ID !== curSelectedRect.ID;
     });
     const newMouseArr = mouseMoveArrays.filter((item) => {
       return item.ID !== curSelectedRect.ID;
     });
-    console.log(`AFTER del:${JSON.stringify(newArr)}`);
-    console.log(`AFTER del mousemove:${JSON.stringify(newMouseArr)}`);
 
-    await this.setState({
+    this.setState({
       delItemID: curSelectedRect.ID,
       editshowup: false,
       mode: "delete",
@@ -153,10 +149,7 @@ class CanavasRectangleComponet extends Component {
 
   initilization() {
     const { myCtx, monitorImageUrl } = this.state;
-    // const ctx = myCtx || this.canvas.current.getContext("2d");
-    console.log(`myCtx:${myCtx.drawImage}`);
     if (monitorImageUrl !== "" && monitorImageUrl.indexOf("undefined") === -1) {
-      console.log(`did update!${monitorImageUrl}`);
       return this.getImage(monitorImageUrl).then((initImage) => {
         const w = initImage.width;
         const h = initImage.height;
@@ -183,7 +176,6 @@ class CanavasRectangleComponet extends Component {
           ? e.nativeEvent.layerY
           : e.nativeEvent.offsetY;
       this.setState({
-        flag: true,
         startPoint: [offsetX, offsetY],
         ismouseDown: true
       });
@@ -196,35 +188,36 @@ class CanavasRectangleComponet extends Component {
       recArrays,
       ratioWidth,
       ratioHeight,
-      flag,
-      originLen,
       ismouseDown,
-      mouseMoveArrays
+      mouseMoveArrays,
+      isMoveAll,
+      mode
     } = this.state;
     if (ismouseDown) {
-      if (flag) {
-        console.log(
-          `[mouse move] recArray:${recArrays.length}ORIGIN LEN:${originLen}`
-        );
-        if (mouseMoveArrays.length > 0) {
-          mouseMoveArrays.pop();
-        }
+      console.log(`[mouse move] mode:${mode}`);
+      if (mouseMoveArrays.length > 0) {
+        mouseMoveArrays.pop();
+      }
+      console.log(
+        `startPoint[0]:${startPoint[0]},startPoint[1]:${startPoint[1]}`
+      );
+      if (startPoint[0] !== 0 || startPoint[1] !== 0) {
+        if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
+          const offsetX =
+            e.nativeEvent.offsetX === undefined
+              ? e.nativeEvent.layerX
+              : e.nativeEvent.offsetX;
+          const offsetY =
+            e.nativeEvent.offsetY === undefined
+              ? e.nativeEvent.layerY
+              : e.nativeEvent.offsetY;
+          // TODO: check no overlapping.....
 
-        if (startPoint[0] !== 0 || startPoint[1] !== 0) {
-          if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
-            const offsetX =
-              e.nativeEvent.offsetX === undefined
-                ? e.nativeEvent.layerX
-                : e.nativeEvent.offsetX;
-            const offsetY =
-              e.nativeEvent.offsetY === undefined
-                ? e.nativeEvent.layerY
-                : e.nativeEvent.offsetY;
-            // TODO: check no overlapping.....
-
-            const width = offsetX - startPoint[0];
-            const height = offsetY - startPoint[1];
-
+          const width = offsetX - startPoint[0];
+          const height = offsetY - startPoint[1];
+          console.log(`width:${width},height:${height}`);
+          if (!isMoveAll && mode === "add") {
+            console.log("***********[Mouse Move]in add mode************");
             const addRect = {
               ID: "mouseMoveID",
               Desc: "mouseMoveDesc",
@@ -245,13 +238,41 @@ class CanavasRectangleComponet extends Component {
               ]
             };
 
-            // if (Array.isArray(recArrays)) {
-            // if (recArrays.length !== originLen) {
             console.log("[mouse move] added!");
             mouseMoveArrays.push(addRect);
 
             this.setState({ mouseMoveArrays: [...mouseMoveArrays] });
-            // }
+          } else if (mode === "moveall") {
+            console.log("***********[Mouse Move]in moveall mode************");
+            const res = [];
+            recArrays.map((item) => {
+              res.push({
+                ...item,
+                axis: [
+                  [
+                    item.axis[0][0] + width * ratioWidth,
+                    item.axis[0][1] + height * ratioHeight
+                  ],
+                  [
+                    item.axis[1][0] + width * ratioWidth,
+                    item.axis[1][1] + height * ratioHeight
+                  ],
+                  [
+                    item.axis[2][0] + width * ratioWidth,
+                    item.axis[2][1] + height * ratioHeight
+                  ],
+                  [
+                    item.axis[3][0] + width * ratioWidth,
+                    item.axis[3][1] + height * ratioHeight
+                  ]
+                ]
+              });
+            });
+            // console.log(`after move: all rec:${JSON.stringify(res)}`);
+            this.setState({
+              mouseMoveAllArrays: [...res]
+            });
+            // TODO: SETSTATE, ADD MODE TO DO UPDATE ON COMPONENT DID UPDATE
           }
         }
       }
@@ -260,8 +281,7 @@ class CanavasRectangleComponet extends Component {
 
   mouseUpHandler(e) {
     // e.stopPropagation();
-    const { myCtx, startPoint, recArrays } = this.state;
-    this.setState({ ismouseDown: false });
+    const { myCtx, startPoint, recArrays, isMoveAll, mode } = this.state;
     if (e.nativeEvent.offsetX || e.nativeEvent.layerX) {
       const offsetX =
         e.nativeEvent.offsetX === undefined
@@ -272,24 +292,26 @@ class CanavasRectangleComponet extends Component {
           ? e.nativeEvent.layerY
           : e.nativeEvent.offsetY;
       if (startPoint[0] !== offsetX && startPoint[1] !== offsetY) {
-        myCtx.strokeRect(
-          startPoint[0],
-          startPoint[1],
-          offsetX - startPoint[0],
-          offsetY - startPoint[1]
-        );
-        // const width = offsetX - startPoint[0];
-        // const height = offsetY - startPoint[1];
+        if (!isMoveAll) {
+          myCtx.strokeRect(
+            startPoint[0],
+            startPoint[1],
+            offsetX - startPoint[0],
+            offsetY - startPoint[1]
+          );
+        }
+        const shouldPopup = !(mode === "moveall");
         this.setState(
           {
             startPoint: [0, 0],
             recArrays,
             cssX: offsetX,
             cssY: offsetY,
-            showup: true,
+            showup: shouldPopup,
             inputID: "",
             inputDesc: "",
-            flag: false
+            ismouseDown: false,
+            isMoveAll: false
           },
           () => {
             this.initilization();
@@ -395,12 +417,14 @@ class CanavasRectangleComponet extends Component {
   }
 
   drawRectangles() {
-    const { mode, recArrays, mouseMoveArrays, curSelectedRect, delItemID } =
-      this.state;
-    // const newArr = recArrays.filter(item=>{return item.ID!=="000000000"})
-    console.log(`DRAW recArrays:${JSON.stringify(recArrays)}`);
-    console.log(`DRAW mouseArrays:${JSON.stringify(mouseMoveArrays)}`);
-    console.log(`selected delete id:${JSON.stringify(curSelectedRect)}`);
+    const {
+      mode,
+      recArrays,
+      mouseMoveArrays,
+      delItemID,
+      mouseMoveAllArrays,
+      isMoveAll
+    } = this.state;
     if (delItemID !== "" && mode === "delete") {
       const newTest = recArrays.filter((item) => {
         return item.ID !== delItemID;
@@ -420,10 +444,16 @@ class CanavasRectangleComponet extends Component {
           return item.ID !== delItemID;
         })
       );
+
       this.setState({ mode: "", delItemID: "" });
-    } else {
-      this.draw(recArrays);
+    } else if (mode === "add") {
       this.draw(mouseMoveArrays);
+      this.draw(recArrays); // 最后的mouseup会重新跑到这里
+    } else if (mode === "moveall") {
+      console.log(
+        `isMove in component did update:${isMoveAll} and mode is ${mode}`
+      );
+      this.draw(mouseMoveAllArrays);
     }
   }
 
@@ -436,14 +466,22 @@ class CanavasRectangleComponet extends Component {
       ...canvasItem
     };
 
-    saveSourceCanvasDetail(payload).then(({ data }) => {
-      console.log(`result save:${JSON.stringify(data)}`);
-      if (data.state) {
-        message.info("保存成功！");
-      } else {
-        message.info("保存失败！");
-      }
-    });
+    saveSourceCanvasDetail(payload)
+      .then(({ data }) => {
+        console.log(`result save:${JSON.stringify(data)}`);
+        if (data.state) {
+          message.info("保存成功！");
+        } else {
+          message.info("保存失败！");
+        }
+      })
+      .then(() => {
+        this.setState({
+          mode: "",
+          ismouseDown: false,
+          isMoveAll: false
+        });
+      });
   }
 
   render() {
@@ -465,18 +503,40 @@ class CanavasRectangleComponet extends Component {
     return (
       <div className={style.monitorArea}>
         <div className={style.btnLayer}>
-          <Button
-            type="primary"
-            onClick={() => {
-              this.setState({ recArrays: [], mouseMoveArrays: [] });
-            }}
-          >
-            全部重画
-          </Button>
-          <Divider type="vertical" />
-          <Button type="primary" onClick={this.saveDetail}>
-            保存
-          </Button>
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                this.setState({
+                  recArrays: [],
+                  mouseMoveArrays: [],
+                  mouseMoveAllArrays: [],
+                  mode: "add",
+                  isMoveAll: false,
+                  ismouseDown: false
+                });
+              }}
+            >
+              全部重画
+            </Button>
+            <Button
+              className={style.moveAllBtn}
+              type="primary"
+              onClick={() => {
+                this.setState({
+                  isMoveAll: true,
+                  mode: "moveall"
+                });
+              }}
+            >
+              全部移动
+            </Button>
+          </div>
+          <div>
+            <Button type="primary" onClick={this.saveDetail}>
+              保存
+            </Button>
+          </div>
         </div>
 
         <div className={style.monitorCanvas} id="canvasArea">
@@ -486,7 +546,8 @@ class CanavasRectangleComponet extends Component {
             id="canvas"
             onDoubleClick={this.dobuleClickHandler}
             onMouseDown={this.mouseDownHandler}
-            onMouseMove={throttle(16, this.mouseMoveHandler)}
+            // onMouseMove={throttle(16, this.mouseMoveHandler)}
+            onMouseMove={this.mouseMoveHandler}
             onMouseUp={this.mouseUpHandler}
             width={960}
             height={540}
@@ -624,7 +685,7 @@ class CanavasRectangleComponet extends Component {
                       editshowup: false,
                       startPoint: [0, 0],
                       recArrays: [...newArr],
-                      mode: "update"
+                      mode: ""
                     });
                   }}
                   className={style.confirmBtn}
@@ -641,7 +702,7 @@ class CanavasRectangleComponet extends Component {
                 <Button
                   type="primary"
                   onClick={() => {
-                    this.setState({ editshowup: false });
+                    this.setState({ editshowup: false, mode: "" });
                   }}
                   className={style.cancelBtn}
                 >

@@ -4,6 +4,7 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Stage, Layer, Rect, Group } from "react-konva";
 // eslint-disable-next-line no-unused-vars
 import Konva from "konva";
+import { v4 as uuidv4 } from "uuid";
 import * as style from "../../css/rectangle.less";
 import APICONST from "../../services/APIConst";
 import { fetchAllInsturment } from "../../services/devices";
@@ -15,27 +16,33 @@ class CanavasRectangleComponet2 extends Component {
     super(props);
     this.getImage = this.getImage.bind(this);
     this.handleClick = this.handleClick.bind(this);
-    this.handleDragStart = this.handleDragStart.bind(this);
     this.handleDragEnd = this.handleDragEnd.bind(this);
     this.createRectangles = this.createRectangles.bind(this);
     this.deleteRectangle = this.deleteRectangle.bind(this);
     this.getInfoFromAxis = this.getInfoFromAxis.bind(this);
-    this.checkDeselect = this.checkDeselect.bind(this);
     this.onModeChange = this.onModeChange.bind(this);
 
     this.dragAllEnd = this.dragAllEnd.bind(this);
+
+    this.handleCreateNewClick = this.handleCreateNewClick.bind(this);
+    this.handleCreateNewMouseMove = this.handleCreateNewMouseMove.bind(this);
+
     this.state = {
-      recArrays: [],
+      recArrays: [], // store real data
       ratioWidth: 1,
       ratioHeight: 1,
       fillPatternImage: null,
       mode: "edit",
       isDrawing: false,
-      selectedId: null,
+      isDrawingMode: false,
       selected: {
+        uuid: "",
         id: "",
         desc: ""
-      }
+      },
+      moveAllOffsetX: 0,
+      moveAllOffsetY: 0,
+      hasMovedAll: false
     };
   }
 
@@ -89,6 +96,7 @@ class CanavasRectangleComponet2 extends Component {
             y: y0,
             width: w,
             height: h,
+            uuid: uuidv4(),
             id: item.ID,
             desc: item.Desc
           });
@@ -104,36 +112,49 @@ class CanavasRectangleComponet2 extends Component {
   }
 
   componentDidUpdate() {
-    const { recArrays } = this.state;
+    const { recArrays, mode } = this.state;
+    console.log(`component did update mode: ${mode}`);
     console.log(`updated : ${JSON.stringify(recArrays)}`);
   }
 
   handleClick(e) {
-    console.log(`click rect${JSON.stringify(e)}`);
-    this.setState({
-      selected: {
-        id: e.rectId,
-        desc: e.desc
-      }
-    });
+    console.log(`click rect :::::: ${JSON.stringify(e)}`);
+    const { mode } = this.state;
+    if (mode === "edit") {
+      this.setState({
+        selected: {
+          uuid: e.uuid,
+          id: e.rectId,
+          desc: e.desc
+        }
+      });
+    }
   }
 
-  handleDragStart(e) {
-    const { selected } = this.state;
-    console.log(`start drag get selected: ${JSON.stringify(selected)}`);
-  }
-
-  //
   handleDragEnd(e) {
-    // const target = JSON.parse(e.target);
+    // e.target.absolutePosition({
+    //   x: 0,
+    //   y: 0
+    // });
+    // const groupPos = e.target.getAbsolutePosition();
+
+    // console.log(`Group position: x:${groupPos.x},y:${groupPos.y}`);
+
     console.log(
-      `handle drag in parent rect end${JSON.stringify(e.target.attrs)}`
+      `handle drag in parent rect end--->${JSON.stringify(e.target.attrs)}`
     );
-    const { rectId, x, y } = e.target.attrs;
+    const { uuid, x, y } = e.target.attrs;
     const { recArrays } = this.state;
     const res = [];
+    let selectedUuid;
+    let selectedId;
+    let selectedDesc;
+    console.log(`before drag end : res is:${JSON.stringify(recArrays)}`);
     recArrays.map((item) => {
-      if (item.id === rectId) {
+      if (item.uuid === uuid) {
+        selectedUuid = uuid;
+        selectedId = item.id;
+        selectedDesc = item.desc;
         res.push({
           ...item,
           x,
@@ -143,15 +164,90 @@ class CanavasRectangleComponet2 extends Component {
         res.push(item);
       }
     });
+
     console.log(`after drag end : res is:${JSON.stringify(res)}`);
     this.setState({
-      recArrays: [...res]
+      recArrays: [...res],
+      selected: {
+        uuid: selectedUuid,
+        id: selectedId,
+        desc: selectedDesc
+      }
     });
+  }
+
+  handleCreateNewClick = (e) => {
+    const { isDrawing, isDrawingMode, recArrays, mode } = this.state;
+    if (mode !== "new") {
+      return;
+    }
+    console.log("on handle create click.");
+    if (!isDrawingMode) return;
+    // if we are drawing a shape, a click finishes the drawing
+    if (isDrawing) {
+      this.setState({
+        isDrawing: !isDrawing
+      });
+      return;
+    }
+    // otherwise, add a new rectangle at the mouse position with 0 width and height,
+    // and set isDrawing to true
+    const newUUID = uuidv4();
+    const newShapes = recArrays.slice();
+    newShapes.push({
+      x: e.evt.layerX,
+      y: e.evt.layerY,
+      width: 0,
+      height: 0,
+      uuid: newUUID,
+      id: "id",
+      desc: "desc"
+    });
+    this.setState({
+      isDrawing: true,
+      recArrays: newShapes
+    });
+  };
+
+  handleCreateNewMouseMove(e) {
+    const { isDrawingMode, isDrawing, recArrays, mode } = this.state;
+    if (mode !== "new") return;
+    console.log("on handle create mouse move .");
+    if (!isDrawingMode) return;
+
+    const mouseX = e.evt.layerX;
+    const mouseY = e.evt.layerY;
+
+    // update the current rectangle's width and height based on the mouse position
+    if (isDrawing) {
+      const newUUID = uuidv4();
+      // get the current shape (the last shape in this.state.shapes)
+      const currShapeIndex = recArrays.length - 1;
+      const currShape = recArrays[currShapeIndex];
+      const newWidth = mouseX - currShape.x;
+      const newHeight = mouseY - currShape.y;
+      const newShapesList = recArrays.slice();
+
+      newShapesList[currShapeIndex] = {
+        x: currShape.x, // keep starting position the same
+        y: currShape.y,
+        width: newWidth, // new width and height
+        height: newHeight,
+        uuid: newUUID,
+        id: "id",
+        desc: "desc"
+      };
+
+      this.setState({
+        recArrays: newShapesList
+      });
+    }
   }
 
   onModeChange(e) {
     this.setState({
-      mode: e.target.value
+      mode: e.target.value,
+      isDrawingMode: e.target.value === "new"
     });
   }
 
@@ -187,10 +283,23 @@ class CanavasRectangleComponet2 extends Component {
   }
 
   dragAllEnd(e) {
-    const { recArrays, mode, ratioWidth, ratioHeight } = this.state;
+    const { mode } = this.state;
+
     if (mode === "moveall") {
-      console.log(`drag with all node end： ${JSON.stringify(e.target)}`);
-      console.log(`before drag all:${JSON.stringify(recArrays)}`);
+      console.log(`draw all, mode is ${mode}`);
+      const groupPos = e.target.getAbsolutePosition();
+      console.log(`Group position before all: x:${groupPos.x},y:${groupPos.y}`);
+
+      e.target.absolutePosition({
+        x: 0,
+        y: 0
+      });
+      const groupPosNew = e.target.getAbsolutePosition();
+
+      console.log(`Group position all: x:${groupPosNew.x},y:${groupPosNew.y}`);
+
+      // console.log(`drag with all node end： ${JSON.stringify(e.target)}`);
+      // console.log(`before drag all:${JSON.stringify(recArrays)}`);
 
       const { x, y } = e.target.attrs;
       const { children } = e.target;
@@ -198,40 +307,39 @@ class CanavasRectangleComponet2 extends Component {
       children.map((item) => {
         newArr.push(item.attrs);
       });
-      console.log(`ration is :${ratioWidth},${ratioHeight}`);
-      const res = newArr.map((item) => {
-        return {
+      console.log(`x, y is :[${groupPos.x},${groupPos.y}]`);
+      const res = [];
+      newArr.map((item) => {
+        res.push({
           ...item,
-          x: item.x + x,
-          y: item.y + y,
+          x: item.x + groupPos.x,
+          y: item.y + groupPos.y,
           id: item.rectId
-        };
+        });
       });
-      console.log(`after drag all:${JSON.stringify(res)}`);
 
       this.setState({
-        recArrays: [...res]
+        recArrays: [...res],
+        hasMovedAll: true,
+        moveAllOffsetX: x,
+        moveAllOffsetY: y
       });
     }
   }
 
-  checkDeselect(e) {
-    const clickedOnEmpty = e.target === e.target.getStage();
-    if (clickedOnEmpty) {
-      this.setState({ selectedId: null });
-    }
-  }
-
-  createRectangles(recArray, mode) {
+  createRectangles() {
+    const { isDrawingMode, recArrays, mode } = this.state;
+    console.log("called: createRectangles");
     const rectangles = [];
-    const { isDrawingMode } = this.state;
-    if (recArray.length > 0) {
+    if (recArrays.length > 0) {
       if (mode === "edit" || mode === "new") {
-        recArray.map((item) => {
+        console.log("refresh with recArrays");
+        recArrays.map((item) => {
           rectangles.push(
             <SimpleRectangle
-              key={item.id}
+              key={item.uuid}
               rectId={item.id}
+              uuid={item.uuid}
               desc={item.desc}
               x={item.x}
               y={item.y}
@@ -241,9 +349,6 @@ class CanavasRectangleComponet2 extends Component {
               onClick={(e) => {
                 this.handleClick(e);
               }}
-              onDragStart={(e) => {
-                this.handleDragStart(e);
-              }}
               onDragEnd={(e) => {
                 this.handleDragEnd(e);
               }}
@@ -251,12 +356,13 @@ class CanavasRectangleComponet2 extends Component {
             />
           );
         });
-      } else if (mode === "moveall") {
-        recArray.map((item) => {
+      } else {
+        recArrays.map((item) => {
           rectangles.push(
             <SimpleRectangle
-              key={item.id}
+              key={item.uuid}
               rectId={item.id}
+              uuid={item.uuid}
               desc={item.desc}
               x={item.x}
               y={item.y}
@@ -264,7 +370,6 @@ class CanavasRectangleComponet2 extends Component {
               height={item.height}
               isDrawingMode={isDrawingMode}
               onClick={this.handleClick}
-              onDragStart={this.handleDragStart}
               onDragEnd={this.handleDragEnd}
               drag="false"
             />
@@ -278,10 +383,15 @@ class CanavasRectangleComponet2 extends Component {
 
   deleteRectangle() {
     console.log("delete");
-    const { selected, recArrays } = this.state;
-    const { id } = selected;
+    const { selected, recArrays, mode } = this.state;
+    console.log(`start to delete this;${JSON.stringify(selected)}`);
+    const { uuid } = selected;
+    if (mode !== "edit") {
+      message.info("请切换到编辑模式，再进行删除！");
+      return;
+    }
     const newArr = recArrays.filter((item) => {
-      return item.id !== id;
+      return item.uuid !== uuid;
     });
     console.log(`NEW ARR: ${JSON.stringify(newArr)}`);
     this.setState(
@@ -334,7 +444,7 @@ class CanavasRectangleComponet2 extends Component {
       selected
     } = this.state;
     // const rectangleImages = [];
-    const rectangleImages = this.createRectangles(recArrays, mode);
+    const rectangleImages = this.createRectangles();
     return (
       <div className={style.monitorArea}>
         <div className={style.btnLayer}>
@@ -366,11 +476,12 @@ class CanavasRectangleComponet2 extends Component {
           <Stage
             width={960}
             height={540}
-            onMouseDown={this.checkDeselect}
-            onTouchStart={this.checkDeselect}
+            onClick={this.handleCreateNewClick}
+            onMouseMove={this.handleCreateNewMouseMove}
+            key="onlyStageHere"
           >
-            <Layer>
-              <Group>
+            <Layer key="onlyLayerHere">
+              <Group key="backgroundGroup">
                 <Rect
                   x={0}
                   y={0}
@@ -381,7 +492,7 @@ class CanavasRectangleComponet2 extends Component {
                   fillPatternScaleY={1 / parseInt(ratioHeight, 10)}
                 />
               </Group>
-              <Group onDragEnd={this.dragAllEnd} draggable>
+              <Group key="onlyGroup" onDragEnd={this.dragAllEnd} draggable>
                 {rectangleImages}
               </Group>
             </Layer>
@@ -395,7 +506,25 @@ class CanavasRectangleComponet2 extends Component {
             size="small"
             placeholder="ID"
             value={selected.id}
-            disabled
+            onChange={(e) => {
+              const res = [];
+              const resData = [];
+              recArrays.map((item) => {
+                if (item.uuid === selected.uuid) {
+                  res.push({
+                    ...item,
+                    id: e.target.value
+                  });
+                } else {
+                  res.push(item);
+                }
+              });
+
+              this.setState({
+                recArrays: [...res],
+                selected: { ...selected, id: e.target.value }
+              });
+            }}
           />
           <div className={style.labelFont}>描述:</div>
           <Input
@@ -405,12 +534,9 @@ class CanavasRectangleComponet2 extends Component {
             placeholder="Description"
             value={selected.desc}
             onChange={(e) => {
-              if (selected.id === "" || selected.desc === "") {
-                return;
-              }
               const res = [];
               recArrays.map((item) => {
-                if (item.id === selected.id) {
+                if (item.uuid === selected.uuid) {
                   res.push({
                     ...item,
                     desc: e.target.value
@@ -427,7 +553,11 @@ class CanavasRectangleComponet2 extends Component {
             }}
           />
 
-          <Button type="link" onClick={this.deleteRectangle}>
+          <Button
+            type="link"
+            onClick={this.deleteRectangle}
+            disabled={mode !== "edit"}
+          >
             删除
           </Button>
           <Button type="primary" onClick={this.saveDetail}>

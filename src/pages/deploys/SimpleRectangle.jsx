@@ -12,19 +12,22 @@ class SimpleRectangle extends React.Component {
     this.handleSubClick = this.handleSubClick.bind(this);
   }
 
-  handleSubClick() {
+  handleSubClick = (e) => {
     const { isDrawingMode, onClick } = this.props;
     if (!isDrawingMode) {
+      e.evt.stopPropagation();
+      console.log(`on sub page props: ${JSON.stringify(this.props)}`);
       onClick(this.props);
     }
-  }
+  };
 
   render() {
-    const { x, y, width, height, drag, rectId, desc, onDragStart, onDragEnd } =
+    const { x, y, width, height, drag, rectId, uuid, desc, onDragEnd } =
       this.props;
     return (
       <Rect
-        key={rectId}
+        key={uuid}
+        uuid={uuid}
         x={x}
         y={y}
         width={width}
@@ -35,7 +38,6 @@ class SimpleRectangle extends React.Component {
         stroke="red"
         draggable={drag === "true"}
         onClick={this.handleSubClick}
-        onDragStart={onDragStart}
         onDragEnd={onDragEnd}
       />
     );

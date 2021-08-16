@@ -1,7 +1,14 @@
 import React from "react";
 import { Rect, Transformer } from "react-konva";
 
-const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
+const Rectangle = ({
+  shapeProps,
+  isSelected,
+  onSelect,
+  onChange,
+  dragMode
+}) => {
+  console.log(`re-render Rectangle because mode change to ${dragMode}`);
   const shapeRef = React.useRef();
   const trRef = React.useRef();
 
@@ -16,11 +23,12 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
   return (
     <>
       <Rect
+        key={shapeProps.id}
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef}
         {...shapeProps}
-        draggable
+        draggable={dragMode === "edit"}
         onDragEnd={(e) => {
           onChange({
             ...shapeProps,
@@ -46,13 +54,17 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
             y: node.y(),
             // set minimal value
             width: Math.max(5, node.width() * scaleX),
-            height: Math.max(5, node.height() * scaleY)
+            height: Math.max(node.height() * scaleY)
           });
         }}
       />
       {isSelected && (
         <Transformer
           ref={trRef}
+          borderEnabled={false}
+          anchorSize={4}
+          // anchorFill="#ff7875"
+          rotateEnabled={false}
           boundBoxFunc={(oldBox, newBox) => {
             // limit resize
             if (newBox.width < 5 || newBox.height < 5) {
@@ -65,4 +77,5 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
     </>
   );
 };
+
 export default Rectangle;

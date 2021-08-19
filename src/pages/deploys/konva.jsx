@@ -14,6 +14,8 @@ import Rectangle from "./konvarectangle";
 class CanavasRectangleComponet2 extends Component {
   constructor(props) {
     super(props);
+    this.selectionRectRef = React.createRef();
+
     this.getImage = this.getImage.bind(this);
     this.deleteRectangle = this.deleteRectangle.bind(this);
     this.getInfoFromAxis = this.getInfoFromAxis.bind(this);
@@ -23,6 +25,9 @@ class CanavasRectangleComponet2 extends Component {
 
     this.saveDetail = this.saveDetail.bind(this);
     this.checkDeselect = this.checkDeselect.bind(this);
+
+    this.selectAllRectangle = this.selectAllRectangle.bind(this);
+    this.selectAllPosition = this.selectAllPosition.bind(this);
 
     this.state = {
       recArrays: [], // store real data
@@ -123,7 +128,13 @@ class CanavasRectangleComponet2 extends Component {
       }
     }
     this.setState({
-      mode: e.target.value
+      mode: e.target.value,
+      selectedId: null,
+      selected: {
+        uuid: "",
+        id: "",
+        desc: ""
+      }
     });
   }
 
@@ -182,10 +193,69 @@ class CanavasRectangleComponet2 extends Component {
     }
   }
 
+  selectAllRectangle() {
+    const node = this.selectionRectRef.current;
+    // disable click event
+    Konva.listenClickTap = false;
+    const [x, y, width, height] = this.selectAllPosition();
+    console.log(`get x, y , width,height is: [${x},${y},${width},${height}]`);
+    node.setAttrs({
+      visible: true,
+      x,
+      y,
+      width,
+      height,
+      fill: "rgba(0, 161, 255, 0.3)",
+      stroke: "lightblue",
+      strokeWidth: 1
+    });
+    document.getElementsById("canvasArea").style.cursor = "crosshair";
+    node.getLayer().batchDraw();
+  }
+
+  selectAllPosition() {
+    const { recArrays } = this.state;
+    let minx = 980;
+    let miny = 540;
+    let maxx = 0;
+    let maxy = 0;
+    recArrays.map((item) => {
+      if (item.x < minx) {
+        minx = item.x;
+      }
+      if (item.y < miny) {
+        miny = item.y;
+      }
+      if (item.x > maxx) {
+        maxx = item.x;
+      }
+      if (item.y > maxy) {
+        maxy = item.y;
+      }
+    });
+    const lastElement = recArrays.filter((item) => {
+      return item.x === maxx;
+    })[0];
+    return [
+      minx - 10 < 0 ? minx : minx - 10,
+      miny - 10 < 0 ? miny : miny - 10,
+      minx + maxx - minx + lastElement.width > 980
+        ? 980
+        : maxx - minx + lastElement.width + 20,
+      miny + maxy - miny + lastElement.height > 540
+        ? 980
+        : maxy - miny + lastElement.height + 20
+    ];
+  }
+
   dragAllEnd(e) {
     const { mode } = this.state;
 
     if (mode === "moveall") {
+      const node = this.selectionRectRef.current;
+      node.setAttrs({
+        visible: false
+      });
       console.log(`draw all, mode is ${mode}`);
       const groupPos = e.target.getAbsolutePosition();
       console.log(`Group position before all: x:${groupPos.x},y:${groupPos.y}`);
@@ -203,24 +273,28 @@ class CanavasRectangleComponet2 extends Component {
 
       // const { x, y } = e.target.attrs;
       const { children } = e.target;
+      console.log(`children is:${JSON.stringify(children)}`);
       const newArr = [];
       children.map((item) => {
         newArr.push(item.attrs);
       });
       console.log(`x, y is :[${groupPos.x},${groupPos.y}]`);
-      const res = [];
+
+      const afterMoveArr = [];
       newArr.map((item) => {
-        res.push({
-          ...item,
-          x: item.x + groupPos.x,
-          y: item.y + groupPos.y
-        });
+        if (item.hasOwnProperty("uuid")) {
+          afterMoveArr.push({
+            ...item,
+            x: item.x + groupPos.x,
+            y: item.y + groupPos.y
+          });
+        }
       });
 
-      console.log(`draw after:${JSON.stringify(res)}`);
+      console.log(`draw after:${JSON.stringify(afterMoveArr)}`);
 
       this.setState({
-        recArrays: [...res]
+        recArrays: [...afterMoveArr]
       });
     }
   }
@@ -374,13 +448,17 @@ class CanavasRectangleComponet2 extends Component {
                         console.log(
                           `on select rec is ${selectedId} and rect id is: ${rect.id}`
                         );
-                        this.setState({
-                          selected: {
-                            uuid: rect.uuid,
-                            id: rect.id,
-                            desc: rect.name
-                          }
-                        });
+                        if (mode === "moveall") {
+                          this.selectAllRectangle();
+                        } else {
+                          this.setState({
+                            selected: {
+                              uuid: rect.uuid,
+                              id: rect.id,
+                              desc: rect.name
+                            }
+                          });
+                        }
                       }}
                       onChange={(newAttrs) => {
                         const rects = recArrays.slice();
@@ -392,6 +470,17 @@ class CanavasRectangleComponet2 extends Component {
                     />
                   );
                 })}
+                <Rect
+                  id={`selectall${uuidv4()}`}
+                  uuid={`selectall${uuidv4()}`}
+                  name="selectall"
+                  stroke="stroke"
+                  strokeWidth={1}
+                  draggable={false}
+                  key="onlySelectAll"
+                  fill="rgba(0,0,255,0.5)"
+                  ref={this.selectionRectRef}
+                />
               </Group>
             </Layer>
           </Stage>

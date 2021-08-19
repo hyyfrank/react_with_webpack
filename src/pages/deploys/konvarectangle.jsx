@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Rect, Transformer } from "react-konva";
 
 const Rectangle = ({
@@ -12,9 +12,8 @@ const Rectangle = ({
   const shapeRef = React.useRef();
   const trRef = React.useRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isSelected) {
-      // we need to attach transformer manually
       trRef.current.nodes([shapeRef.current]);
       trRef.current.getLayer().batchDraw();
     }

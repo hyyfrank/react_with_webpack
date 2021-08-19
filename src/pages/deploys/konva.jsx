@@ -37,7 +37,9 @@ class CanavasRectangleComponet2 extends Component {
         id: "",
         desc: ""
       },
-      selectedId: null
+      selectedId: null,
+      shapeRefArray: [],
+      trsfomerRef: null
     };
   }
 
@@ -112,6 +114,14 @@ class CanavasRectangleComponet2 extends Component {
 
   onModeChange(e) {
     console.log(`mode change to : ${e.target.value}`);
+    if (e.target.value === "moveall") {
+      console.log("i am in setting the transformer");
+      const { shapeRefArray, trsfomerRef } = this.state;
+      if (trsfomerRef !== undefined && trsfomerRef !== null) {
+        trsfomerRef.nodes(shapeRefArray);
+        trsfomerRef.getLayer().batchDraw();
+      }
+    }
     this.setState({
       mode: e.target.value
     });
@@ -191,7 +201,7 @@ class CanavasRectangleComponet2 extends Component {
       // console.log(`drag with all node end： ${JSON.stringify(e.target)}`);
       // console.log(`before drag all:${JSON.stringify(recArrays)}`);
 
-      const { x, y } = e.target.attrs;
+      // const { x, y } = e.target.attrs;
       const { children } = e.target;
       const newArr = [];
       children.map((item) => {

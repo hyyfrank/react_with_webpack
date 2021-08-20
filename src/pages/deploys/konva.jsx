@@ -29,6 +29,8 @@ class CanavasRectangleComponet2 extends Component {
     this.selectAllRectangle = this.selectAllRectangle.bind(this);
     this.selectAllPosition = this.selectAllPosition.bind(this);
 
+    this.onMouseEnter = this.onMouseEnter.bind(this);
+
     this.state = {
       recArrays: [], // store real data
       ratioWidth: 1,
@@ -138,6 +140,10 @@ class CanavasRectangleComponet2 extends Component {
     });
   }
 
+  onMouseEnter(e) {
+    e.target.container().style.cursor = "grab";
+  }
+
   getImage(url) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -209,7 +215,7 @@ class CanavasRectangleComponet2 extends Component {
       stroke: "lightblue",
       strokeWidth: 1
     });
-    document.getElementsById("canvasArea").style.cursor = "crosshair";
+    // document.getElementsById("canvasArea").style.cursor = "grabbing";
     node.getLayer().batchDraw();
   }
 
@@ -422,6 +428,7 @@ class CanavasRectangleComponet2 extends Component {
             height={540}
             onMouseDown={this.checkDeselect}
             onTouchStart={this.checkDeselect}
+            onMouseEnter={this.onMouseEnter}
             key="onlyStageHere"
           >
             <Layer key="onlyLayerHere">

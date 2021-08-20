@@ -7,6 +7,7 @@ const path = require("path");
 const StyleCssLintPlugin = require("stylelint-webpack-plugin");
 // const ESLintPlugin = require("eslint-webpack-plugin");
 const webpack = require("webpack");
+const fs = require("fs");
 // const LodashWebpackPlugin = require("lodash-webpack-plugin");
 // const {generateHtmlPages, getEntry, getDebugChunk} = require("./src/utils/webpack-utils");
 
@@ -18,6 +19,15 @@ const webpack = require("webpack");
 //         whitelist: ["*purify*"]
 //     }
 // });
+
+const lessToJs = require("less-vars-to-js");
+
+const themeVariables = lessToJs(
+  fs.readFileSync(
+    path.join(__dirname, "./src/css/ant-default-vars.less"),
+    "utf8"
+  )
+);
 
 const StyleLintPlugin = new StyleCssLintPlugin({
   configFile: ".stylelintrc",
@@ -74,7 +84,8 @@ module.exports = {
             loader: require.resolve("less-loader"),
             options: {
               lessOptions: {
-                javascriptEnabled: true
+                javascriptEnabled: true,
+                modifyVars: themeVariables
               }
             }
             // options: { modifyVars: { "@primary-color": "#1DA57A" } }
@@ -100,7 +111,8 @@ module.exports = {
             loader: require.resolve("less-loader"),
             options: {
               lessOptions: {
-                javascriptEnabled: true
+                javascriptEnabled: true,
+                modifyVars: themeVariables
               }
             }
             // options: { modifyVars: { "@primary-color": "#1DA57A" } }

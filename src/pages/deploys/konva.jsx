@@ -351,22 +351,23 @@ class CanavasRectangleComponet2 extends Component {
     const payload = {
       ...canvasItem
     };
-    saveSourceCanvasDetail(payload)
-      .then(({ data }) => {
-        console.log(`result save:${JSON.stringify(data)}`);
-        if (data.state) {
-          message.info("保存成功！");
-        } else {
-          message.info("保存失败！");
-        }
-      })
-      .then(() => {
-        this.setState({
-          mode: "",
-          ismouseDown: false,
-          isMoveAll: false
-        });
-      });
+    console.log(`save payload:${JSON.stringify(payload)}`);
+    // saveSourceCanvasDetail(payload)
+    //   .then(({ data }) => {
+    //     console.log(`result save:${JSON.stringify(data)}`);
+    //     if (data.state) {
+    //       message.info("保存成功！");
+    //     } else {
+    //       message.info("保存失败！");
+    //     }
+    //   })
+    //   .then(() => {
+    //     this.setState({
+    //       mode: "",
+    //       ismouseDown: false,
+    //       isMoveAll: false
+    //     });
+    //   });
   }
 
   render() {

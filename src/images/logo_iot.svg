@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 40 40" style="enable-background:new 0 0 40 40;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:url(#路径_2_);stroke-width:2;stroke-linecap:round;}
+	.st1{fill:none;stroke:url(#路径_3_);stroke-width:2;stroke-linecap:round;}
+	.st2{fill:none;stroke:url(#椭圆形_3_);stroke-width:2;}
+	.st3{fill:url(#椭圆形_4_);}
+	.st4{fill:#00FF83;}
+</style>
+<g id="IOT">
+	<g>
+		
+			<linearGradient id="路径_2_" gradientUnits="userSpaceOnUse" x1="-905.3958" y1="512.4445" x2="-906.3958" y2="512.4445" gradientTransform="matrix(28.8 0 0 -10.8 26109.8008 5554.3994)">
+			<stop  offset="0" style="stop-color:#00FF83;stop-opacity:0.2"/>
+			<stop  offset="1" style="stop-color:#00FF83"/>
+		</linearGradient>
+		<path id="路径" class="st0" d="M20,25.4c8,0,14.4-2.4,14.4-5.4S28,14.6,20,14.6S5.6,17,5.6,20"/>
+		
+			<linearGradient id="路径_3_" gradientUnits="userSpaceOnUse" x1="-956.5208" y1="472.2349" x2="-956.5208" y2="474.8827" gradientTransform="matrix(1.763492e-15 -28.8 -10.8 -6.613093e-16 5134.3994 -27527.8008)">
+			<stop  offset="0" style="stop-color:#00FF83;stop-opacity:0.2"/>
+			<stop  offset="1" style="stop-color:#00FF83"/>
+		</linearGradient>
+		<path id="路径_1_" class="st1" d="M25.4,20c0-8-2.4-14.4-5.4-14.4S14.6,12,14.6,20S17,34.4,20,34.4"/>
+		
+			<linearGradient id="椭圆形_3_" gradientUnits="userSpaceOnUse" x1="-905.3953" y1="542.4634" x2="-906.3953" y2="542.4949" gradientTransform="matrix(28.8 0 0 -28.8 26109.7988 15643.3994)">
+			<stop  offset="0" style="stop-color:#00FF83;stop-opacity:0.2"/>
+			<stop  offset="1" style="stop-color:#00FF83"/>
+		</linearGradient>
+		<circle id="椭圆形" class="st2" cx="20" cy="20" r="14.4"/>
+		
+			<linearGradient id="椭圆形_4_" gradientUnits="userSpaceOnUse" x1="-915.5099" y1="548.0392" x2="-915.0883" y2="547.5922" gradientTransform="matrix(40 0 0 -40 36621 21921)">
+			<stop  offset="0" style="stop-color:#00FF83"/>
+			<stop  offset="1" style="stop-color:#15F7D9;stop-opacity:3.491239e-02"/>
+			<stop  offset="1" style="stop-color:#16F7DC;stop-opacity:0"/>
+		</linearGradient>
+		<circle id="椭圆形_1_" class="st3" cx="20" cy="20" r="20"/>
+		<circle id="椭圆形_2_" class="st4" cx="20.9" cy="25.4" r="1.8"/>
+	</g>
+</g>
+</svg>
